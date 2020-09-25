@@ -1,7 +1,7 @@
 baseurl = "/"
 title = "洗衣机的博客"
 
-theme = "fuji"
+theme = "hugo-lithium"
 hasCJKLanguage = true
 enableEmoji = true
 enableRobotsTXT = true
