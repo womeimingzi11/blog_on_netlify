@@ -1,13 +1,12 @@
 baseurl = "/"
 title = "洗衣机的博客"
 
-theme = "materialize-bp-hugo-theme"
+theme = "hugo-theme-mixedpaper"
 
+enableRobotsTXT = true
 paginate = 10 # Set the number of posts to show before overflowing to the next page.
 summaryLength = 100 # Configure how long the post summary should be on the homepage.
-
-enableInlineShortcodes = true
-footnoteReturnLinkContents = "^"
+pygmentsUseClasses = true # enable theme-defined highlight style
 
 defaultContentLanguage = "zh-hans"
 #defaultContentLanguageInSubdir = true
@@ -15,101 +14,49 @@ hasCJKLanguage = true
 
 copyright = "&copy;{year}, All Rights Reserved"
 
-#ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 ## Change this two to switch between different language
 languageCode = "zh-cn"  # For RSS, view https://www.rssboard.org/rss-language-codes
 
-enableRobotsTXT = true
-pygmentsCodeFences = true
-canonifyurls = true
+# Add your Google Analytics identifier: UA-XXXXXXXX-X
+googleAnalytics = ""
+
+#[taxonomies]
+#tag = "tags"
 
 [author]
 name = "Han Chen"
 
 [params]
-  description = "Why be a researcher if you can be an Engineer?"
-  #images = ["logo.jpg"]
-   showPostSummary = true
-  # startPageColumns = true
-  # showListsGrouped = true
-  # alwaysExpandMenu = true
-  hideReadingTime = true
-  #themeColor1 = "light-green" # main buttons and navbar
-  #themeColor1text = "light-green-text"
-  #themeColor2 = "red" # footer
-  #themeColor2text = "red-text text-lighten-3"
+# Blog description at the top of the homepage. Supports markdown.
+description = "Why be a researcher if you can be an Engineer?"
+showReadMore = false
+mainSections = [
+	"post",
+]
+# paginate of archives, tags and categories
+listPaginate = 20
+postLicense = ""
 
-# Sets Social Media icons to appear and link to your account. Value should be your
-# username unless otherwise noted.
-# Code from https://themes.gohugo.io/future-imperfect/ theme
-[social]
-  # Coding Communities
-  github           = "womeimingzi11"
-  # Social Networks
-  twitter          = "chenhan1992"
-  # Email
-  email            = "chenhan28@gmail.com"
+[params.comment]
+type = "none"
 
-[menu]
-
-  [[menu.main]]
-    identifier = "about"
-    # name = "About"  # Material Icons are displayed as block so use the icon only
-    url = "/about/"
-    weight = 10
-    pre = "<i class='material-icons'>speaker_notes</i>" # Material Icons
-    # pre = "<i class='fas fa-heart'></i>" # FontAwesone has more love ;-)
-
-  [[menu.footer]]
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-    weight = 10
-    pre = "<i class='fas fa-address-card'></i>"
-
-  [[menu.footer]]
-    identifier = "categories"
-    name = "Categories"
-    url = "/categories/"
-    weight = 20
-    pre = "<i class='fas fa-folder'></i>"
-
-  [[menu.footer]]
-    identifier = "tags"
-    name = "Tags"
-    url = "/tags/"
-    weight = 30
-    pre = "<i class='fas fa-tags'></i>"
+# Menu links along the sidebar navigation.
+[[menu.main]]
+identifier = "about"
+name = "About Me"
+url = "/about/"
+weight = 1 # Weight is an integer used to sort the menu items. The sorting goes from smallest to largest numbers. If weight is not defined for each menu entry, Hugo will sort the entries alphabetically.
 
 
-[taxonomies]
-category = "categories"
-tag = "tags"
-series = "series"
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+url = "/tags/"
+weight = 2
 
-[privacy]
-
-  [privacy.vimeo]
-    disable = false
-    simple = true
-
-  [privacy.twitter]
-    disable = false
-    enableDNT = true
-    simple = true
-
-  [privacy.instagram]
-    disable = false
-    simple = true
-
-  [privacy.youtube]
-    disable = false
-    privacyEnhanced = true
-
-[services]
-
-  [services.instagram]
-    disableInlineCSS = true
-
-  [services.twitter]
-    disableInlineCSS = true
+[[menu.main]]
+name = "Posts"
+identifier = "posts"
+url = "/post/"
+weight = 3
