@@ -9,7 +9,7 @@ summaryLength = 100 # Configure how long the post summary should be on the homep
 pygmentsUseClasses = true # enable theme-defined highlight style
 
 defaultContentLanguage = "zh-hans"
-defaultContentLanguageInSubdir = true
+#defaultContentLanguageInSubdir = true
 hasCJKLanguage = true
 
 copyright = "&copy;{year}, All Rights Reserved"
@@ -21,8 +21,8 @@ languageCode = "zh-cn"  # For RSS, view https://www.rssboard.org/rss-language-co
 # Add your Google Analytics identifier: UA-XXXXXXXX-X
 googleAnalytics = ""
 
-[taxonomies]
-tag = "tags"
+#[taxonomies]
+#tag = "tags"
 
 [author]
 name = "Han Chen"
