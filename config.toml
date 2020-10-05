@@ -15,7 +15,7 @@ hasCJKLanguage = true
 
 copyright = "&copy;{year}, All Rights Reserved"
 
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+#ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 ## Change this two to switch between different language
 languageCode = "zh-cn"  # For RSS, view https://www.rssboard.org/rss-language-codes
 
