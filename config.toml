@@ -38,9 +38,6 @@ mainSections = [
 listPaginate = 20
 postLicense = ""
 
-[params.comment]
-type = "none"
-
 # Menu links along the sidebar navigation.
 [[menu.main]]
 identifier = "about"
