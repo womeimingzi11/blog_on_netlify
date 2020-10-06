@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://womeimingzi11.netlify.app/"
 title = "洗衣机的博客"
 
 theme = "hugo-theme-mixedpaper"
