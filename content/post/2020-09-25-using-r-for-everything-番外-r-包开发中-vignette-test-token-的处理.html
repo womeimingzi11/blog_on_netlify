@@ -12,7 +12,6 @@ tags:
   - token
 ---
 
-<script src="2020-09-25-using-r-for-everything-番外-r-包开发中-vignette-test-token-的处理_files/header-attrs/header-attrs.js"></script>
 
 
 <p>作为一个不怎么 Skr 的 API Wrapper，最近花式的用到了高德地图的地理编码/逆编码服务，与其散乱各处每次都要反复修改 function 代码，不如干脆就封装成 package，还能方便自己和团队今后的使用。</p>
@@ -82,5 +81,5 @@ knitr::opts_chunk$set(purl = NOT_CRAN)</code></pre>
 <p>然而实际上，放入 .Rbuildignore 中的文件因为被排除在了打包之外，而构建 vignette 是完成打包之后方才进行，因此这种情况下是找不到文件地址的（因为没有在已经打包完成的library目录中）。</p>
 <p>通过这些方法，目前暂时实现了 0 error 0 warning，各位处理过相似问题的前辈如果有更合理的解决方案，还望能分享指点。</p>
 <hr />
-<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://womeimingzi11.github.io">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 </div>

@@ -111,4 +111,4 @@ knitr::opts_chunk$set(purl = NOT_CRAN)
 通过这些方法，目前暂时实现了 0 error 0 warning，各位处理过相似问题的前辈如果有更合理的解决方案，还望能分享指点。
 
 ---
-欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://womeimingzi11.github.io)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！
+欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！
