@@ -35,7 +35,7 @@ slug: amapgeocode-使用r进行高德地图地理编码-逆编码.zh-hans
 </div>
 <div id="amapgeocode" class="section level2">
 <h2>amapGeocode</h2>
-<p>基于以上原因，笔者使用<a href="https://lbs.amap.com/api/webservice/guide/api/georegeo">高德开放平台</a> API 编写了用于 R 的地理编码/逆编码的 Package <a href="https://cran.r-project.org/package=amapGeocode">amapGeocode</a>。具体的高德文档可以查看<a href="https://lbs.amap.com/">这里</a>和<a href="https://lbs.amap.com/api/webservice/summary/">这里</a>。</p>
+<p>基于以上原因，笔者使用<a href="https://lbs.amap.com/api/webservice/guide/api/georegeo">高德开放平台</a> API 编写了用于 R 的地理编码/逆编码的 Package <a href="https://cran.r-project.org/package=amapGeocode">amapGeocode</a>。代码托管于 <a href="https://github.com/womeimingzi11/amapGeocode">Github</a>。具体的高德文档可以查看<a href="https://lbs.amap.com/">这里</a>和<a href="https://lbs.amap.com/api/webservice/summary/">这里</a>。</p>
 <p>目前 amapGeocode 支持通过 <code>getCoord()</code> 进行地理编码，即根据地址获取坐标等信息；以及通过 <code>getLocation()</code> 进行地理逆编码，即根据经纬度获取地址等信息。此外还可以通过 <code>getAdmin()</code> 获取给定行政区其下属行政区（<code>JSON</code> 和 <code>XML</code> 支持多级行政区）。</p>
 <p>上述 function 支持输入单条的文本地址/坐标/行政区，同时也支持批量输入信息，其默认返回结果为 <a href="https://tibble.tidyverse.org/">tibble</a>， 同时也可以返回原生的 <code>JSON</code> 格式以及 <code>XML</code> 格式，此时批量查询的地址将以 <code>list</code> 的结构保存。</p>
 <div id="安装" class="section level3">

@@ -38,7 +38,7 @@ knitr::opts_chunk$set(
 
 ## amapGeocode
 
-基于以上原因，笔者使用[高德开放平台](https://lbs.amap.com/api/webservice/guide/api/georegeo) API 编写了用于 R 的地理编码/逆编码的 Package [amapGeocode](https://cran.r-project.org/package=amapGeocode)。具体的高德文档可以查看[这里](https://lbs.amap.com/)和[这里](https://lbs.amap.com/api/webservice/summary/)。
+基于以上原因，笔者使用[高德开放平台](https://lbs.amap.com/api/webservice/guide/api/georegeo) API 编写了用于 R 的地理编码/逆编码的 Package [amapGeocode](https://cran.r-project.org/package=amapGeocode)。代码托管于 [Github](https://github.com/womeimingzi11/amapGeocode)。具体的高德文档可以查看[这里](https://lbs.amap.com/)和[这里](https://lbs.amap.com/api/webservice/summary/)。
 
 目前 amapGeocode 支持通过 `getCoord()` 进行地理编码，即根据地址获取坐标等信息；以及通过 `getLocation()` 进行地理逆编码，即根据经纬度获取地址等信息。此外还可以通过 `getAdmin()` 获取给定行政区其下属行政区（`JSON` 和 `XML` 支持多级行政区）。
 
