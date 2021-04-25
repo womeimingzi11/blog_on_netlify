@@ -1,6 +1,0 @@
-[submodule "themes/minimo"]
-	path = themes/minimo
-	url = https://github.com/MunifTanjim/minimo
-[submodule "themes/fuji"]
-	path = themes/fuji
-	url = https://github.com/amzrk2/hugo-theme-fuji.git
