@@ -2,7 +2,6 @@
 title: 'amapGeocode: 使用R进行高德地图地理编码/逆编码'
 author: "Han Chen"
 date: '2020-10-09'
-output: word_document
 categories: Using R for Everything
 tags:
 - package
@@ -11,6 +10,7 @@ tags:
 slug: amapgeocode-使用r进行高德地图地理编码-逆编码.zh-hans
 ---
 
+<script src="2020-10-09-amapgeocode-使用r进行高德地图地理编码-逆编码_files/header-attrs/header-attrs.js"></script>
 
 
 <!-- Place this tag in your head or just before your close body tag. -->
@@ -62,15 +62,16 @@ slug: amapgeocode-使用r进行高德地图地理编码-逆编码.zh-hans
 <p>加载 amapGeocode 后，用户可以选择每次执行命令之时手动指定 <code>key</code> 参数来设定之前申请到的 Key，同时也可以通过下列命令将 key 设置为全局可用，则单条命令无需再次手动输入之前申请到的 Key</p>
 <pre><code>options(amap_key = &#39;REPLACE THIS BY YOUR KEY&#39;)</code></pre>
 <p>通过 <code>getCoord()</code> 来获取给定地址的经纬度：</p>
-<pre class="r"><code>getCoord(c(&quot;四川省中医院&quot;, &quot;四川省人民医院&quot;, &quot;兰州大学盘旋路校区&quot;, &quot;成都中医药大学十二桥校区&quot;))</code></pre>
+<pre class="r"><code>getCoord(c(&quot;四川省中医院&quot;, &quot;四川省人民医院&quot;, &quot;兰州大学盘旋路校区&quot;, 
+    &quot;成都中医药大学十二桥校区&quot;))</code></pre>
 <pre><code>## # A tibble: 4 x 12
-##     lng   lat formatted_addre~ country province city  district township street
+##     lng   lat formatted_addre… country province city  district township street
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;    &lt;lgl&gt;    &lt;lgl&gt; 
-## 1  104.  30.7 四川省成都市金牛区四川省中医院~ 中国    四川省   成都市~ 金牛区   NA       NA    
-## 2  104.  30.7 四川省成都市青羊区四川省人民医~ 中国    四川省   成都市~ 青羊区   NA       NA    
-## 3  104.  36.0 甘肃省兰州市城关区兰州大学盘旋~ 中国    甘肃省   兰州市~ 城关区   NA       NA    
-## 4  104.  30.7 四川省成都市金牛区成都中医药大~ 中国    四川省   成都市~ 金牛区   NA       NA    
-## # ... with 3 more variables: number &lt;lgl&gt;, citycode &lt;chr&gt;, adcode &lt;chr&gt;</code></pre>
+## 1  104.  30.7 四川省成都市金牛区四川省中医院… 中国    四川省   成都市… 金牛区   NA       NA    
+## 2  104.  30.7 四川省成都市青羊区四川省人民医… 中国    四川省   成都市… 青羊区   NA       NA    
+## 3  104.  36.0 甘肃省兰州市城关区兰州大学盘旋… 中国    甘肃省   兰州市… 城关区   NA       NA    
+## 4  104.  30.7 四川省成都市金牛区成都中医药大… 中国    四川省   成都市… 金牛区   NA       NA    
+## # … with 3 more variables: number &lt;lgl&gt;, citycode &lt;chr&gt;, adcode &lt;chr&gt;</code></pre>
 <p>在默认状态下，该命令将返回按输入顺序排序的 tibble 表格。不过用户依然可以通过指定 <code>output = 'JSON'</code> 或 <code>output = 'XML'</code> 并配合 <code>to_table = FALSE</code> 来直接获得高德地图 API 返回的 <code>JSON/XML</code> 格式的结果。</p>
 <pre class="r"><code># An individual request
 res &lt;- getCoord(&quot;成都中医药大学&quot;, output = &quot;XML&quot;, to_table = FALSE)
@@ -85,10 +86,10 @@ res</code></pre>
 <p>这类结果可以使用 amapGeocode 内置的 <code>extractCoord()</code> 处理为与之前格式相同的 <code>tibble</code> 格式。</p>
 <pre class="r"><code>extractCoord(res)</code></pre>
 <pre><code>## # A tibble: 1 x 12
-##     lng   lat formatted_addre~ country province city  district township street
+##     lng   lat formatted_addre… country province city  district township street
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;    &lt;lgl&gt;    &lt;lgl&gt; 
-## 1  104.  30.7 四川省成都市金牛区成都中医药大~ 中国    四川省   成都市~ 金牛区   NA       NA    
-## # ... with 3 more variables: number &lt;lgl&gt;, citycode &lt;chr&gt;, adcode &lt;chr&gt;</code></pre>
+## 1  104.  30.7 四川省成都市金牛区成都中医药大… 中国    四川省   成都市… 金牛区   NA       NA    
+## # … with 3 more variables: number &lt;lgl&gt;, citycode &lt;chr&gt;, adcode &lt;chr&gt;</code></pre>
 </div>
 <div id="地理逆编码" class="section level3">
 <h3>地理逆编码</h3>
@@ -98,8 +99,8 @@ getLocation(coord$lat, coord$lon)</code></pre>
 <pre><code>## # A tibble: 2 x 8
 ##   formatted_address   country province city  district township citycode towncode
 ##   &lt;chr&gt;               &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
-## 1 四川省成都市金牛区西安路街道成都中医~ 中国    四川省   成都市~ 金牛区   西安路街道~ 028      5101060~
-## 2 四川省成都市青羊区草堂街道四川省医学~ 中国    四川省   成都市~ 青羊区   草堂街道 028      5101050~</code></pre>
+## 1 四川省成都市金牛区西安路街道成都中医… 中国    四川省   成都市… 金牛区   西安路街道… 028      5101060…
+## 2 四川省成都市青羊区草堂街道四川省医学… 中国    四川省   成都市… 青羊区   草堂街道 028      5101050…</code></pre>
 </div>
 <div id="行政区获取" class="section level3">
 <h3>行政区获取</h3>
@@ -119,7 +120,7 @@ getLocation(coord$lat, coord$lon)</code></pre>
 ##  8  107.  30.5 广安市 city  0826     511600
 ##  9  108.  31.2 达州市 city  0818     511700
 ## 10  106.  30.8 南充市 city  0817     511300
-## # ... with 11 more rows
+## # … with 11 more rows
 ## 
 ## [[2]]
 ## # A tibble: 8 x 6
