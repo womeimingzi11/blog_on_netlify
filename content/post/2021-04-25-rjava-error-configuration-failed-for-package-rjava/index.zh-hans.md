@@ -32,7 +32,7 @@ tags:
 > Cannot find JVM library 'NA/lib/server/libjvm.dylib'
 > Install Java and/or check JAVA_HOME (if in doubt, do NOT set it, it will be detected)
 > The operation couldn’t be completed. Unable to locate a Java Runtime.
-> Please visit http://www.java.com for information on installing Java.
+> Please visit http://www&#46;java&#46;com for information on installing Java.
 
 或者问题出现在安装包的步骤，错误提示可能是：
 
