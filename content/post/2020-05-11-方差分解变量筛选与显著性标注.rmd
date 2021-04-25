@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 方差分解（Variation partition）变量筛选与显著性标注'
+title: 'Using R: 方差分解（Variation partition）变量筛选与显著性标注'
 author: Han
 date: '2020-05-11'
 slug: 方差分解变量筛选与显著性标注.zh-hans

@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything 番外: R 包开发中 vignette/test token 的处理'
+title: 'Using R 番外: R 包开发中 vignette/test token 的处理'
 author: Han
 date: '2020-09-25'
 slug: using-r-for-everything-番外-r-包开发中-vignette-test-token-的处理

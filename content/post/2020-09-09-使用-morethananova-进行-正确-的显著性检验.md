@@ -1,5 +1,5 @@
 ---
-title: 'Shiny apps: 使用 moreThanANOVA 进行「正确」的显著性检验'
+title: 'R Shiny: 使用 moreThanANOVA 进行「正确」的显著性检验'
 author: Han
 date: '2020-06-09'
 slug: shiny-apps-使用-morethananova-进行-正确-的显著性检验.zh-hans

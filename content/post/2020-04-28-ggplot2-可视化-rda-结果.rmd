@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: ggplot2 可视化 RDA 结果'
+title: 'Using R: ggplot2 可视化 RDA 结果'
 author: Han
 date: '2020-04-28'
 slug: using-r-for-everything-ggplot2-可视化-rda-结果.zh-hans

@@ -1,5 +1,5 @@
 ---
-title: 'rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’'
+title: 'Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’'
 author: Han Chen
 date: '2021-04-25'
 slug: []

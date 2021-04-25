@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 使用 ggplot2 绘制 RasterLayer 地图'
+title: 'Using R: 使用 ggplot2 绘制 RasterLayer 地图'
 author: Han
 date: '2020-02-19'
 slug: 使用-ggplot2-绘制-rasterlayer-地图.zh-hans

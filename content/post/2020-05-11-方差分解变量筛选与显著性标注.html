@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 方差分解（Variation partition）变量筛选与显著性标注'
+title: 'Using R: 方差分解（Variation partition）变量筛选与显著性标注'
 author: Han
 date: '2020-05-11'
 slug: 方差分解变量筛选与显著性标注.zh-hans
@@ -12,7 +12,7 @@ tags:
   - Variation partition
 ---
 
-<script src="方差分解变量筛选与显著性标注.zh-hans_files/header-attrs/header-attrs.js"></script>
+<script src="2020-05-11-方差分解变量筛选与显著性标注_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="何为反差分解" class="section level2">
@@ -47,27 +47,27 @@ df_env &lt;- read_csv(&#39;assets/2020-04-28-post/df_env_smp.csv&#39;, col_types
 glimpse(df_com)</code></pre>
 <pre><code>## Rows: 150
 ## Columns: 5
-## $ pp &lt;dbl&gt; 2.5500000, 1.3110456, 8.2500000, 102.4900000, 21.3500000, 2.49000…
-## $ ba &lt;dbl&gt; 28.010000, 7.316707, 13.255000, 18.516667, 52.720000, 4.965000, 6…
-## $ fu &lt;dbl&gt; 2.5500000, 1.3378838, 3.3550000, 20.9466667, 14.8466667, 1.245000…
-## $ pr &lt;dbl&gt; 2.5500000, 1.3378838, 0.0000000, 0.0000000, 0.0000000, 0.0000000,…
-## $ om &lt;dbl&gt; 15.280000, 5.953381, 14.850000, 23.500000, 5.623333, 2.475000, 31…</code></pre>
+## $ pp &lt;dbl&gt; 2.5500000, 1.3110456, 8.2500000, 102.4900000, 21.3500000, 2.4900000…
+## $ ba &lt;dbl&gt; 28.010000, 7.316707, 13.255000, 18.516667, 52.720000, 4.965000, 61.…
+## $ fu &lt;dbl&gt; 2.5500000, 1.3378838, 3.3550000, 20.9466667, 14.8466667, 1.2450000,…
+## $ pr &lt;dbl&gt; 2.5500000, 1.3378838, 0.0000000, 0.0000000, 0.0000000, 0.0000000, 4…
+## $ om &lt;dbl&gt; 15.280000, 5.953381, 14.850000, 23.500000, 5.623333, 2.475000, 31.2…</code></pre>
 <pre class="r"><code>glimpse(df_env)</code></pre>
 <pre><code>## Rows: 150
 ## Columns: 13
-## $ pH  &lt;dbl&gt; -1.63965465, 0.94291257, -1.33875709, -1.20359469, -1.17624072, …
-## $ MOI &lt;dbl&gt; -0.1610384, -0.5549069, -0.2762522, -0.1658411, 1.0043821, 0.546…
-## $ TN  &lt;dbl&gt; -0.116240631, -0.791972999, 0.199881689, -0.260084650, 0.2918749…
-## $ TP  &lt;dbl&gt; -0.44892589, 0.02952209, -0.14900328, -0.45606691, -0.47748995, …
-## $ AP  &lt;dbl&gt; 0.17966965, -0.78701735, -0.10273314, 0.09277663, 2.24338416, 0.…
-## $ NH4 &lt;dbl&gt; 0.4471754, -0.3426843, 0.7179844, -0.1328073, 0.7924569, -0.3652…
-## $ NO3 &lt;dbl&gt; -0.51485153, -0.41977560, -0.49221441, -0.16774892, -0.58276291,…
-## $ SOC &lt;dbl&gt; -0.292278803, -0.697789311, 0.461059956, -0.007572046, 0.0358092…
-## $ MAT &lt;dbl&gt; 0.84202205, -1.55196703, -0.84801694, 0.78335952, -0.28932636, -…
-## $ MAP &lt;dbl&gt; 0.02487222, 0.27013035, 1.21243154, -0.87351309, -0.22471654, 1.…
-## $ PBM &lt;dbl&gt; 0.17638650, -0.02465146, 0.73829039, -0.80968336, 0.12645186, 2.…
-## $ PCV &lt;dbl&gt; 0.426595458, 0.008333099, -0.793336422, -0.514494850, 0.18260908…
-## $ PSR &lt;dbl&gt; 0.22757812, -0.83529465, 0.83493399, -1.29081156, 0.98677296, 0.…</code></pre>
+## $ pH  &lt;dbl&gt; -1.63965465, 0.94291257, -1.33875709, -1.20359469, -1.17624072, 0.…
+## $ MOI &lt;dbl&gt; -0.1610384, -0.5549069, -0.2762522, -0.1658411, 1.0043821, 0.54673…
+## $ TN  &lt;dbl&gt; -0.116240631, -0.791972999, 0.199881689, -0.260084650, 0.291874957…
+## $ TP  &lt;dbl&gt; -0.44892589, 0.02952209, -0.14900328, -0.45606691, -0.47748995, -0…
+## $ AP  &lt;dbl&gt; 0.17966965, -0.78701735, -0.10273314, 0.09277663, 2.24338416, 0.54…
+## $ NH4 &lt;dbl&gt; 0.4471754, -0.3426843, 0.7179844, -0.1328073, 0.7924569, -0.365251…
+## $ NO3 &lt;dbl&gt; -0.51485153, -0.41977560, -0.49221441, -0.16774892, -0.58276291, -…
+## $ SOC &lt;dbl&gt; -0.292278803, -0.697789311, 0.461059956, -0.007572046, 0.035809220…
+## $ MAT &lt;dbl&gt; 0.84202205, -1.55196703, -0.84801694, 0.78335952, -0.28932636, -0.…
+## $ MAP &lt;dbl&gt; 0.02487222, 0.27013035, 1.21243154, -0.87351309, -0.22471654, 1.21…
+## $ PBM &lt;dbl&gt; 0.17638650, -0.02465146, 0.73829039, -0.80968336, 0.12645186, 2.11…
+## $ PCV &lt;dbl&gt; 0.426595458, 0.008333099, -0.793336422, -0.514494850, 0.182609082,…
+## $ PSR &lt;dbl&gt; 0.22757812, -0.83529465, 0.83493399, -1.29081156, 0.98677296, 0.68…</code></pre>
 <p>按照 varpart 在文档中的说明：</p>
 <blockquote>
 <p>The functions partition the variation in Y into components accounted for by two to four explanatory tables and their combined effects. If Y is a multicolumn data frame or matrix, the partitioning is based on redundancy analysis (RDA, see rda), and if Y is a single variable, the partitioning is based on linear regression. If Y are dissimilarities, the decomposition is based on distance-based redundancy analysis (db-RDA, see capscale) following McArdle &amp; Anderson (2001). The input dissimilarities must be compatible to the results of dist. Vegan functions vegdist, designdist, raupcrick and betadiver produce such objects, as do many other dissimilarity functions in R packages. However, symmetric square matrices are not recognized as dissimilarities but must be transformed with as.dist. Partitioning will be made to squared dissimilarities analogously to using variance with rectangular data – unless sqrt.dist = TRUE was specified.</p>
@@ -89,12 +89,15 @@ rda_null &lt;- rda(df_com~1, data = df_env)
 # backward selection
 # trace = 0 prevent ordistep print the selection progress from outputing to the console
 # it makes the output clearer.
-rda_back &lt;- ordistep(rda_full, direction = &#39;backward&#39;,trace = 0)</code></pre>
-<pre class="r"><code># forward selection
-rda_frwd &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;forward&#39;,trace = 0)</code></pre>
-<pre class="r"><code># bothward selection 
-rda_both &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;both&#39;,trace = 0)</code></pre>
-<pre class="r"><code>rda_back</code></pre>
+rda_back &lt;- ordistep(rda_full, direction = &#39;backward&#39;,trace = 0)
+
+# forward selection
+rda_frwd &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;forward&#39;,trace = 0)
+
+# bothward selection 
+rda_both &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;both&#39;,trace = 0)
+
+rda_back</code></pre>
 <pre><code>## Call: rda(formula = df_com ~ pH + MOI + TN + TP + NO3 + SOC + MAT, data
 ## = df_env)
 ## 
@@ -112,7 +115,7 @@ rda_both &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;both&#39;,
 ##   PC1   PC2   PC3   PC4   PC5 
 ## 755.6 247.3 108.6  46.6  13.5</code></pre>
 <pre class="r"><code>rda_frwd</code></pre>
-<pre><code>## Call: rda(formula = df_com ~ MOI + NO3 + TN + SOC, data = df_env)
+<pre><code>## Call: rda(formula = df_com ~ MOI + TN + SOC + NO3, data = df_env)
 ## 
 ##                 Inertia Proportion Rank
 ## Total         2031.7341     1.0000     
@@ -128,22 +131,21 @@ rda_both &lt;- ordistep(rda_null, formula(rda_full), direction = &#39;both&#39;,
 ##   PC1   PC2   PC3   PC4   PC5 
 ## 787.6 277.0 114.1  48.7  14.0</code></pre>
 <pre class="r"><code>rda_both</code></pre>
-<pre><code>## Call: rda(formula = df_com ~ MOI + NO3 + TN + SOC + pH + TP, data =
-## df_env)
+<pre><code>## Call: rda(formula = df_com ~ MOI + NO3 + TN + SOC, data = df_env)
 ## 
 ##                 Inertia Proportion Rank
 ## Total         2031.7341     1.0000     
-## Constrained    838.3620     0.4126    5
-## Unconstrained 1193.3721     0.5874    5
+## Constrained    790.2092     0.3889    4
+## Unconstrained 1241.5248     0.6111    5
 ## Inertia is variance 
 ## 
 ## Eigenvalues for constrained axes:
-##  RDA1  RDA2  RDA3  RDA4  RDA5 
-## 736.0  70.9  28.9   2.1   0.4 
+##  RDA1  RDA2  RDA3  RDA4 
+## 714.8  70.1   4.3   1.0 
 ## 
 ## Eigenvalues for unconstrained axes:
 ##   PC1   PC2   PC3   PC4   PC5 
-## 769.5 253.1 110.3  46.6  13.9</code></pre>
+## 787.6 277.0 114.1  48.7  14.0</code></pre>
 <p>根据实际情况选择最终的模型，这里我们选择向后消除法选择的模型作为 RDA 最终的结果。同时这也是方差分解的最终模型，即 df_com ~ pH + MOI + TN + TP + NO3 + SOC + MAT，其中 MAT 是气候因素，我们将其选入气候因素集 df_clim， 其余均为土壤性质因素集 df_soil，植物因素没有选入模型。</p>
 <pre class="r"><code># Divide the environmental data.frame by different categories.
 df_clim &lt;- df_env %&gt;% select(MAT)
@@ -188,7 +190,7 @@ anova(rda(formula_soil, data = df_env))</code></pre>
 ## 
 ## Model: rda(formula = df_com ~ Condition(pH) + Condition(MOI) + Condition(TN) + Condition(TP) + Condition(NO3) + Condition(SOC) + MAT, data = df_env)
 ##           Df Variance      F Pr(&gt;F)  
-## Model      1    21.82 2.6443  0.072 .
+## Model      1    21.82 2.6443  0.056 .
 ## Residual 142  1171.56                
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
