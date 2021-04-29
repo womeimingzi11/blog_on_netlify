@@ -11,7 +11,7 @@ tags:
   - install.package
   - rJava
 ---
-[`rJava`](https://CRAN.R-project.org/package=rJava)) 是 R 语言中经常会遇到的依赖包，例如使用 [`xlsx`](https://cran.r-project.org/package=xlsx) 包便需要 `rJava` 依赖（[`readxl`](https://CRAN.R-project.org/package=readxl)也是不错的选择）， 然而安装 `rJava`很难不让人感觉：rJava, an interface to nightmere instead an interface for R to use java.
+[`rJava`](https://CRAN.R-project.org/package=rJava) 是 R 语言中经常会遇到的依赖包，例如使用 [`xlsx`](https://cran.r-project.org/package=xlsx) 包便需要 `rJava` 依赖（[`readxl`](https://CRAN.R-project.org/package=readxl)也是不错的选择）， 然而安装 `rJava`很难不让人感觉：rJava, an interface to nightmere instead an interface for R to use java.
 
 所以我尝试总结目前遇到的安装并配置 rJava 过程中遇到的那些坑，为自己做个记录，如果对任何人有任何帮助那就更好了。本文中以 macOS 为示例，然而绝大多数操作对于 Linux 也有效，虽然 Windows 具体方法基本不同，但其中思路也可作为参考。
 

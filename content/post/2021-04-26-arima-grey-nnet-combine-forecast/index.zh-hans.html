@@ -1,0 +1,260 @@
+---
+title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测 （上）'
+author: Han Chen
+date: '2021-04-26'
+slug: arima-grey-nnet-combine-forecast
+categories:
+  - Using R for Everything
+tags:
+  - ARIMA
+  - 机器学习
+  - 神经网络
+  - 灰色模型
+  - Grey Model
+  - GM(1,1)
+  - Combine
+  - 混合
+  - 预测
+  - 时间序列
+  - 公共卫生
+  - 流行病学
+bibliography: references.bib
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。</p>
+<p>通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章<span class="citation">(<a href="#ref-liTimeSeriesAnalysis2016" role="doc-biblioref">Li et al. 2016</a>; <a href="#ref-wangComparisonARIMAGM2018" role="doc-biblioref">Wang, Shen, and Jiang 2018</a>; <a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-gharbiTimeSeriesAnalysis2011" role="doc-biblioref">Gharbi et al. 2011</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>)</span>——虽然 Plos One，但是方法是无辜的嘛……搞起来。</p>
+<p>目前这类建模与预测较多的使用 Matlab、SAS 等软件实现 <span class="citation">(<a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>)</span>，可是我们的口号是什么？</p>
+<p><strong>Using R for Everything！</strong></p>
+<div id="预测任务与模型评价" class="section level2">
+<h2>预测任务与模型评价</h2>
+<p>使用来自于 <span class="citation"><a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">Durbin and Koopman</a> (<a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">2012</a>)</span> 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。</p>
+<p>其中 Internet Usage per Minute 数据集来源于 R 绑定 <code>datasets</code> 包，选取前 80 条记录用作训练数据，剩余 20 条记录用作验证数据:</p>
+<pre class="r"><code>data(&quot;WWWusage&quot;)
+knitr::knit_print(WWWusage)</code></pre>
+<pre><code>## Time Series:
+## Start = 1 
+## End = 100 
+## Frequency = 1 
+##   [1]  88  84  85  85  84  85  83  85  88  89  91  99 104 112 126 138 146 151
+##  [19] 150 148 147 149 143 132 131 139 147 150 148 145 140 134 131 131 129 126
+##  [37] 126 132 137 140 142 150 159 167 170 171 172 172 174 175 172 172 174 174
+##  [55] 169 165 156 142 131 121 112 104 102  99  99  95  88  84  84  87  89  88
+##  [73]  85  86  89  91  91  94 101 110 121 135 145 149 156 165 171 175 177 182
+##  [91] 193 204 208 210 215 222 228 226 222 220</code></pre>
+<pre class="r"><code># Select the first 80 records as the train dataset
+WWWusage_train &lt;-
+  WWWusage[1:80]
+
+# Select the last 20 records as the test dataset
+WWWusage_test &lt;-
+  WWWusage[81:100]</code></pre>
+<p>由于并非所有模型都有统一的 RMSE 计算方法，因此我们自行定义 <code>func_rmse</code>:</p>
+<pre class="r"><code>func_rmse &lt;-
+  # actual_val is the actual valeu,
+  # fit_val is the value fitted by model
+  function(actual_val, fit_val) {
+  sqrt(
+    mean((as.numeric(fit_val) - as.numeric(actual_val))^2, na.rm = TRUE)
+    )
+  }</code></pre>
+</div>
+<div id="arima" class="section level2">
+<h2>ARIMA</h2>
+<p>ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 <code>ARIMA(p, d, q)</code>中 <code>p、d、q</code> 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；q为滑动平均项数 <span class="citation">(<a href="#ref-ARIMAMoXing2019a" role="doc-biblioref"><span>“ARIMA模型”</span> 2019</a>; <a href="#ref-AutoregressiveIntegratedMoving2021" role="doc-biblioref"><span>“Autoregressive Integrated Moving Average”</span> 2021</a>)</span>。</p>
+<p>使用 <a href="https://pkg.robjhyndman.com/forecast/"><code>forecast</code></a> 包中 <a href="https://pkg.robjhyndman.com/forecast/reference/Arima.html"><code>Arima</code></a> 进行 ARIMA 预测，然而正如我们在前面所说的，模型中 <code>p、d、q</code> 三个参数需要人工确定，<code>forecast</code> 中也提供了 <a href="https://pkg.robjhyndman.com/forecast/reference/auto.arima.html"><code>auto.arima</code></a>，通过 AIC, AICc 或 BIC 选择最优 <code>p、d、q</code> 组合。</p>
+<p>在本案例中，其方法如下:</p>
+<pre class="r"><code>library(&quot;forecast&quot;)
+mod_arima &lt;-
+  auto.arima(WWWusage_test)
+
+# the combination of p,d,q is (0,2,0),
+# viz, the final model is ARIMA(0,2,0)
+mod_arima</code></pre>
+<pre><code>## Series: WWWusage_test 
+## ARIMA(0,2,0) 
+## 
+## sigma^2 estimated as 14.78:  log likelihood=-49.78
+## AIC=101.56   AICc=101.81   BIC=102.45</code></pre>
+<pre class="r"><code># forecast another 20 records
+forecast_arima &lt;-
+  forecast(mod_arima, h = 20)
+
+summary(forecast_arima)</code></pre>
+<pre><code>## 
+## Forecast method: ARIMA(0,2,0)
+## 
+## Model Information:
+## Series: WWWusage_test 
+## ARIMA(0,2,0) 
+## 
+## sigma^2 estimated as 14.78:  log likelihood=-49.78
+## AIC=101.56   AICc=101.81   BIC=102.45
+## 
+## Error measures:
+##                     ME     RMSE      MAE       MPE     MAPE      MASE      ACF1
+## Training set -0.803846 3.647054 2.909257 -0.448219 1.562461 0.4806599 0.1789684
+## 
+## Forecasts:
+##    Point Forecast      Lo 80    Hi 80       Lo 95    Hi 95
+## 21            218 213.073289 222.9267  210.465246 225.5348
+## 22            216 204.983540 227.0165  199.151778 232.8482
+## 23            214 195.565937 232.4341  185.807533 242.1925
+## 24            212 185.015294 238.9847  170.730454 253.2695
+## 25            210 173.462536 246.5375  154.120771 265.8792
+## 26            208 161.002176 254.9978  136.123030 279.8770
+## 27            206 147.706373 264.2936  116.847591 295.1524
+## 28            204 133.632497 274.3675   96.382191 311.6178
+## 29            202 118.827551 285.1724   74.798717 329.2013
+## 30            200 103.330956 296.6690   52.157456 347.8425
+## 31            198  87.176384 308.8236   28.509906 367.4901
+## 32            196  70.393031 321.6070    3.900718 388.0993
+## 33            194  53.006527 334.9935  -21.630909 409.6309
+## 34            192  35.039607 348.9604  -48.050207 432.0502
+## 35            190  16.512615 363.4874  -75.326059 455.3261
+## 36            188  -2.556099 378.5561 -103.430405 479.4304
+## 37            186 -22.149881 394.1499 -132.337773 504.3378
+## 38            184 -42.253521 410.2535 -162.024901 530.0249
+## 39            182 -62.853059 426.8531 -192.470439 556.4704
+## 40            180 -83.935620 443.9356 -223.654698 583.6547</code></pre>
+<pre class="r"><code># calculate the RMSE of ARIMA
+rmse_arima &lt;-
+  func_rmse(WWWusage_test, forecast_arima$fitted)
+
+rmse_arima</code></pre>
+<pre><code>## [1] 3.647054</code></pre>
+</div>
+<div id="greymodel-gm11" class="section level2">
+<h2>GreyModel-GM(1,1)</h2>
+<p>在诸多灰色理论算法中，GM(1,1) 常用来进行小样本以及较少信息数据的预测 <span class="citation">(<a href="#ref-liuGreyInformationTheory2006" role="doc-biblioref">S. Liu and Lin 2006</a>; <a href="#ref-dengjulongHuiLiLunJiChu2002" role="doc-biblioref">邓聚龙 2002</a>; <a href="#ref-zhouGeneralizedGMModel2013" role="doc-biblioref">Zhou and He 2013</a>)</span>。</p>
+<p>目前在 R 语言中进行灰色模型预测的包相对没有那么丰富。由 <a href="https://github.com/exoplanetX">exoplanetX</a> 开发的 <a href="https://github.com/exoplanetX/greyforecasting"><code>greyforecasting</code></a> 是一个包含了丰富灰色理论算法的 R Package。</p>
+<blockquote>
+<p>然而不幸的是，截止至2021.04.27，在原作者<a href="https://github.com/exoplanetX/greyforecasting/commit/23b51a18e765cde04b5784b6a62ee55fc60bca8b">最近一次提交中</a>似乎破坏了其中的 <code>bo.obj</code> 类，导致原包的安装失败。笔者尝试修复这个问题并已经通过 <a href="https://github.com/exoplanetX/greyforecasting/pull/2">GitHub 提交 PR</a>，还需等待原开发者的合并或者修复。目前可以<a href="https://github.com/womeimingzi11/greyforecasting/tree/format_n_fix">从笔者 Fork 的 Repo 中安装 <code>greyforecasting</code></a>。</p>
+</blockquote>
+<pre class="r"><code>remotes::install_github(&quot;womeimingzi11/greyforecasting@format_n_fix&quot;)</code></pre>
+<p>不过与 ARIMA 等其他模型的构建流程不同，<code>greyforecasting</code> 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：</p>
+<pre class="r"><code>library(greyforecasting)
+
+# `term = 20` means forecasting another 20 records
+mod_gm &lt;-
+  gmprocess(WWWusage_test, term = 20)
+
+# calculate the RMSE of GM(1,1)
+rmse_gm &lt;-
+  func_rmse(WWWusage_test, mod_gm)
+
+rmse_gm</code></pre>
+<pre><code>## [1] 137.2426</code></pre>
+<p>相比而言在本案例中，GM(1,1) 模型的 RMSE 远大于 ARIMA 模型的 RMSE（137.2426 vs 3.647054），这至少说明在本案例中 ARIMA 其拟合效果更为优秀。</p>
+</div>
+<div id="nnet" class="section level2">
+<h2>NNet</h2>
+<p>机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测<span class="citation">(<a href="#ref-oanceaTimeSeriesForecasting2013" role="doc-biblioref">Oancea and Ciucu 2013</a>)</span>。那么神经网络真的是可以做到最优吗？实际上，由于 ARIMA 在预测 WWWusage 数据机上表现过分优秀——RMSE 仅为 3.6，笔者对于神经网络的表现期待并不高。</p>
+<p>同样是 <a href="https://pkg.robjhyndman.com/forecast/"><code>forecast</code></a> 包，其中 <a href="https://pkg.robjhyndman.com/forecast/reference/nnetar.html"><code>nnetar</code></a> 可以进行基于时间序列的神经网络预测：</p>
+<pre class="r"><code>library(&quot;forecast&quot;)
+mod_nnet &lt;-
+  nnetar(WWWusage_test)
+
+mod_nnet</code></pre>
+<pre><code>## Series: WWWusage_test 
+## Model:  NNAR(1,1) 
+## Call:   nnetar(y = WWWusage_test)
+## 
+## Average of 20 networks, each of which is
+## a 1-1-1 network with 4 weights
+## options were - linear output units 
+## 
+## sigma^2 estimated as 7.946</code></pre>
+<pre class="r"><code># forecast another 20 records
+forecast_nnet &lt;-
+  forecast(mod_nnet, h = 20)
+
+summary(forecast_nnet)</code></pre>
+<pre><code>## 
+## Forecast method: NNAR(1,1)
+## 
+## Model Information:
+## 
+## Average of 20 networks, each of which is
+## a 1-1-1 network with 4 weights
+## options were - linear output units 
+## 
+## Error measures:
+##                        ME     RMSE      MAE         MPE     MAPE      MASE
+## Training set 2.019556e-07 2.818776 2.384951 -0.02105836 1.245339 0.3940354
+##                   ACF1
+## Training set 0.3250362
+## 
+## Forecasts:
+##    Point Forecast
+## 21       221.6214
+## 22       222.5668
+## 23       223.1009
+## 24       223.3972
+## 25       223.5598
+## 26       223.6486
+## 27       223.6969
+## 28       223.7231
+## 29       223.7373
+## 30       223.7450
+## 31       223.7492
+## 32       223.7515
+## 33       223.7527
+## 34       223.7534
+## 35       223.7537
+## 36       223.7539
+## 37       223.7540
+## 38       223.7541
+## 39       223.7541
+## 40       223.7542</code></pre>
+<pre class="r"><code># calculate the RMSE of NNet
+rmse_nnet &lt;-
+  func_rmse(WWWusage_test, forecast_nnet$fitted)
+
+rmse_nnet</code></pre>
+<pre><code>## [1] 2.818776</code></pre>
+<p>RMSE = 2.818776，居然比 ARIMA 还要低，RESPECT～</p>
+<p>截止到目前，单一的 ARIMA、灰色模型 GM(1,1)以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。</p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ARIMAMoXing2019a" class="csl-entry">
+<span>“ARIMA模型.”</span> 2019. In <em>维基百科，自由的百科全书</em>. <a href="https://zh.wikipedia.org/w/index.php?title=ARIMA%E6%A8%A1%E5%9E%8B&amp;oldid=52985832">https://zh.wikipedia.org/w/index.php?title=ARIMA%E6%A8%A1%E5%9E%8B&amp;oldid=52985832</a>.
+</div>
+<div id="ref-AutoregressiveIntegratedMoving2021" class="csl-entry">
+<span>“Autoregressive Integrated Moving Average.”</span> 2021. In <em>Wikipedia</em>. <a href="https://en.wikipedia.org/w/index.php?title=Autoregressive_integrated_moving_average&amp;oldid=1016146583">https://en.wikipedia.org/w/index.php?title=Autoregressive_integrated_moving_average&amp;oldid=1016146583</a>.
+</div>
+<div id="ref-durbinTimeSeriesAnalysis2012" class="csl-entry">
+Durbin, James, and Siem Jan Koopman. 2012. <em>Time <span>Series Analysis</span> by <span>State Space Methods</span>: <span>Second Edition</span></em>. <em>Time Series Analysis by State Space Methods</em>. <span>Oxford University Press</span>. <a href="https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199641178.001.0001/acprof-9780199641178">https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199641178.001.0001/acprof-9780199641178</a>.
+</div>
+<div id="ref-gharbiTimeSeriesAnalysis2011" class="csl-entry">
+Gharbi, Myriam, Philippe Quenel, Joël Gustave, Sylvie Cassadou, Guy La Ruche, Laurent Girdary, and Laurence Marrama. 2011. <span>“Time Series Analysis of Dengue Incidence in <span>Guadeloupe</span>, <span>French West Indies</span>: <span>Forecasting</span> Models Using Climate Variables as Predictors.”</span> <em>BMC Infectious Diseases</em> 11 (1): 166. <a href="https://doi.org/10.1186/1471-2334-11-166">https://doi.org/10.1186/1471-2334-11-166</a>.
+</div>
+<div id="ref-liTimeSeriesAnalysis2016" class="csl-entry">
+Li, Shujuan, Wei Cao, Hongyan Ren, Liang Lu, Dafang Zhuang, and Qiyong Liu. 2016. <span>“Time <span>Series Analysis</span> of <span>Hemorrhagic Fever</span> with <span>Renal Syndrome</span>: <span>A Case Study</span> in <span>Jiaonan County</span>, <span>China</span>.”</span> <em>PLOS ONE</em> 11 (10): e0163771. <a href="https://doi.org/10.1371/journal.pone.0163771">https://doi.org/10.1371/journal.pone.0163771</a>.
+</div>
+<div id="ref-liuForecastingIncidenceHemorrhagic2011" class="csl-entry">
+Liu, Qiyong, Xiaodong Liu, Baofa Jiang, and Weizhong Yang. 2011. <span>“Forecasting Incidence of Hemorrhagic Fever with Renal Syndrome in <span>China</span> Using <span>ARIMA</span> Model.”</span> <em>BMC Infectious Diseases</em> 11 (1): 218. <a href="https://doi.org/10.1186/1471-2334-11-218">https://doi.org/10.1186/1471-2334-11-218</a>.
+</div>
+<div id="ref-liuGreyInformationTheory2006" class="csl-entry">
+Liu, Sifeng, and Yi Lin. 2006. <em>Grey <span>Information</span>: <span>Theory</span> and <span>Practical Applications</span></em>. <span>Springer Science &amp; Business Media</span>. <a href="https://books.google.com?id=T9RqJlwk8g8C">https://books.google.com?id=T9RqJlwk8g8C</a>.
+</div>
+<div id="ref-oanceaTimeSeriesForecasting2013" class="csl-entry">
+Oancea, Bogdan, and Stefan Ciucu. 2013. <span>“Time Series Forecasting Using Neural Networks,”</span> May.
+</div>
+<div id="ref-wangComparisonARIMAGM2018" class="csl-entry">
+Wang, Ya-wen, Zhong-zhou Shen, and Yu Jiang. 2018. <span>“Comparison of <span>ARIMA</span> and <span>GM</span>(1,1) Models for Prediction of Hepatitis <span>B</span> in <span>China</span>.”</span> <em>PLoS ONE</em> 13 (9). <a href="https://doi.org/10.1371/journal.pone.0201987">https://doi.org/10.1371/journal.pone.0201987</a>.
+</div>
+<div id="ref-zhengForecastModelAnalysis2015" class="csl-entry">
+Zheng, Yan-Ling, Li-Ping Zhang, Xue-Liang Zhang, Kai Wang, and Yu-Jian Zheng. 2015. <span>“Forecast <span>Model Analysis</span> for the <span>Morbidity</span> of <span>Tuberculosis</span> in <span>Xinjiang</span>, <span>China</span>.”</span> <em>PLOS ONE</em> 10 (3): e0116832. <a href="https://doi.org/10.1371/journal.pone.0116832">https://doi.org/10.1371/journal.pone.0116832</a>.
+</div>
+<div id="ref-zhouGeneralizedGMModel2013" class="csl-entry">
+Zhou, Wei, and Jian-Min He. 2013. <span>“Generalized <span>GM</span> (1,1) Model and Its Application in Forecasting of Fuel Production.”</span> <em>Applied Mathematical Modelling</em> 37 (9): 6234–43. <a href="https://doi.org/10.1016/j.apm.2013.01.002">https://doi.org/10.1016/j.apm.2013.01.002</a>.
+</div>
+<div id="ref-dengjulongHuiLiLunJiChu2002" class="csl-entry">
+邓聚龙. 2002. <em>灰理论基础</em>. 灰色系统理论系列书. <span>华中科技大学出版社</span>. <a href="https://book.douban.com/subject/1239548/">https://book.douban.com/subject/1239548/</a>.
+</div>
+</div>
+</div>

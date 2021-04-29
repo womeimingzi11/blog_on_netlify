@@ -1,0 +1,161 @@
+---
+title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测 （上）'
+author: Han Chen
+date: '2021-04-26'
+slug: arima-grey-nnet-combine-forecast
+categories:
+  - Using R for Everything
+tags:
+  - ARIMA
+  - 机器学习
+  - 神经网络
+  - 灰色模型
+  - Grey Model
+  - GM(1,1)
+  - Combine
+  - 混合
+  - 预测
+  - 时间序列
+  - 公共卫生
+  - 流行病学
+bibliography: references.bib
+---
+```{r include=FALSE}
+# Collect cited reference from current RMarkdown file into references.bib file
+rbbt::bbt_write_bib("references.bib",
+                    rbbt::bbt_detect_citations("index.zh-hans.Rmd"), 
+                    overwrite = TRUE)
+knitr::opts_knit$set(tidy = TRUE)
+```
+
+最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。
+
+通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章[@liTimeSeriesAnalysis2016; @wangComparisonARIMAGM2018; @zhengForecastModelAnalysis2015; @gharbiTimeSeriesAnalysis2011; @liuForecastingIncidenceHemorrhagic2011]------虽然 Plos One，但是方法是无辜的嘛......搞起来。
+
+目前这类建模与预测较多的使用 Matlab、SAS 等软件实现 [@zhengForecastModelAnalysis2015; @liuForecastingIncidenceHemorrhagic2011]，可是我们的口号是什么？
+
+**Using R for Everything！**
+
+## 预测任务与模型评价
+
+使用来自于 @durbinTimeSeriesAnalysis2012 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。
+
+其中 Internet Usage per Minute 数据集来源于 R 绑定 `datasets` 包，选取前 80 条记录用作训练数据，剩余 20 条记录用作验证数据:
+
+```{r reveal_wwwusage_data}
+data("WWWusage")
+knitr::knit_print(WWWusage)
+
+# Select the first 80 records as the train dataset
+WWWusage_train <-
+  WWWusage[1:80]
+
+# Select the last 20 records as the test dataset
+WWWusage_test <-
+  WWWusage[81:100]
+```
+
+由于并非所有模型都有统一的 RMSE 计算方法，因此我们自行定义 `func_rmse`:
+
+```{r func_rmse}
+func_rmse <-
+  # actual_val is the actual valeu,
+  # fit_val is the value fitted by model
+  function(actual_val, fit_val) {
+  sqrt(
+    mean((as.numeric(fit_val) - as.numeric(actual_val))^2, na.rm = TRUE)
+    )
+  }
+```
+
+## ARIMA
+
+ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 `ARIMA(p, d, q)`中 `p、d、q` 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；q为滑动平均项数 [@ARIMAMoXing2019a; @AutoregressiveIntegratedMoving2021]。
+
+使用 [`forecast`](https://pkg.robjhyndman.com/forecast/) 包中 [`Arima`](https://pkg.robjhyndman.com/forecast/reference/Arima.html) 进行 ARIMA 预测，然而正如我们在前面所说的，模型中 `p、d、q` 三个参数需要人工确定，`forecast` 中也提供了 [`auto.arima`](https://pkg.robjhyndman.com/forecast/reference/auto.arima.html)，通过 AIC, AICc 或 BIC 选择最优 `p、d、q` 组合。
+
+在本案例中，其方法如下:
+
+```{r auto_arima_n_predict, message=FALSE}
+library("forecast")
+mod_arima <-
+  auto.arima(WWWusage_test)
+
+# the combination of p,d,q is (0,2,0),
+# viz, the final model is ARIMA(0,2,0)
+mod_arima
+
+# forecast another 20 records
+forecast_arima <-
+  forecast(mod_arima, h = 20)
+
+summary(forecast_arima)
+
+# calculate the RMSE of ARIMA
+rmse_arima <-
+  func_rmse(WWWusage_test, forecast_arima$fitted)
+
+rmse_arima
+```
+
+## GreyModel-GM(1,1)
+
+在诸多灰色理论算法中，GM(1,1) 常用来进行小样本以及较少信息数据的预测 [@liuGreyInformationTheory2006; @dengjulongHuiLiLunJiChu2002; @zhouGeneralizedGMModel2013]。
+
+目前在 R 语言中进行灰色模型预测的包相对没有那么丰富。由 [exoplanetX](https://github.com/exoplanetX) 开发的 [`greyforecasting`](https://github.com/exoplanetX/greyforecasting) 是一个包含了丰富灰色理论算法的 R Package。
+
+> 然而不幸的是，截止至2021.04.27，在原作者[最近一次提交中](https://github.com/exoplanetX/greyforecasting/commit/23b51a18e765cde04b5784b6a62ee55fc60bca8b)似乎破坏了其中的 `bo.obj` 类，导致原包的安装失败。笔者尝试修复这个问题并已经通过 [GitHub 提交 PR](https://github.com/exoplanetX/greyforecasting/pull/2)，还需等待原开发者的合并或者修复。目前可以[从笔者 Fork 的 Repo 中安装 `greyforecasting`](https://github.com/womeimingzi11/greyforecasting/tree/format_n_fix)。
+
+```{r eval = FALSE}
+remotes::install_github("womeimingzi11/greyforecasting@format_n_fix")
+```
+
+不过与 ARIMA 等其他模型的构建流程不同，`greyforecasting` 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：
+
+```{r gmprocess_n_predict}
+library(greyforecasting)
+
+# `term = 20` means forecasting another 20 records
+mod_gm <-
+  gmprocess(WWWusage_test, term = 20)
+
+# calculate the RMSE of GM(1,1)
+rmse_gm <-
+  func_rmse(WWWusage_test, mod_gm)
+
+rmse_gm
+```
+
+相比而言在本案例中，GM(1,1) 模型的 RMSE 远大于 ARIMA 模型的 RMSE（137.2426 vs 3.647054），这至少说明在本案例中 ARIMA 其拟合效果更为优秀。
+
+## NNet
+
+机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测[@oanceaTimeSeriesForecasting2013]。那么神经网络真的是可以做到最优吗？实际上，由于 ARIMA 在预测 WWWusage 数据机上表现过分优秀——RMSE 仅为 3.6，笔者对于神经网络的表现期待并不高。
+
+同样是 [`forecast`](https://pkg.robjhyndman.com/forecast/) 包，其中 [`nnetar`](https://pkg.robjhyndman.com/forecast/reference/nnetar.html) 可以进行基于时间序列的神经网络预测：
+
+```{r nnet_n_predict, message=FALSE}
+library("forecast")
+mod_nnet <-
+  nnetar(WWWusage_test)
+
+mod_nnet
+
+# forecast another 20 records
+forecast_nnet <-
+  forecast(mod_nnet, h = 20)
+
+summary(forecast_nnet)
+# calculate the RMSE of NNet
+rmse_nnet <-
+  func_rmse(WWWusage_test, forecast_nnet$fitted)
+
+rmse_nnet
+```
+
+RMSE = 2.818776，居然比 ARIMA 还要低，RESPECT～
+
+截止到目前，单一的 ARIMA、灰色模型 GM(1,1)以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。
+
+---
+欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！
