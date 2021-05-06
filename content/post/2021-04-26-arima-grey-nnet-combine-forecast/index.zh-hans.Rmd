@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测 （上）'
+title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
 author: Han Chen
 date: '2021-04-26'
 slug: arima-grey-nnet-combine-forecast
@@ -25,7 +25,8 @@ bibliography: references.bib
 rbbt::bbt_write_bib("references.bib",
                     rbbt::bbt_detect_citations("index.zh-hans.Rmd"), 
                     overwrite = TRUE)
-knitr::opts_knit$set(tidy = TRUE)
+knitr::opts_knit$set(tidy = TRUE,
+                     cache = TRUE)
 ```
 
 最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。
@@ -79,10 +80,10 @@ ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通�
 ```{r auto_arima_n_predict, message=FALSE}
 library("forecast")
 mod_arima <-
-  auto.arima(WWWusage_test)
+  auto.arima(WWWusage_train)
 
-# the combination of p,d,q is (0,2,0),
-# viz, the final model is ARIMA(0,2,0)
+# the combination of p,d,q is (1,1,1),
+# viz, the final model is ARIMA(1,1,1)
 mod_arima
 
 # forecast another 20 records
@@ -93,7 +94,7 @@ summary(forecast_arima)
 
 # calculate the RMSE of ARIMA
 rmse_arima <-
-  func_rmse(WWWusage_test, forecast_arima$fitted)
+  func_rmse(WWWusage_test, forecast_arima$mean)
 
 rmse_arima
 ```
@@ -113,31 +114,34 @@ remotes::install_github("womeimingzi11/greyforecasting@format_n_fix")
 不过与 ARIMA 等其他模型的构建流程不同，`greyforecasting` 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：
 
 ```{r gmprocess_n_predict}
-library(greyforecasting)
+library("greyforecasting")
 
 # `term = 20` means forecasting another 20 records
 mod_gm <-
-  gmprocess(WWWusage_test, term = 20)
+  gm(WWWusage_train, term = 20)
 
 # calculate the RMSE of GM(1,1)
 rmse_gm <-
-  func_rmse(WWWusage_test, mod_gm)
+  func_rmse(WWWusage_train, mod_gm$simulation)
 
 rmse_gm
 ```
 
-相比而言在本案例中，GM(1,1) 模型的 RMSE 远大于 ARIMA 模型的 RMSE（137.2426 vs 3.647054），这至少说明在本案例中 ARIMA 其拟合效果更为优秀。
+相比而言在本案例中，GM(1,1) 模型的 RMSE 小于 ARIMA 模型的 RMSE（`r rmse_gm` vs `r rmse_arima`），这至少说明在本案例中 GM(1,1) 其拟合效果更为优秀。
 
 ## NNet
 
-机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测[@oanceaTimeSeriesForecasting2013]。那么神经网络真的是可以做到最优吗？实际上，由于 ARIMA 在预测 WWWusage 数据机上表现过分优秀——RMSE 仅为 3.6，笔者对于神经网络的表现期待并不高。
+机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测[@oanceaTimeSeriesForecasting2013]。那么神经网络真的是可以做到最优吗？
 
 同样是 [`forecast`](https://pkg.robjhyndman.com/forecast/) 包，其中 [`nnetar`](https://pkg.robjhyndman.com/forecast/reference/nnetar.html) 可以进行基于时间序列的神经网络预测：
 
 ```{r nnet_n_predict, message=FALSE}
 library("forecast")
+
+set.seed(1234)
+
 mod_nnet <-
-  nnetar(WWWusage_test)
+  nnetar(WWWusage_train)
 
 mod_nnet
 
@@ -148,14 +152,14 @@ forecast_nnet <-
 summary(forecast_nnet)
 # calculate the RMSE of NNet
 rmse_nnet <-
-  func_rmse(WWWusage_test, forecast_nnet$fitted)
+  func_rmse(WWWusage_test, forecast_nnet$mean)
 
 rmse_nnet
 ```
 
-RMSE = 2.818776，居然比 ARIMA 还要低，RESPECT～
+RMSE = `r rmse_nnet`，强于 ARIMA，但弱于 GM(1,1) 模型。
 
-截止到目前，单一的 ARIMA、灰色模型 GM(1,1)以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。
+至此，独立的 ARIMA、灰色模型 GM(1,1) 以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。
 
 ---
 欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！

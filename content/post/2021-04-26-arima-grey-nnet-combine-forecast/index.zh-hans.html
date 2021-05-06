@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测 （上）'
+title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
 author: Han Chen
 date: '2021-04-26'
 slug: arima-grey-nnet-combine-forecast
@@ -68,63 +68,75 @@ WWWusage_test &lt;-
 <p>在本案例中，其方法如下:</p>
 <pre class="r"><code>library(&quot;forecast&quot;)
 mod_arima &lt;-
-  auto.arima(WWWusage_test)
+  auto.arima(WWWusage_train)
 
-# the combination of p,d,q is (0,2,0),
-# viz, the final model is ARIMA(0,2,0)
+# the combination of p,d,q is (1,1,1),
+# viz, the final model is ARIMA(1,1,1)
 mod_arima</code></pre>
-<pre><code>## Series: WWWusage_test 
-## ARIMA(0,2,0) 
+<pre><code>## Series: WWWusage_train 
+## ARIMA(1,1,1) 
 ## 
-## sigma^2 estimated as 14.78:  log likelihood=-49.78
-## AIC=101.56   AICc=101.81   BIC=102.45</code></pre>
+## Coefficients:
+##          ar1     ma1
+##       0.6239  0.4856
+## s.e.  0.1020  0.1056
+## 
+## sigma^2 estimated as 10.09:  log likelihood=-203.04
+## AIC=412.09   AICc=412.41   BIC=419.2</code></pre>
 <pre class="r"><code># forecast another 20 records
 forecast_arima &lt;-
   forecast(mod_arima, h = 20)
 
 summary(forecast_arima)</code></pre>
 <pre><code>## 
-## Forecast method: ARIMA(0,2,0)
+## Forecast method: ARIMA(1,1,1)
 ## 
 ## Model Information:
-## Series: WWWusage_test 
-## ARIMA(0,2,0) 
+## Series: WWWusage_train 
+## ARIMA(1,1,1) 
 ## 
-## sigma^2 estimated as 14.78:  log likelihood=-49.78
-## AIC=101.56   AICc=101.81   BIC=102.45
+## Coefficients:
+##          ar1     ma1
+##       0.6239  0.4856
+## s.e.  0.1020  0.1056
+## 
+## sigma^2 estimated as 10.09:  log likelihood=-203.04
+## AIC=412.09   AICc=412.41   BIC=419.2
 ## 
 ## Error measures:
-##                     ME     RMSE      MAE       MPE     MAPE      MASE      ACF1
-## Training set -0.803846 3.647054 2.909257 -0.448219 1.562461 0.4806599 0.1789684
+##                     ME     RMSE      MAE       MPE     MAPE      MASE
+## Training set 0.1392471 3.116697 2.406878 0.1923048 2.052624 0.5905072
+##                      ACF1
+## Training set -0.001943443
 ## 
 ## Forecasts:
-##    Point Forecast      Lo 80    Hi 80       Lo 95    Hi 95
-## 21            218 213.073289 222.9267  210.465246 225.5348
-## 22            216 204.983540 227.0165  199.151778 232.8482
-## 23            214 195.565937 232.4341  185.807533 242.1925
-## 24            212 185.015294 238.9847  170.730454 253.2695
-## 25            210 173.462536 246.5375  154.120771 265.8792
-## 26            208 161.002176 254.9978  136.123030 279.8770
-## 27            206 147.706373 264.2936  116.847591 295.1524
-## 28            204 133.632497 274.3675   96.382191 311.6178
-## 29            202 118.827551 285.1724   74.798717 329.2013
-## 30            200 103.330956 296.6690   52.157456 347.8425
-## 31            198  87.176384 308.8236   28.509906 367.4901
-## 32            196  70.393031 321.6070    3.900718 388.0993
-## 33            194  53.006527 334.9935  -21.630909 409.6309
-## 34            192  35.039607 348.9604  -48.050207 432.0502
-## 35            190  16.512615 363.4874  -75.326059 455.3261
-## 36            188  -2.556099 378.5561 -103.430405 479.4304
-## 37            186 -22.149881 394.1499 -132.337773 504.3378
-## 38            184 -42.253521 410.2535 -162.024901 530.0249
-## 39            182 -62.853059 426.8531 -192.470439 556.4704
-## 40            180 -83.935620 443.9356 -223.654698 583.6547</code></pre>
+##     Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95
+##  81       117.0633 112.99207 121.1346 110.83687 123.2898
+##  82       121.4699 111.96549 130.9743 106.93418 136.0056
+##  83       124.2189 109.37188 139.0660 101.51233 146.9256
+##  84       125.9340 106.09129 145.7767  95.58721 156.2807
+##  85       127.0039 102.56812 151.4397  89.63260 164.3752
+##  86       127.6714  99.02761 156.3152  83.86450 171.4783
+##  87       128.0878  95.57987 160.5958  78.37119 177.8045
+##  88       128.3476  92.27372 164.4215  73.17736 183.5179
+##  89       128.5097  89.12558 167.8938  68.27689 188.7425
+##  90       128.6108  86.13519 171.0864  63.64997 193.5716
+##  91       128.6739  83.29428 174.0535  59.27178 198.0760
+##  92       128.7132  80.59122 176.8352  55.11696 202.3095
+##  93       128.7378  78.01347 179.4621  51.16165 206.3139
+##  94       128.7531  75.54890 181.9573  47.38430 210.1219
+##  95       128.7626  73.18629 184.3390  43.76594 213.7593
+##  96       128.7686  70.91557 186.6216  40.29002 217.2472
+##  97       128.7723  68.72786 188.8168  36.94224 220.6024
+##  98       128.7746  66.61534 190.9339  33.71019 223.8391
+##  99       128.7761  64.57120 192.9810  30.58319 226.9690
+## 100       128.7770  62.58949 194.9645  27.55194 230.0021</code></pre>
 <pre class="r"><code># calculate the RMSE of ARIMA
 rmse_arima &lt;-
-  func_rmse(WWWusage_test, forecast_arima$fitted)
+  func_rmse(WWWusage_test, forecast_arima$mean)
 
 rmse_arima</code></pre>
-<pre><code>## [1] 3.647054</code></pre>
+<pre><code>## [1] 66.23669</code></pre>
 </div>
 <div id="greymodel-gm11" class="section level2">
 <h2>GreyModel-GM(1,1)</h2>
@@ -135,88 +147,91 @@ rmse_arima</code></pre>
 </blockquote>
 <pre class="r"><code>remotes::install_github(&quot;womeimingzi11/greyforecasting@format_n_fix&quot;)</code></pre>
 <p>不过与 ARIMA 等其他模型的构建流程不同，<code>greyforecasting</code> 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：</p>
-<pre class="r"><code>library(greyforecasting)
+<pre class="r"><code>library(&quot;greyforecasting&quot;)
 
 # `term = 20` means forecasting another 20 records
 mod_gm &lt;-
-  gmprocess(WWWusage_test, term = 20)
+  gm(WWWusage_train, term = 20)
 
 # calculate the RMSE of GM(1,1)
 rmse_gm &lt;-
-  func_rmse(WWWusage_test, mod_gm)
+  func_rmse(WWWusage_train, mod_gm$simulation)
 
 rmse_gm</code></pre>
-<pre><code>## [1] 137.2426</code></pre>
-<p>相比而言在本案例中，GM(1,1) 模型的 RMSE 远大于 ARIMA 模型的 RMSE（137.2426 vs 3.647054），这至少说明在本案例中 ARIMA 其拟合效果更为优秀。</p>
+<pre><code>## [1] 30.7227</code></pre>
+<p>相比而言在本案例中，GM(1,1) 模型的 RMSE 小于 ARIMA 模型的 RMSE（30.7226991 vs 66.2366936），这至少说明在本案例中 GM(1,1) 其拟合效果更为优秀。</p>
 </div>
 <div id="nnet" class="section level2">
 <h2>NNet</h2>
-<p>机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测<span class="citation">(<a href="#ref-oanceaTimeSeriesForecasting2013" role="doc-biblioref">Oancea and Ciucu 2013</a>)</span>。那么神经网络真的是可以做到最优吗？实际上，由于 ARIMA 在预测 WWWusage 数据机上表现过分优秀——RMSE 仅为 3.6，笔者对于神经网络的表现期待并不高。</p>
+<p>机器学习、深度学习、神经网络在各行各业的呼喊中，似乎成为了最后一个需要学习的模型。毫无意外的，神经网络也可以用于时间序列预测<span class="citation">(<a href="#ref-oanceaTimeSeriesForecasting2013" role="doc-biblioref">Oancea and Ciucu 2013</a>)</span>。那么神经网络真的是可以做到最优吗？</p>
 <p>同样是 <a href="https://pkg.robjhyndman.com/forecast/"><code>forecast</code></a> 包，其中 <a href="https://pkg.robjhyndman.com/forecast/reference/nnetar.html"><code>nnetar</code></a> 可以进行基于时间序列的神经网络预测：</p>
 <pre class="r"><code>library(&quot;forecast&quot;)
+
+set.seed(1234)
+
 mod_nnet &lt;-
-  nnetar(WWWusage_test)
+  nnetar(WWWusage_train)
 
 mod_nnet</code></pre>
-<pre><code>## Series: WWWusage_test 
-## Model:  NNAR(1,1) 
-## Call:   nnetar(y = WWWusage_test)
+<pre><code>## Series: WWWusage_train 
+## Model:  NNAR(2,2) 
+## Call:   nnetar(y = WWWusage_train)
 ## 
 ## Average of 20 networks, each of which is
-## a 1-1-1 network with 4 weights
+## a 2-2-1 network with 9 weights
 ## options were - linear output units 
 ## 
-## sigma^2 estimated as 7.946</code></pre>
+## sigma^2 estimated as 8.454</code></pre>
 <pre class="r"><code># forecast another 20 records
 forecast_nnet &lt;-
   forecast(mod_nnet, h = 20)
 
 summary(forecast_nnet)</code></pre>
 <pre><code>## 
-## Forecast method: NNAR(1,1)
+## Forecast method: NNAR(2,2)
 ## 
 ## Model Information:
 ## 
 ## Average of 20 networks, each of which is
-## a 1-1-1 network with 4 weights
+## a 2-2-1 network with 9 weights
 ## options were - linear output units 
 ## 
 ## Error measures:
-##                        ME     RMSE      MAE         MPE     MAPE      MASE
-## Training set 2.019556e-07 2.818776 2.384951 -0.02105836 1.245339 0.3940354
-##                   ACF1
-## Training set 0.3250362
+##                         ME     RMSE      MAE         MPE     MAPE      MASE
+## Training set -0.0007408546 2.907538 2.350621 -0.06330018 1.959347 0.5767051
+##                  ACF1
+## Training set 0.122691
 ## 
 ## Forecasts:
-##    Point Forecast
-## 21       221.6214
-## 22       222.5668
-## 23       223.1009
-## 24       223.3972
-## 25       223.5598
-## 26       223.6486
-## 27       223.6969
-## 28       223.7231
-## 29       223.7373
-## 30       223.7450
-## 31       223.7492
-## 32       223.7515
-## 33       223.7527
-## 34       223.7534
-## 35       223.7537
-## 36       223.7539
-## 37       223.7540
-## 38       223.7541
-## 39       223.7541
-## 40       223.7542</code></pre>
+##     Point Forecast
+## 81        121.0024
+## 82        132.9642
+## 83        142.8745
+## 84        149.8028
+## 85        154.0405
+## 86        155.9769
+## 87        155.8329
+## 88        153.6791
+## 89        149.6578
+## 90        144.4252
+## 91        139.2503
+## 92        135.3176
+## 93        133.1738
+## 94        132.7999
+## 95        133.8105
+## 96        135.6047
+## 97        137.5464
+## 98        139.1455
+## 99        140.1396
+## 100       140.4769</code></pre>
 <pre class="r"><code># calculate the RMSE of NNet
 rmse_nnet &lt;-
-  func_rmse(WWWusage_test, forecast_nnet$fitted)
+  func_rmse(WWWusage_test, forecast_nnet$mean)
 
 rmse_nnet</code></pre>
-<pre><code>## [1] 2.818776</code></pre>
-<p>RMSE = 2.818776，居然比 ARIMA 还要低，RESPECT～</p>
-<p>截止到目前，单一的 ARIMA、灰色模型 GM(1,1)以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。</p>
+<pre><code>## [1] 56.96941</code></pre>
+<p>RMSE = 56.9694052，强于 ARIMA，但弱于 GM(1,1) 模型。</p>
+<p>至此，独立的 ARIMA、灰色模型 GM(1,1) 以及基于时间序列的神经网络模型均已单独实现。在下篇，笔者会继续实现多模型的混合预测。</p>
 <hr />
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 <div id="refs" class="references csl-bib-body hanging-indent">

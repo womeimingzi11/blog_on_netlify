@@ -1,0 +1,247 @@
+---
+title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
+author: Han Chen
+date: '2021-04-29'
+slug: arima_grey_nnet_combine_ii
+categories:
+  - Using R for Everything
+tags: 
+  - ARIMA
+  - 机器学习
+  - 神经网络
+  - 灰色模型
+  - Grey Model
+  - GM(1,1)
+  - Combine
+  - 混合
+  - 预测
+  - 时间序列
+  - 公共卫生
+  - 流行病学
+bibliography: references.bib
+---
+```{r include=FALSE}
+# Collect cited reference from current RMarkdown file into references.bib file
+rbbt::bbt_write_bib("references.bib",
+                    rbbt::bbt_detect_citations("index.zh-hans.Rmd"), 
+                    overwrite = TRUE)
+knitr::opts_knit$set(tidy = TRUE)
+```
+
+在上篇文章[《R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）》](https://blog.washman.top/post/arima-grey-nnet-combine-forecast/)中，我们分别利用 ARIMA、GM(1,1) 和基于时间序列的神经网络对 Internet Usage per Minute 数据集进行了 20 条新记录的预测，简要代码如下：
+
+```{r code_from_previous, message=FALSE, cache=TRUE}
+set.seed(1234)
+data("WWWusage")
+
+# Select the first 80 records as the train dataset
+WWWusage_train <-
+  WWWusage[1:80]
+
+# Select the last 20 records as the test dataset
+WWWusage_test <-
+  WWWusage[81:100]
+
+library("forecast")
+# ARIMA model with best p,d,q combination by AAIC selection
+mod_arima <-
+  auto.arima(WWWusage_train)
+
+# forecast another 20 records
+forecast_arima <-
+  forecast(mod_arima, h = 20)
+
+# GM(1,1) model
+library("greyforecasting")
+
+# `term = 20` means forecasting another 20 records
+mod_gm <-
+  gm(WWWusage_train, term = 20)
+
+# NNet model
+mod_nnet <-
+  nnetar(WWWusage_train)
+
+# forecast another 20 records
+forecast_nnet <-
+  forecast(mod_nnet, h = 20)
+```
+
+正如我们在上篇文章的结尾处所说，神经网络模型拥有最低的 RMSE，表明在一定程度上他可以相对良好的拟合我们的案例数据，然而 @hansenChallengesEconometricModel2005 认为使用最佳的混合模型组合取代单一模型能够长生更好的结果。
+
+因此混合预测模型应运而生，按照 [`ForecastComb`](https://cran.r-project.org/package=ForecastComb) 的说明，这类模型通过几何或回归的方式，将一组预测模型汇合为单独的预测模型。
+
+> The R package ForecastComb presents functions to pool individual model forecasts using geometric- and regression-based forecast combination methods. ForecastComb combines the functionality of the packages ForecastCombinations and GeomComb under a unified user interface and convenience functions.
+
+`ForecastComb` 详细使用指南可以参考 @christophForecastCombinationsUsing2019。
+
+## Forecast Comb 101
+
+### 数据格式化
+
+具体而言，`ForecastComb` 支持处理三种数据集：
+
+> 1. Only training set; 
+  2. Training set + future forecasts
+  3. Full training + test set
+  
+在进行混合预测之前，我们首先需要通过 [`foreccomb`](https://rdrr.io/cran/ForecastComb/man/foreccomb.html) 将数据集转换为 `foreccomb` 类对象。
+
+参考其参数:
+
+```{r document_of_foreccomb, eval=FALSE}
+foreccomb(observed_vector, prediction_matrix, 
+          newobs = NULL, newpreds = NULL, 
+          byrow = FALSE, na.impute = TRUE, criterion = "RMSE")
+``` 
+
+使用 `foreccomb` 格式化数据，我们至少需要提供观测值向量（`observed_vector`）以及多个模型的预测值矩阵（`prediction_matrix`）。其中 `prediction_matrix` 中每列为单一模型预测值。
+
+就我们的安利而言，我们需要将 `WWWusage_train` 定义为 `observed_vector`，并将 `mod_arima`, `mod_gm` 以及 `mod_nnet` 三个模型中的 Fitted Value 提取并合并为 `data.frame` 之后定义为 `prediction_matrix`。
+
+```{r data_prepare_by_foreccomb_impute_true}
+df_fitted_by_mods <-
+  data.frame(
+    arima = as.numeric(mod_arima$fitted),
+    gm = as.numeric(mod_gm$simulation),
+    nnet = as.numeric(mod_nnet$fitted)
+)
+
+knitr::kable(df_fitted_by_mods)
+
+# The NNet model often generate NA value
+# please significantly consider how to
+# process NA value and how to explain
+
+# In this case, we use`na.impute = TRUE`
+# to solve NA value,
+# but it is not always the best practice
+
+library("ForecastComb")
+
+fc_dat <-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods,
+            na.impute = TRUE)
+
+fc_dat
+```
+
+在上述步骤中，我们生成了可用于混合模型训练的 `fc_dat` 数据集，但是应当注意到系统的错误提醒:
+
+> non-finite value inf; using BIG value.
+
+> A subset of the individual forecasts included NA values and has been imputed.
+
+另外通过查看 `fc_dat`，我们也不难注意到 nnet 第一个缺失值明显大于 `arima` 以及 `gm`，这也可能会造成后续预测的不准确，不过我们且看后续再进行进一步处理。
+
+### 模型拟合
+
+使用 [`auto_combine`](https://rdrr.io/cran/ForecastComb/man/auto_combine.html) 可以进行混合预测，目前 `auto_combine` 支持根据 RMSE、MAE 以及 MAPE 确定最优混合参数。
+
+```{r auto_combin_na_imputed, eval=FALSE}
+auto_combine(fc_dat)
+```
+
+如果没有意外，这一步无法运行，会提示：
+
+```{r auto_combin_err, eval = FALSE}
+Error in `-.default`(observed_vector, prediction_matrix) : 
+  time-series/vector length mismatch
+```
+
+这是因为在 `foreccomb` 这一步中使用 `na.imputat = TRUE` 差值缺失值导致了数据趋势错误，故此我们尝试使用 ariam 和 gm 模型的预测值均值用作 nnet 模型预测值的缺失值进行填充：
+
+```{r data_prepare_by_foreccomb_impute_false}
+library("dplyr")
+# Use the mean value of arima and gm 
+# as the missing value of nnet
+# but this may be not a good practice
+
+df_fitted_by_mods_miss_val_fix <-
+  mutate(df_fitted_by_mods,
+         nnet = if_else(is.na(nnet),
+                        (arima+gm)/2, nnet))
+
+fc_dat_miss_val_fix <-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods_miss_val_fix,
+            na.impute = FALSE)
+
+fc_dat_miss_val_fix
+```
+
+再次进行混合预测：
+
+```{r auto_combin_na_fixed, eval=TRUE}
+mod_comb <-
+  auto_combine(fc_dat_miss_val_fix)
+
+mod_comb
+```
+
+结果显示通过 `r mod_comb$Method` (最小二乘法) 进行混合预测可以得到最小的 RMSE，此时 arima、gm、nnet 三模型的权重依次是 `r mod_comb$Weights[[1]]`, `r mod_comb$Weights[[2]]`, `r mod_comb$Weights[[3]]`。然而我们依然应该使用测试集验证模型方可用于进一步的预测。
+
+### 模型验证
+
+#### 自动完成
+
+模型验证可以在 `auto_combine` 之前的数据预处理过程中一并完成：
+
+```{r data_prepare_by_foreccomb_train_n_test, error=TRUE}
+df_pred_by_mods <-
+  data.frame(
+    arima = as.numeric(forecast_arima$mean),
+    gm = as.numeric(mod_gm$forecasts),
+    nnet = as.numeric(forecast_nnet$mean)
+)
+
+fc_train_n_test <-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods_miss_val_fix,
+            newobs = WWWusage_test,
+            newpreds = as.matrix(df_pred_by_mods),
+            na.impute = FALSE)
+
+mod_train_n_test_comb <-
+  auto_combine(fc_train_n_test)
+
+fc_train_n_test
+```
+
+此时可以通过 `mod_train_n_test_comb$Forecasts_Test` 获得模型预测值，通过 `Forecasts_Test$Accuracy_Test` 获得包含 RMSE 在内的预测准确度指标。
+
+#### 手动实现
+
+然而在某些情况下，在这个案例中 `auto_combine` 会报遇到报错： 
+
+``` error
+Error in newpred_matrix %*% weights : 
+  requires numeric/complex matrix/vector arguments
+```
+
+好在，案例中使用了最小二乘法，也就是线性回归，所以通过截距与斜率（变量的权重）也很容易手动混合预测：
+
+```{r train_n_test_manually}
+library("purrr")
+forecast_comb <-
+  mod_comb$Intercept +
+  reduce(map2(mod_comb$Weights, df_pred_by_mods, `*`),`+`)
+
+forecast_comb
+
+rmse_comb <-
+  sqrt(mean((as.numeric(forecast_comb) - as.numeric(WWWusage_test))^2, na.rm = TRUE))
+
+rmse_comb
+```
+
+混合预测模型的 RMSE = `r rmse_comb`，与[上篇中](https://blog.washman.top/post/arima-grey-nnet-combine-forecast/) ARIMA 模型性能相似，实际上根据 arima、gm、nnet 三模型的权重 `r mod_comb$Weights[[1]]`, `r mod_comb$Weights[[2]]`, `r mod_comb$Weights[[3]]` 就不难猜出，此案例中混合模型结果应该是相当接近于 ARIMA 的预测结果的。
+
+至于如何选择模型，还需要根据实际的应用情况进一步考虑。
+
+### 尾声
+截止至 2021 年 5 月，[`ForecastComb`](https://github.com/ceweiss/ForecastComb) 距离[上一次提交](https://github.com/ceweiss/ForecastComb/commit/5ea735d106b1d21a8cc43fce0b613676a6507c37)已经过去将近 3 年，程序运行不顺利在所难免——就像我们提到的 `auto_combine` 报错。此外， 并非所有的场景都会选择出最小二乘法用作组合模型的方法，但是只要阅读 `ForecastComb` [源代码中的 R 脚本](https://github.com/ceweiss/ForecastComb/tree/master/R)，通过手动实现预测也并不困难。
+
+---
+欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！
