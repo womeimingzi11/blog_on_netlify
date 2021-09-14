@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: WSL2 中 R 读写性能只有1/10？'
+title: 'R for Everything: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10'
 author: Han Chen
 date: '2021-09-14'
 slug: R_in_wsl2_is_limited_by_io_performance
@@ -111,5 +111,6 @@ print(readRDS("wsl_in_benchmark.RDS"),
 此时最快 2.21 秒，最慢 2.43 秒，平均 2.63 秒，这样甚至是最快的！
 
 综上，是不是使用 WSL2，该如何使用 WSL2，希望能给大家更多启发。
+
 ---
 欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！
