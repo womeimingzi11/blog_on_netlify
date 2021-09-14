@@ -41,3 +41,6 @@ vignettes/*.pdf
 public
 static/figures
 blogdown
+
+# Rmarkdown to Markdown, local
+/rmd2md

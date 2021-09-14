@@ -21,17 +21,19 @@ tags:
 bibliography: references.bib
 ---
 ```{r include=FALSE}
+knitr::opts_knit$set(tidy = TRUE,
+                     cache = TRUE)
+```
+```{r prepare_bib, include=FALSE}
 # Collect cited reference from current RMarkdown file into references.bib file
 rbbt::bbt_write_bib("references.bib",
                     rbbt::bbt_detect_citations("index.zh-hans.Rmd"), 
                     overwrite = TRUE)
-knitr::opts_knit$set(tidy = TRUE,
-                     cache = TRUE)
 ```
 
 最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。
 
-通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章[@liTimeSeriesAnalysis2016; @wangComparisonARIMAGM2018; @zhengForecastModelAnalysis2015; @gharbiTimeSeriesAnalysis2011; @liuForecastingIncidenceHemorrhagic2011]------虽然 Plos One，但是方法是无辜的嘛......搞起来。
+通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章[@liTimeSeriesAnalysis2016; @wangComparisonARIMAGM2018; @zhengForecastModelAnalysis2015; @gharbiTimeSeriesAnalysis2011; @liuForecastingIncidenceHemorrhagic2011∂]------虽然 Plos One，但是方法是无辜的嘛......搞起来。
 
 目前这类建模与预测较多的使用 Matlab、SAS 等软件实现 [@zhengForecastModelAnalysis2015; @liuForecastingIncidenceHemorrhagic2011]，可是我们的口号是什么？
 
@@ -71,7 +73,7 @@ func_rmse <-
 
 ## ARIMA
 
-ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 `ARIMA(p, d, q)`中 `p、d、q` 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；q为滑动平均项数 [@ARIMAMoXing2019a; @AutoregressiveIntegratedMoving2021]。
+ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 `ARIMA(p, d, q)`中 `p、d、q` 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；q为滑动平均项数@ARIMAMoXing2019, p. 20; [@AutoregressiveIntegratedMoving2021]。
 
 使用 [`forecast`](https://pkg.robjhyndman.com/forecast/) 包中 [`Arima`](https://pkg.robjhyndman.com/forecast/reference/Arima.html) 进行 ARIMA 预测，然而正如我们在前面所说的，模型中 `p、d、q` 三个参数需要人工确定，`forecast` 中也提供了 [`auto.arima`](https://pkg.robjhyndman.com/forecast/reference/auto.arima.html)，通过 AIC, AICc 或 BIC 选择最优 `p、d、q` 组合。
 

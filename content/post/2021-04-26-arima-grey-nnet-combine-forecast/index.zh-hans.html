@@ -25,12 +25,12 @@ bibliography: references.bib
 
 
 <p>最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。</p>
-<p>通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章<span class="citation">(<a href="#ref-liTimeSeriesAnalysis2016" role="doc-biblioref">Li et al. 2016</a>; <a href="#ref-wangComparisonARIMAGM2018" role="doc-biblioref">Wang, Shen, and Jiang 2018</a>; <a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-gharbiTimeSeriesAnalysis2011" role="doc-biblioref">Gharbi et al. 2011</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>)</span>——虽然 Plos One，但是方法是无辜的嘛……搞起来。</p>
+<p>通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章<span class="citation">(<a href="#ref-liTimeSeriesAnalysis2016" role="doc-biblioref">Li et al. 2016</a>; <a href="#ref-wangComparisonARIMAGM2018" role="doc-biblioref">Wang, Shen, and Jiang 2018</a>; <a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-gharbiTimeSeriesAnalysis2011" role="doc-biblioref">Gharbi et al. 2011</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>, ∂)</span>——虽然 Plos One，但是方法是无辜的嘛……搞起来。</p>
 <p>目前这类建模与预测较多的使用 Matlab、SAS 等软件实现 <span class="citation">(<a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>)</span>，可是我们的口号是什么？</p>
 <p><strong>Using R for Everything！</strong></p>
 <div id="预测任务与模型评价" class="section level2">
 <h2>预测任务与模型评价</h2>
-<p>使用来自于 <span class="citation"><a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">Durbin and Koopman</a> (<a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">2012</a>)</span> 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。</p>
+<p>使用来自于 <span class="citation">Durbin and Koopman (<a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">2012</a>)</span> 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。</p>
 <p>其中 Internet Usage per Minute 数据集来源于 R 绑定 <code>datasets</code> 包，选取前 80 条记录用作训练数据，剩余 20 条记录用作验证数据:</p>
 <pre class="r"><code>data(&quot;WWWusage&quot;)
 knitr::knit_print(WWWusage)</code></pre>
@@ -63,7 +63,7 @@ WWWusage_test &lt;-
 </div>
 <div id="arima" class="section level2">
 <h2>ARIMA</h2>
-<p>ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 <code>ARIMA(p, d, q)</code>中 <code>p、d、q</code> 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；q为滑动平均项数 <span class="citation">(<a href="#ref-ARIMAMoXing2019a" role="doc-biblioref"><span>“ARIMA模型”</span> 2019</a>; <a href="#ref-AutoregressiveIntegratedMoving2021" role="doc-biblioref"><span>“Autoregressive Integrated Moving Average”</span> 2021</a>)</span>。</p>
+<p>ARIMA 模型是时间序列预测分析方法之一，在实际的使用中通常需要确定 <code>ARIMA(p, d, q)</code>中 <code>p、d、q</code> 三个参数，p为自回归项数；d为使之成为平稳序列所做的差分次数；<a href="mailto:q为滑动平均项数@ARIMAMoXing2019" class="email">q为滑动平均项数@ARIMAMoXing2019</a>, p. 20; <span class="citation">(<a href="#ref-AutoregressiveIntegratedMoving2021" role="doc-biblioref"><span>“Autoregressive Integrated Moving Average”</span> 2021</a>)</span>。</p>
 <p>使用 <a href="https://pkg.robjhyndman.com/forecast/"><code>forecast</code></a> 包中 <a href="https://pkg.robjhyndman.com/forecast/reference/Arima.html"><code>Arima</code></a> 进行 ARIMA 预测，然而正如我们在前面所说的，模型中 <code>p、d、q</code> 三个参数需要人工确定，<code>forecast</code> 中也提供了 <a href="https://pkg.robjhyndman.com/forecast/reference/auto.arima.html"><code>auto.arima</code></a>，通过 AIC, AICc 或 BIC 选择最优 <code>p、d、q</code> 组合。</p>
 <p>在本案例中，其方法如下:</p>
 <pre class="r"><code>library(&quot;forecast&quot;)
@@ -235,9 +235,6 @@ rmse_nnet</code></pre>
 <hr />
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-ARIMAMoXing2019a" class="csl-entry">
-<span>“ARIMA模型.”</span> 2019. In <em>维基百科，自由的百科全书</em>. <a href="https://zh.wikipedia.org/w/index.php?title=ARIMA%E6%A8%A1%E5%9E%8B&amp;oldid=52985832">https://zh.wikipedia.org/w/index.php?title=ARIMA%E6%A8%A1%E5%9E%8B&amp;oldid=52985832</a>.
-</div>
 <div id="ref-AutoregressiveIntegratedMoving2021" class="csl-entry">
 <span>“Autoregressive Integrated Moving Average.”</span> 2021. In <em>Wikipedia</em>. <a href="https://en.wikipedia.org/w/index.php?title=Autoregressive_integrated_moving_average&amp;oldid=1016146583">https://en.wikipedia.org/w/index.php?title=Autoregressive_integrated_moving_average&amp;oldid=1016146583</a>.
 </div>
