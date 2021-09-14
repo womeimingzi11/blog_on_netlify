@@ -59,11 +59,11 @@ remotes::install_github('womeimingzi11/amapGeocode')
 
 由于 amapGeocode 使用了高的开放平台的的 API 服务，因此在使用 amapGeocode 之前，用户**必须首先申请** API Key，申请地址如下 https://console.amap.com/dev/index
 
-![](https://raw.githubusercontent.com/womeimingzi11/self-image/main/20210914170924.png)
+![](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/20210914170924.png)
 
 点击`管理Key`进入管理页面，选择`创建新应用`，应用名称和用途可以根据自己的实际用途填写。之后在刚刚创建的应用右侧点击添加按钮添加一个新的 API Key，Key 名称可以自行命名，但是注意一定要把服务平台选为 `Web服务`。之后就能查看申请到的 Key 了。**请注意，Key 的作用相当于访问高德服务的密码，切勿分享给其他人使用。如果怀疑 Key 泄露，可以通过`删除`按钮撤销该 Key，但同时也意味着您之前在程序中引用的该 Key 也需要一并更换，否者 amapGeocode 无法正常工作。**
 
-![](https://raw.githubusercontent.com/womeimingzi11/self-image/main/20210914170905.png)
+![](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/20210914170905.png)
 
 此外，截止到 2020 年 10 月 9 日，根据[高德开放平台配额管理页面显示](https://console.amap.com/dev/flow/manage)：高德开放平台**地理编码/逆地理编码/行政区查询服务**对于实名认证免费用户分别提供了**单日** 300,000次/300,000次/30,000 次的使用额度，超过此额度后，当日无法继续使用查询服务。理论上来讲，除非主动购买额外的查询次数，否则不会产生费用，但 amapGeocode 开发者暨笔者不对高德开放平台其规定与收费政策作任何保证，请用户自行判断。
 

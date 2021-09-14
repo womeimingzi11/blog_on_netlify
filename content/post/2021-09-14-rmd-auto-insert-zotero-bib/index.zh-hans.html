@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: Rmarkdown 与 Zotero 联动自动插入参考文献'
+title: 'R for Everything: 使用 Zotero 为 Rmarkdown 插入参考文献'
 author: Han Chen
 date: '2021-09-14'
 slug: rmd_auto_insert_zotero_bib
@@ -60,12 +60,12 @@ tags:
 <p>首先在 Zotero 的 Preference 中找到 Better BibTeX 选项卡，随后在 Citation keys 页面中的 Citation key kormat 设置样式，例如： <code>[auth:lower][shorttitle3_3][year]</code></p>
 <p>其中 <code>auth：lower</code> 代表将第一作者英文名小写，<code>shorttitle3_3</code> 代表选取文献标题的前三个字符，<code>year</code> 则代表文献出版年份。</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.39.50%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.39.50%402x.png" alt="" />
 <p class="caption">BBT Preference</p>
 </div>
 <p>当论文生成 Citation Key 并已经在 RMarkdown 中引用之后，大概没人希望 Citation Key 会再次发生变化。为了避免在之后刷新数据库或者其他操作导致 Citation Key 变化，选中参考文献，通常笔者会选中 Zotero 库中的所有文献，点击右键 Better BibTe - Pin BibTex Key 就可以锁定 Citation Key。</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.46.50%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.46.50%402x.png" alt="" />
 <p class="caption">Pin BibTex Key</p>
 </div>
 <p>这样后续的操作，例如修改作者名字和论文名（Typo 是敌人），将不会改变 Citation Key，也就不会导致参考文献引用的失败。</p>
@@ -75,7 +75,7 @@ tags:
 <p>这里还是以 Zotero 为例，选中需要使用的 Library，将其导出为 bib 文件即可。</p>
 <p>不过这还不是最优雅的使用方法，每次都要手动导出，也是很累的！怎么办？后面继续看！</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.51.32%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.51.32%402x.png" alt="" />
 <p class="caption">Export Bib</p>
 </div>
 </div>
@@ -94,17 +94,17 @@ bibliography: references.bib
 <pre><code>remotes::install_github(&quot;paleolimbot/rbbt&quot;)</code></pre>
 <p>随后在 RStudio 的 Addins 中应该可以看到 rbbt 相关的按钮。</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.29.50%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.29.50%402x.png" alt="" />
 <p class="caption">rbbt button</p>
 </div>
 <p>点击 Insert Zotero Citation 按钮就会弹出 Zotero 文献的选择弹窗，选取后可自动插入 RMakdown 中。</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.32.47%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.32.47%402x.png" alt="" />
 <p class="caption">rbbt addon</p>
 </div>
 <p>不过点击 Addin 也是挺麻烦的，不如给这个功能设置快捷键。在 RStudio 最顶端的 Tools 菜单中，选择 Modify Keyboard Shortcuts，在弹出页面中搜索 Insert Zotero Citation 便可给该功能设置快捷方式，这里我们设置成 CMD/Ctrl + M 插入（毕竟是 Mendeley 的老用户……</p>
 <div class="figure">
-<img src="https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.36.15%402x.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.36.15%402x.png" alt="" />
 <p class="caption">RStudio Shortcuts</p>
 </div>
 <p>上面这些操作看起来还不错是吧？不过，每次添加新的文献到 Zotoer 并将其引用到文章中依然要在 Zotero 中导出才好，这完全不像是现代化的操作模式。</p>

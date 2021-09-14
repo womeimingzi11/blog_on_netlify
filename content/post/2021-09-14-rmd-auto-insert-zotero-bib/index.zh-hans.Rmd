@@ -60,11 +60,11 @@ tags:
 
 其中 `auth：lower` 代表将第一作者英文名小写，`shorttitle3_3` 代表选取文献标题的前三个字符，`year` 则代表文献出版年份。
 
-![BBT Preference](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.39.50%402x.png)
+![BBT Preference](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.39.50%402x.png)
 
 当论文生成 Citation Key 并已经在 RMarkdown 中引用之后，大概没人希望 Citation Key 会再次发生变化。为了避免在之后刷新数据库或者其他操作导致 Citation Key 变化，选中参考文献，通常笔者会选中 Zotero 库中的所有文献，点击右键 Better BibTe - Pin BibTex Key 就可以锁定 Citation Key。
 
-![Pin BibTex Key](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.46.50%402x.png)
+![Pin BibTex Key](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.46.50%402x.png)
 
 这样后续的操作，例如修改作者名字和论文名（Typo 是敌人），将不会改变 Citation Key，也就不会导致参考文献引用的失败。
 
@@ -74,7 +74,7 @@ tags:
 
 不过这还不是最优雅的使用方法，每次都要手动导出，也是很累的！怎么办？后面继续看！
 
-![Export Bib](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2015.51.32%402x.png)
+![Export Bib](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.51.32%402x.png)
 
 #### Step 3，一键插入参考文献
 
@@ -96,15 +96,15 @@ remotes::install_github("paleolimbot/rbbt")
 ```
 随后在 RStudio 的 Addins 中应该可以看到 rbbt 相关的按钮。
 
-![rbbt button](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.29.50%402x.png)
+![rbbt button](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.29.50%402x.png)
 
 点击 Insert Zotero Citation 按钮就会弹出 Zotero 文献的选择弹窗，选取后可自动插入 RMakdown 中。
 
-![rbbt addon](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.32.47%402x.png)
+![rbbt addon](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.32.47%402x.png)
 
 不过点击 Addin 也是挺麻烦的，不如给这个功能设置快捷键。在 RStudio 最顶端的 Tools 菜单中，选择 Modify Keyboard Shortcuts，在弹出页面中搜索 Insert Zotero Citation 便可给该功能设置快捷方式，这里我们设置成 CMD/Ctrl + M 插入（毕竟是 Mendeley 的老用户……
 
-![RStudio Shortcuts](https://raw.githubusercontent.com/womeimingzi11/self-image/main/CleanShot%202021-09-14%20at%2016.36.15%402x.png)
+![RStudio Shortcuts](https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.36.15%402x.png)
 
 上面这些操作看起来还不错是吧？不过，每次添加新的文献到 Zotoer 并将其引用到文章中依然要在 Zotero 中导出才好，这完全不像是现代化的操作模式。
 
