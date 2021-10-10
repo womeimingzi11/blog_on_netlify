@@ -1,0 +1,24 @@
+---
+title: 'Using R: macOS 下 data.table 的正确用法'
+author: Han Chen
+date: '2021-09-22'
+slug: []
+categories:
+  - Using R for Everything
+  - R for Everything
+  - data.table
+tags:
+  - data.table
+  - macOS
+draft: yes
+---
+
+
+
+```
+data.table 1.14.0 using 1 threads (see ?getDTthreads).  Latest news: r-datatable.com
+**********
+This installation of data.table has not detected OpenMP support. It should still work but in single-threaded mode.
+This is a Mac. Please read https://mac.r-project.org/openmp/. Please engage with Apple and ask them for support. Check r-datatable.com for updates, and our Mac instructions here: https://github.com/Rdatatable/data.table/wiki/Installation. After several years of many reports of installation problems on Mac, it's time to gingerly point out that there have been no similar problems on Windows or Linux.
+**********
+```

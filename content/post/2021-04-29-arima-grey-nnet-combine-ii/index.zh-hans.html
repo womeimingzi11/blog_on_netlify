@@ -1,5 +1,5 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
+title: 'Using R: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
 author: Han Chen
 date: '2021-04-29'
 slug: arima_grey_nnet_combine_ii
@@ -809,7 +809,7 @@ fc_dat_miss_val_fix</code></pre>
 ## 
 ## $Accuracy_Train
 ##                    ME    RMSE      MAE        MPE     MAPE       ACF1 Theil&#39;s U
-## Test set 1.243423e-15 3.02758 2.402171 -0.0741498 2.056542 -0.0140366 0.6035688
+## Test set 3.552443e-16 3.02758 2.402171 -0.0741498 2.056542 -0.0140366 0.6035688
 ## 
 ## $Input_Data
 ## $Input_Data$Actual_Train
@@ -918,7 +918,7 @@ fc_dat_miss_val_fix</code></pre>
 ##     pred &lt;- as.vector(coef %*% t(cbind(1, newpreds)))
 ##     return(pred)
 ## }
-## &lt;bytecode: 0x7ffda198d8c8&gt;
+## &lt;bytecode: 0x7fa895a6fb88&gt;
 ## &lt;environment: namespace:ForecastComb&gt;
 ## 
 ## $Intercept

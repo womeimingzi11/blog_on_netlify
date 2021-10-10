@@ -1,23 +1,22 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
-author: Han Chen
+title: 'Using R : 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
+author: "Han Chen"
 date: '2021-04-26'
 slug: arima-grey-nnet-combine-forecast
-categories:
-  - Using R for Everything
+categories: Using R for Everything
 tags:
-  - ARIMA
-  - 机器学习
-  - 神经网络
-  - 灰色模型
-  - Grey Model
-  - GM(1,1)
-  - Combine
-  - 混合
-  - 预测
-  - 时间序列
-  - 公共卫生
-  - 流行病学
+- ARIMA
+- 机器学习
+- 神经网络
+- 灰色模型
+- Grey Model
+- GM(1,1)
+- Combine
+- 混合
+- 预测
+- 时间序列
+- 公共卫生
+- 流行病学
 bibliography: references.bib
 ---
 
@@ -25,12 +24,12 @@ bibliography: references.bib
 
 
 <p>最近同学手头上有公共卫生方面的报告，其中就有基于时间序列进行预测的部分。</p>
-<p>通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章<span class="citation">(<a href="#ref-liTimeSeriesAnalysis2016" role="doc-biblioref">Li et al. 2016</a>; <a href="#ref-wangComparisonARIMAGM2018" role="doc-biblioref">Wang, Shen, and Jiang 2018</a>; <a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-gharbiTimeSeriesAnalysis2011" role="doc-biblioref">Gharbi et al. 2011</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>, ∂)</span>——虽然 Plos One，但是方法是无辜的嘛……搞起来。</p>
+<p>通过查看国内外的相关研究，ARIMA、灰色模型、神经网络以及不同模型的混合模型，是在公共卫生方面最常用到的时间序列预测模型。例如一众国内发表的 Plos One 类文章<span class="citation">(<a href="#ref-liTimeSeriesAnalysis2016" role="doc-biblioref">Li et al. 2016</a>; <a href="#ref-wangComparisonARIMAGM2018" role="doc-biblioref">Wang, Shen, and Jiang 2018</a>; <a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-gharbiTimeSeriesAnalysis2011" role="doc-biblioref">Gharbi et al. 2011</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>∂)</span>——虽然 Plos One，但是方法是无辜的嘛……搞起来。</p>
 <p>目前这类建模与预测较多的使用 Matlab、SAS 等软件实现 <span class="citation">(<a href="#ref-zhengForecastModelAnalysis2015" role="doc-biblioref">Zheng et al. 2015</a>; <a href="#ref-liuForecastingIncidenceHemorrhagic2011" role="doc-biblioref">Q. Liu et al. 2011</a>)</span>，可是我们的口号是什么？</p>
 <p><strong>Using R for Everything！</strong></p>
 <div id="预测任务与模型评价" class="section level2">
 <h2>预测任务与模型评价</h2>
-<p>使用来自于 <span class="citation">Durbin and Koopman (<a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">2012</a>)</span> 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。</p>
+<p>使用来自于 <span class="citation"><a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">Durbin and Koopman</a> (<a href="#ref-durbinTimeSeriesAnalysis2012" role="doc-biblioref">2012</a>)</span> 当中的 Internet Usage per Minute 数据集（100 条记录），对每分钟通过服务器连接到互联网的用户数的时间序列进行建模与预测。使用 RMSE 评估模型。</p>
 <p>其中 Internet Usage per Minute 数据集来源于 R 绑定 <code>datasets</code> 包，选取前 80 条记录用作训练数据，剩余 20 条记录用作验证数据:</p>
 <pre class="r"><code>data(&quot;WWWusage&quot;)
 knitr::knit_print(WWWusage)</code></pre>
@@ -142,10 +141,12 @@ rmse_arima</code></pre>
 <h2>GreyModel-GM(1,1)</h2>
 <p>在诸多灰色理论算法中，GM(1,1) 常用来进行小样本以及较少信息数据的预测 <span class="citation">(<a href="#ref-liuGreyInformationTheory2006" role="doc-biblioref">S. Liu and Lin 2006</a>; <a href="#ref-dengjulongHuiLiLunJiChu2002" role="doc-biblioref">邓聚龙 2002</a>; <a href="#ref-zhouGeneralizedGMModel2013" role="doc-biblioref">Zhou and He 2013</a>)</span>。</p>
 <p>目前在 R 语言中进行灰色模型预测的包相对没有那么丰富。由 <a href="https://github.com/exoplanetX">exoplanetX</a> 开发的 <a href="https://github.com/exoplanetX/greyforecasting"><code>greyforecasting</code></a> 是一个包含了丰富灰色理论算法的 R Package。</p>
+<del>
 <blockquote>
 <p>然而不幸的是，截止至2021.04.27，在原作者<a href="https://github.com/exoplanetX/greyforecasting/commit/23b51a18e765cde04b5784b6a62ee55fc60bca8b">最近一次提交中</a>似乎破坏了其中的 <code>bo.obj</code> 类，导致原包的安装失败。笔者尝试修复这个问题并已经通过 <a href="https://github.com/exoplanetX/greyforecasting/pull/2">GitHub 提交 PR</a>，还需等待原开发者的合并或者修复。目前可以<a href="https://github.com/womeimingzi11/greyforecasting/tree/format_n_fix">从笔者 Fork 的 Repo 中安装 <code>greyforecasting</code></a>。</p>
 </blockquote>
 <pre class="r"><code>remotes::install_github(&quot;womeimingzi11/greyforecasting@format_n_fix&quot;)</code></pre>
+</del>
 <p>不过与 ARIMA 等其他模型的构建流程不同，<code>greyforecasting</code> 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：</p>
 <pre class="r"><code>library(&quot;greyforecasting&quot;)
 
@@ -158,8 +159,8 @@ rmse_gm &lt;-
   func_rmse(WWWusage_train, mod_gm$simulation)
 
 rmse_gm</code></pre>
-<pre><code>## [1] 30.7227</code></pre>
-<p>相比而言在本案例中，GM(1,1) 模型的 RMSE 小于 ARIMA 模型的 RMSE（30.7226991 vs 66.2366936），这至少说明在本案例中 GM(1,1) 其拟合效果更为优秀。</p>
+<pre><code>## [1] NaN</code></pre>
+<p>相比而言在本案例中，GM(1,1) 模型的 RMSE 小于 ARIMA 模型的 RMSE（NaN vs 66.2366936），这至少说明在本案例中 GM(1,1) 其拟合效果更为优秀。</p>
 </div>
 <div id="nnet" class="section level2">
 <h2>NNet</h2>
@@ -251,7 +252,7 @@ Li, Shujuan, Wei Cao, Hongyan Ren, Liang Lu, Dafang Zhuang, and Qiyong Liu. 2016
 Liu, Qiyong, Xiaodong Liu, Baofa Jiang, and Weizhong Yang. 2011. <span>“Forecasting Incidence of Hemorrhagic Fever with Renal Syndrome in <span>China</span> Using <span>ARIMA</span> Model.”</span> <em>BMC Infectious Diseases</em> 11 (1): 218. <a href="https://doi.org/10.1186/1471-2334-11-218">https://doi.org/10.1186/1471-2334-11-218</a>.
 </div>
 <div id="ref-liuGreyInformationTheory2006" class="csl-entry">
-Liu, Sifeng, and Yi Lin. 2006. <em>Grey <span>Information</span>: <span>Theory</span> and <span>Practical Applications</span></em>. <span>Springer Science &amp; Business Media</span>. <a href="https://books.google.com?id=T9RqJlwk8g8C">https://books.google.com?id=T9RqJlwk8g8C</a>.
+Liu, Sifeng, and Yi Lin. 2006. <em>Grey <span>Information</span>: <span>Theory</span> and <span>Practical Applications</span></em>. <span>Springer Science &amp; Business Media</span>. <a href="http://books.google.com?id=T9RqJlwk8g8C">http://books.google.com?id=T9RqJlwk8g8C</a>.
 </div>
 <div id="ref-oanceaTimeSeriesForecasting2013" class="csl-entry">
 Oancea, Bogdan, and Stefan Ciucu. 2013. <span>“Time Series Forecasting Using Neural Networks,”</span> May.

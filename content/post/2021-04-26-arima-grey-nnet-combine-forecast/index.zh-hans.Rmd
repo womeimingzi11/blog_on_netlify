@@ -1,23 +1,22 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
-author: Han Chen
+title: 'Using R : 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）'
+author: "Han Chen"
 date: '2021-04-26'
 slug: arima-grey-nnet-combine-forecast
-categories:
-  - Using R for Everything
+categories: Using R for Everything
 tags:
-  - ARIMA
-  - 机器学习
-  - 神经网络
-  - 灰色模型
-  - Grey Model
-  - GM(1,1)
-  - Combine
-  - 混合
-  - 预测
-  - 时间序列
-  - 公共卫生
-  - 流行病学
+- ARIMA
+- 机器学习
+- 神经网络
+- 灰色模型
+- Grey Model
+- GM(1,1)
+- Combine
+- 混合
+- 预测
+- 时间序列
+- 公共卫生
+- 流行病学
 bibliography: references.bib
 ---
 ```{r include=FALSE}
@@ -107,11 +106,13 @@ rmse_arima
 
 目前在 R 语言中进行灰色模型预测的包相对没有那么丰富。由 [exoplanetX](https://github.com/exoplanetX) 开发的 [`greyforecasting`](https://github.com/exoplanetX/greyforecasting) 是一个包含了丰富灰色理论算法的 R Package。
 
+<del>
 > 然而不幸的是，截止至2021.04.27，在原作者[最近一次提交中](https://github.com/exoplanetX/greyforecasting/commit/23b51a18e765cde04b5784b6a62ee55fc60bca8b)似乎破坏了其中的 `bo.obj` 类，导致原包的安装失败。笔者尝试修复这个问题并已经通过 [GitHub 提交 PR](https://github.com/exoplanetX/greyforecasting/pull/2)，还需等待原开发者的合并或者修复。目前可以[从笔者 Fork 的 Repo 中安装 `greyforecasting`](https://github.com/womeimingzi11/greyforecasting/tree/format_n_fix)。
 
 ```{r eval = FALSE}
 remotes::install_github("womeimingzi11/greyforecasting@format_n_fix")
 ```
+</del>
 
 不过与 ARIMA 等其他模型的构建流程不同，`greyforecasting` 中构建模型与预测是通过一步完成，参考 ARIMA 构建模型并预测未来20条数据：
 

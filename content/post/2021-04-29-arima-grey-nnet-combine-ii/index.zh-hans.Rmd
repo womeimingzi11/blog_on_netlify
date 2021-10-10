@@ -1,23 +1,23 @@
 ---
-title: 'R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
+title: 'Using R: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
 author: Han Chen
 date: '2021-04-29'
-slug: arima_grey_nnet_combine_ii
 categories:
   - Using R for Everything
-tags: 
-  - ARIMA
-  - 机器学习
-  - 神经网络
-  - 灰色模型
-  - Grey Model
-  - GM(1,1)
-  - Combine
-  - 混合
-  - 预测
-  - 时间序列
+tags:
   - 公共卫生
+  - 灰色模型
+  - 混合
+  - 机器学习
   - 流行病学
+  - 神经网络
+  - 时间序列
+  - 预测
+  - ARIMA
+  - Combine
+  - GM(1,1)
+  - Grey Model
+slug: arima_grey_nnet_combine_ii
 bibliography: references.bib
 ---
 ```{r include=FALSE}
