@@ -16,3 +16,57 @@ tags:
 draft: yes
 ---
 
+前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。
+
+B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：
+
+[SocialSisterYi/bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
+
+## 设置 Cookies
+
+本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，单就第一步设置 cookies 就花费良久。
+
+参考 bilibili-API-collect 项目（下称项目）中[API认证与鉴权]("https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md")中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。
+
+这不难，直接 Chrome + F12 调试模式，Application 选项卡直接查看即可。
+
+![](https://raw.fastgit.org/womeimingzi11/self-image/main//202110110017317.png)
+然而，这里获取的 SESSDATA 和 bili_jct 是经过转义了的，因此在使用 `httr::set_cookies` 生成 cookies 时程序默认会再次转译，然后就报错了……就这个问题，我已经在 [httr 提交了新的 PR](https://github.com/r-lib/httr/pull/706) 试图解决，至于能不能合并以及什么时候会合并，就不得而知了。
+
+不过既然是要强制转译，那我们就给 `httr::set_cookies` 提供已经反转译的 cookies 即可。这里要用到 `curl::curl_unescape`，实际上 `httr::set_cookies` 就是通过向量化调用 `curl::curl_escape` 来完成的转换。具体而言，代码如下：
+
+<!-- Code block for demo purpose -->
+
+```r
+library("httr")
+cookies <-
+  httr::set_cookies(
+    DedeUserID = rstudioapi::askForPassword("DedeUserID"),
+    DedeUserID__ckMd5 = rstudioapi::askForPassword("DedeUserID__ckMd5"),
+    SESSDATA = curl::curl_unescape(rstudioapi::askForPassword("SESSDATA")),
+    bili_jct = curl::curl_unescape(rstudioapi::askForPassword("bili_jct"))
+  )
+```
+<!-- Evaluated code code block, but no need to be shown -->
+
+```{r set_cookies, include=FALSE}
+library("httr")
+source("set_cookies_background.R")
+```
+
+在后续的操作中，只要在请求中附上 `cookies` 即可。
+
+## 获取历史记录
+
+```{r get_history, cache=TRUE}
+library("jsonlite")
+history_resp <-
+httr::GET(url = "http://api.bilibili.com/x/web-interface/history/cursor", 
+          config = cookies,
+          query = list(ps = 30))
+
+hitory_content <-
+  httr::content(history_resp, type = "text")
+
+jsonlite::fromJSON(hitory_content)
+```
