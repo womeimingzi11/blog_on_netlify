@@ -534,6 +534,7 @@ cat_to_type_tb %&gt;%
   filter(app_id == &quot;com.xiaomi.mihome&quot;) %&gt;% 
   filter(category == &quot;location&quot;) %&gt;% 
   select(kind, timeStamp) %&gt;% 
+  # 此处实现很奇怪，应该可以用 pivot_wider 一步到位的
   pivot_wider(
     names_from = kind,
     values_from = timeStamp
@@ -656,4 +657,18 @@ skimr::skim(mj_time_tb)</code></pre>
   scale_y_continuous(name = &quot;请求次数&quot;) +
   theme_linedraw()</code></pre>
 <p><img src="/post/2021-10-11-using-r-ios-app-背着我们干了啥/index.zh-hans_files/figure-html/mijia_tile-2.png" width="672" /></p>
+<p>总的来说，米家主要请求的因素数据就是定位，并且是夜以继日的工作，可以说是007了。只有在凌晨才舍得勉强克制一点。再结合 iOS 电池选项厘米啊米家出色的耗电量，应该没有冤枉。</p>
+<p><img src="https://raw.fastgit.org/womeimingzi11/self-image/main//202110121513402.jpeg" /></p>
+<p>关键是笔者米家中需要用到定位的自动化并没有开启（因为从来就没有按照预期正常工作过），所以勤劳的定位请求真的让人头大。</p>
+<p><img src="https://raw.fastgit.org/womeimingzi11/self-image/main//202110121515654.jpeg" /></p>
+<p>目前笔者的解决办法是关闭 App 的始终定位功能，只能从根源上解决问题，关键是对于使用影响非常有限（依赖地理围栏功能的小伙伴慎重考虑）</p>
+<p><img src="https://raw.fastgit.org/womeimingzi11/self-image/main//202110121517781.jpeg" /></p>
+</div>
+<div id="总结" class="section level2">
+<h2>总结</h2>
+<p>总的来说，根据使用 R 分析 App_Privacy_Report 报告，笔者并未发现美团与微信的频繁访问，不过这并不能说明它们没有问题，因为我已经关掉了此二者的后台刷新以及始终定位功能，使得他两个没有办法实现频繁唤醒；不过让人意外的是，无意中发现了潜在的耗电大户，还是希望能克制一点。</p>
+<p>声明：本文采用 R 语言是为境外团队 R-Core Team 开发软件；ndjson 包是境外冰岛开发者开发；tidyverse bundle 是新西兰开发者牵头开发；下列读取 iOS 15 系统日志的操作并未进行安全性和保密性测试，建议大家谨慎操作，或者拔掉网线并开启电磁屏蔽操作；不过写作的人是境内人员（战术后仰</p>
+<p>米家版本为v6.11.201-build6.11.201.2</p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 </div>
