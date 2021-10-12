@@ -2,10 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://blog.washman.top/tags/bibliography/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
+    <loc>https://blog.washman.top/categories/analysis/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/categories/case-report/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/categories/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/post/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/tags/r/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/categories/r-for-everything/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/tags/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/categories/using-r-for-everything/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/post/2021-10-12-what-you-did-app/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/</loc>
+    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.washman.top/tags/bibliography/</loc>
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/tags/cite/</loc>
@@ -17,22 +47,10 @@
     <loc>https://blog.washman.top/tags/package/</loc>
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.washman.top/post/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.washman.top/tags/r/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.washman.top/tags/rbbt/</loc>
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/tags/rmarkdown/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.washman.top/tags/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.washman.top/categories/using-r-for-everything/</loc>
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</loc>
@@ -45,9 +63,6 @@
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/tags/zotero/</loc>
-    <lastmod>2021-09-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.washman.top/</loc>
     <lastmod>2021-09-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.washman.top/tags/arima/</loc>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R for Everything on 洗衣机的博客</title>
+    <link>https://blog.washman.top/categories/r-for-everything/</link>
+    <description>Recent content in R for Everything on 洗衣机的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy;{year}, All Rights Reserved</copyright>
+    <lastBuildDate>Mon, 11 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/categories/r-for-everything/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using R: iOS App 背着我们干了啥？</title>
+      <link>https://blog.washman.top/post/2021-10-12-what-you-did-app/</link>
+      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2021-10-12-what-you-did-app/</guid>
+      <description>最近随着 iOS 15 中「记录 App 活动」功能的加入，以微信为代表的一类软件频繁读写用户信息的行为被抓了现形。具体的新闻可以阅读 Hackl0us 发布在知乎的记录. 虽然微信在 10 月 11 日发布了新版似乎修复了这个问题，然而美团针对每 5 分</description>
+    </item>
+    
+  </channel>
+</rss>
