@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’ | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’</h2>
+    <div class="post_content">
+      <p><a href="https://CRAN.R-project.org/package=rJava"><code>rJava</code></a> 是 R 语言中经常会遇到的依赖包，例如使用 <a href="https://cran.r-project.org/package=xlsx"><code>xlsx</code></a> 包便需要 <code>rJava</code> 依赖（<a href="https://CRAN.R-project.org/package=readxl"><code>readxl</code></a>也是不错的选择）， 然而安装 <code>rJava</code>很难不让人感觉：rJava, an interface to nightmere instead an interface for R to use java.</p>
+<p>所以我尝试总结目前遇到的安装并配置 rJava 过程中遇到的那些坑，为自己做个记录，如果对任何人有任何帮助那就更好了。本文中以 macOS 为示例，然而绝大多数操作对于 Linux 也有效，虽然 Windows 具体方法基本不同，但其中思路也可作为参考。</p>
+<h2 id="加载-r-package-的障碍居然是-java">加载 R Package 的障碍居然是 Java？</h2>
+<p>噩梦的开始，通常是发现忘了安装 JDK（<a href="https://www.runoob.com/w3cnote/the-different-of-jre-and-jdk.html">什么是 JDK</a>），例如安装成功，但加载包失败</p>
+<p><code>library(xlsx)</code>：</p>
+<blockquote>
+<p>Error: package or namespace load failed for &lsquo;xlsx&rsquo;:
+.onLoad failed in loadNamespace() for &lsquo;rJava&rsquo;, details:
+call: fun(libname, pkgname)
+error: JVM could not be found
+In addition: Warning messages:
+1: In system(&quot;/usr/libexec/java_home&quot;, intern = TRUE) :
+running command &lsquo;/usr/libexec/java_home&rsquo; had status 1
+2: In fun(libname, pkgname) :
+Cannot find JVM library &lsquo;NA/lib/server/libjvm.dylib&rsquo;
+Install Java and/or check JAVA_HOME (if in doubt, do NOT set it, it will be detected)
+The operation couldn’t be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com for information on installing Java.</p>
+</blockquote>
+<p>或者问题出现在安装包的步骤，错误提示可能是：</p>
+<blockquote>
+<p>ERROR: configuration failed for package ‘rJava’</p>
+</blockquote>
+<h2 id="step-1-安装-jdk">Step 1. 安装 JDK</h2>
+<p>在决定安装 JDK 之前，建议首先检查一下是否真的没有安装 JDK 以及 JDK 的版本，在 macOS 或 Linux 中的 Terminal （或者 RStudio 的 <strong>Terminal 标签</strong>，<strong>Terminal 标签</strong>，<strong>Terminal 标签</strong>）中运行下述命令</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ java -version
+The operation couldn’t be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com <span class="k">for</span> information on installing Java.
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-04-25%20at%2001.17.35%402x.png" alt="在 Terminal 标签中"></p>
+<p>如果没有返回 Java Runtime 的版本或者或者 JDK 版本较高，通常我们可以尝试安装 JDK8，至于为什么是 JDK8 而不是更新的版本，我们后面会讲到。</p>
+<p>对于 macOS，我建议使用Homebrew 安装 JDK，Homebrew 是什么以及如何安装请参考<a href="https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/">清华大学 brew 镜像说明</a>。</p>
+<p>在 <code>AdoptOpenJDK/openjdk</code>这个Homebrew 的 Tap 源中提供了较为丰富的 JDK 版本，基本能够满足需求。至于为什么选择 AdoptOpenJDK，为什么不选择 OracleJDK，以及为什么不选择任何其他版本的 JDK 这里就不做讨论了——有需求的朋友一定能更优雅的解决 rJava 的问题吧。</p>
+<p>通过 Homebrew 安装 AdoptOpenJDK 8 的命令如下（Terminal 中运行）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Activate the AdoptOpenJDK tap</span>
+brew tap AdoptOpenJDK/openjdk
+<span class="c1"># Install the desired version</span>
+brew cask install adoptopenjdk8
+</code></pre></div><p>在 Debian 及 Debian 衍生的 Linux 中，例如 Ubuntu/Debian 等可以使用下列命令:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">sudo apt-get install openjdk-8-jdk
+</code></pre></div><p>安装成功后再次检查 JDK 版本——1.8.X 就代表 JDK8 成功安装了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ java -version
+openjdk version <span class="s2">&#34;1.8.0_292&#34;</span>
+OpenJDK Runtime Environment <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 1.8.0_292-b10<span class="o">)</span>
+OpenJDK 64-Bit Server VM <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 25.292-b10, mixed mode<span class="o">)</span>
+</code></pre></div><p>此时再返回 R 的 Console 中加载之前报错的包，我有 90% 的信心认为你不会再遇到问题了！</p>
+<h2 id="step-2-r-cmd-autoconf">Step 2. <code>R CMD autoconf</code></h2>
+<p>然而，最尴尬的事情并不是 JDK 没有安装，而是 <strong>JDK 安装了，可就是/还是要花式报错……</strong></p>
+<p>相信这也是从网上搜到这篇文章的朋友的最大的困扰，这个问题通常是因为 R 没有正确的识别到电脑上的 JDK，想要解决这个问题也不算太难，网络上大量的教程都会建议尝试在 Terminal 中运行 <code>R CMD autoconf</code>，你以为的是问题解决了，然而通常你遇到的是：</p>
+<blockquote>
+<p>checking whether JNI programs can be compiled&hellip; configure: error: Cannot compile a simple JNI program. See config.log for details.</p>
+</blockquote>
+<p>或者</p>
+<blockquote>
+<p>Make sure you have Java Development Kit installed and correctly registered in R.
+If in doubt, re-run &ldquo;R CMD javareconf&rdquo; as root.</p>
+</blockquote>
+<p>既然系统给出了这个提示，那不妨尝试一下他给出的解决方案：在 Terminal 中运行<code>R CMD javareconf</code>。</p>
+<p>而且我猜如果你是通过搜索来到这里，那么问题一定没有解决，不然谁会搜到这么偏僻的一篇博客呢？例如我遇到过 N 次的一个错误如下:</p>
+<blockquote>
+<p>jni.h: No such file or directory</p>
+</blockquote>
+<p>这个问题可能是因为电脑上默认的 JDK 版本太高了，<code>R CMD javareconf</code>无法找到 jni.h 头文件。</p>
+<p>除了卸载高版本 JDK 并安装 JDK8之外，网上有很多建议例如修改文件目录、建立文件软链接等等，但是不幸的事这并没有解决我的问题，并且因为混乱的文件管理，导致 java 几近抽风……而且往往安装了高版本 JDK 的用户也对高版本是有需求的，简单的删除虽然简单但是不现实。</p>
+<h2 id="step-3-jenv--manage-your-java-environmenthttpsgithubcomjenvjenv">Step 3. <code>jEnv</code>- <a href="https://github.com/jenv/jenv">Manage your Java environment</a></h2>
+<p>然而其实解决这个问题也并不是难——不同版本的 JDK 在同一台电脑上是可以共存的，只不过默认的 JDK 只能有一个，单独为 R 配置低版本的 JDK 即可兼顾。</p>
+<p>按照 <a href="https://github.com/jenv/jenv">jEnv</a> 的介绍：</p>
+<blockquote>
+<p><code>jenv</code> gives you a few critical affordances for using <code>java</code> on development machines:</p>
+<ul>
+<li>It lets you switch between <code>java</code> versions. This is useful when developing Android applications, which generally require Java 8 for its tools, versus server applications, which use later versions like Java 11.</li>
+<li>It sets <code>JAVA_HOME</code> inside your shell, in a way that can be set globally, local to the current working directory or per shell.</li>
+</ul>
+</blockquote>
+<p><code>jEnv</code>可以在本机安装的不同版本 Java 之间切换，并且可以针对不同的作用范围指定 Java 版本，本示例中主要使用第一个功能。</p>
+<p>参考 <code>jEnv</code><a href="https://www.jenv.be/">官方说明</a>，首先在 Shell 中克隆并加载 jEnv:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Clone jEnv git to home directory</span>
+$ git clone https://github.com/jenv/jenv.git ~/.jenv
+
+<span class="c1"># Set jEnv Path for Bash</span>
+$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.bash_profile
+$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.bash_profile
+
+<span class="c1"># Set jEnv Path for Zsh</span>
+$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.zshrc
+$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.zshrc
+</code></pre></div><blockquote>
+<h3 id="which-shell-am-i-using">Which shell am I using?</h3>
+<p>上述设定 jEnv Path 的操作并不是需要都要执行，实际上在进行配置路径之前，大家需要知道自己使用的是什么 Shell，至于 Shell、Bash、Zsh、Terminal、R Console 分别是什么，本文不做进一步讲解，但可以自行搜索，否者很容易混淆。</p>
+<p>可以使用 <code>echo &quot;$SHELL&quot;</code> 命令快速的检查当前使用 Shell，例如这里我们看到：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$SHELL</span><span class="s2">&#34;</span>
+
+/bin/zsh
+</code></pre></div><p><code>zsh</code>关键字即说明我们当前使用的是 zsh</p>
+</blockquote>
+<p>随后将本地已经安装的所有 JDK 路径添加到 <code>jEnv</code> 中以供后续管理，例如示例中电脑安装了 JDK8 和 JDK14，那么使用下列命令将两个版本均添加到 <code>zsh</code> 中:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># For macOS, the directory of Java is in</span>
+<span class="c1"># /Library/Java/JavaVirtualMachines</span>
+
+<span class="c1"># Add JDK8 to jEnv</span>
+$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+openjdk64-1.8.0.292 added
+1.8.0.292 added
+1.8 added
+
+<span class="c1"># Add JDK14 to jEnv</span>
+$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/Home
+openjdk64-14.0.2 added
+14.0.2 added
+14.0 added
+<span class="m">14</span> added
+
+</code></pre></div><p>Shell 中提示 added 就代表添加成功，使用命令 <code>jenv versions</code> 查看已经添加至 <code>jEnv</code>中的 JDK 版本，并且该命令可以显示哪个 JDK 被激活：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ jenv versions
+* system <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
+  1.8
+  1.8.0.292
+  <span class="m">14</span>
+  14.0
+  14.0.2
+  openjdk64-1.8.0.292
+  openjdk64-14.0.2
+</code></pre></div><p>使用 <code>jenv global</code> 切换全局 JDK 版本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ jenv global 1.8
+$ jenv versions
+  system
+* 1.8 <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
+  1.8.0.292
+  <span class="m">14</span>
+  14.0
+  14.0.2
+  openjdk64-1.8.0.292
+  openjdk64-14.0.2
+</code></pre></div><p>结果显示 JDK 已经切换至 JDK8 (1.8)。此时再次在 Terminal 中执行 <code>R CMD javareconf</code> 应该就可以正确的配置 R 对 Java 的调用。</p>
+<p>除了 <code>jenv global</code> 控制全局 JDK 版本，还可以通过 <code>jenv local</code> 控制当前目录/项目下 JDK 版本，以及通过 <code>jenv shell</code> 控制当前 Shell 中 JDK 版本。</p>
+<p>通过上述办法，解决了笔者遇到的大多数 <code>rJava</code> 遇到的载入包问题。</p>
+<hr>
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2021-04-25T00:00:00Z class="date">Sunday, April 25, 2021</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/package">package</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/r">R</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/install.package">install.package</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/rjava">rJava</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/" class="prev">amapGeocode: 使用R进行高德地图地理编码/逆编码</a>
+      
+      
+      <a href="https://blog.washman.top/post/arima-grey-nnet-combine-forecast/" class="next">Using R : 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）</a>
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>

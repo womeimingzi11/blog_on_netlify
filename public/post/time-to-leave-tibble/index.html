@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    Time to leave tibble? | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/style.min.f7761d111b74dd5c07f0111decee92938c12abc42e0fd319e1a07483e248b54e.css" integrity="sha256-93YdERt03VwH8BEd7O6Sk4wSq8QuD9MZ4aB0g&#43;JItU4=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">Time to leave tibble?</h2>
+    <div class="post_content">
+      
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p><code>tidyverse</code> or <code>base R</code>？关于<em>应该</em>用哪套体系编写 R 脚本/程序是存在广泛争论的话题，在统计之都甚至有<a href="https://d.cosx.org/u/dapengde">前辈</a>为此创建了<a href="https://pzhaonet.github.io/btcookbook/">《TNT 擂台赛》</a>。</p>
+<p>然而，无论如何都要承认，<code>tidyverse</code>这套 bundle 以及 Hadley 开发的一众 package/bundle 对于新人上手 R 语言起到了极为重要的作用。至少就个人来讲，没有 <code>tidyverse</code> 我很难在较短的时间内对 R 语言有一定程度上的掌握。</p>
+<p>不过，在最近阅读<a href="https://cosx.org/2020/06/connect-mysql-from-r/">《从 R 连接 MySQL》</a>一文时，作者如下吐槽实实在在引起了笔者的共鸣：</p>
+<blockquote>
+<p>几乎每次看到 dplyr 包，心里都有些不爽，因为我发现之前能用的函数在这里要么不能用了，要么已经变成 Deprecated 了。更加恼火的是 dplyr::count 已经不支持 data.frame 类型的数据对象了，现在必须调用 <code>tibble::as_tibble</code> 转化为它认可的类型。在此之前，是可以用 <code>tibble::as.tibble</code> 函数来做的，现在被替换为 <code>tibble::as_tibble</code>，否则不久的将来就要面临代码运行报错的风险。所以 dplyr 以后就尽量不介绍了，除非 Hadley Wickham 真的如他所说 dplyr 发布 1.0.0 版本之后，将不再做大量的 breaking changes。</p>
+</blockquote>
+<p>再阅读同一作者的<a href="https://shrektan.com/post/2019/11/14/use-no-tdv-in-production/">《别在生产环境中用净土》</a>，此时只有一种想法 that’s exactly what I thought!</p>
+<pre class="r"><code># library(elevatr)  # Get rasterlay from AWS by `get_elev_raster` fucntion
+# library(raster)  # Manipulate RasterLayer object
+
+# Set the extent we want to plot
+ext_sample &lt;- raster::extent(70, 105, 25, 45)
+
+# Preparing for getting the elevation raster data, make a blank RasterLayer,
+# becasue the first parameter of get_elev_raster is a target Rasterlayer.
+bg_init &lt;- raster::raster(ext = ext_sample, resolution = 0.01)
+# Get elevation raster with zoom 5, then only keep the extend we want to plot
+# later.
+bg_rst &lt;- raster::crop(elevatr::get_elev_raster(bg_init, z = 3), ext_sample)
+
+bg_rst</code></pre>
+<pre><code>## class      : RasterLayer 
+## dimensions : 245, 399, 97755  (nrow, ncol, ncell)
+## resolution : 0.0879, 0.0815  (x, y)
+## extent     : 69.9636, 105.0357, 25.02976, 44.99726  (xmin, xmax, ymin, ymax)
+## crs        : +proj=longlat +datum=WGS84 +no_defs 
+## source     : memory
+## names      : layer 
+## values     : -161.0439, 6534.799  (min, max)</code></pre>
+<p>之后使用 data.frame, tibble, data.tibble 分别生成内容相同的三种数据表</p>
+<pre class="r"><code>coord_df =
+  data.frame(
+    x=c(70, 80, 90),
+    y=c(30,35,40)
+  )
+
+coord_tb =
+  tibble::tibble(
+    x=c(70, 80, 90),
+    y=c(30,35,40)
+  )
+
+coord_dt =
+  data.table::data.table(
+    x=c(70, 80, 90),
+    y=c(30,35,40)
+  )</code></pre>
+<p>随后使用 <code>raster::extract()</code> 提取标中对应坐标的 Raster 信息</p>
+<pre class="r"><code>knitr::kable(raster::extract(bg_rst, coord_df))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1525.367</td>
+</tr>
+<tr class="even">
+<td align="right">5073.481</td>
+</tr>
+<tr class="odd">
+<td align="right">795.000</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(raster::extract(bg_rst, coord_tb))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1525.367</td>
+</tr>
+<tr class="even">
+<td align="right">5073.481</td>
+</tr>
+<tr class="odd">
+<td align="right">795.000</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(raster::extract(bg_rst, coord_dt))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1525.367</td>
+</tr>
+<tr class="even">
+<td align="right">5073.481</td>
+</tr>
+<tr class="odd">
+<td align="right">795.000</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2020-10-15T00:00:00Z class="date">Thursday, October 15, 2020</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="/tags/r">R</a> </li>
+        
+          <li> <a href="/tags/tidyverse">tidyverse</a> </li>
+        
+          <li> <a href="/tags/tibble">tibble</a> </li>
+        
+          <li> <a href="/tags/raster">raster</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="/post/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/" class="prev">amapGeocode: 使用R进行高德地图地理编码/逆编码</a>
+      
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2020 <a href="/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="/js/main.min.8b182175f5874aeed0acc0979345c98d4bde22208ec4f36cc1d6e3102acb4b10.js" integrity="sha256-ixghdfWHSu7QrMCXk0XJjUveIiCOxPNswdbjECrLSxA=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>

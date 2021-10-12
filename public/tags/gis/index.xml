@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GIS on 洗衣机的博客</title>
+    <link>https://blog.washman.top/tags/gis/</link>
+    <description>Recent content in GIS on 洗衣机的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy;{year}, All Rights Reserved</copyright>
+    <lastBuildDate>Fri, 09 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>amapGeocode: 使用R进行高德地图地理编码/逆编码</title>
+      <link>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</link>
+      <pubDate>Fri, 09 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</guid>
+      <description>在最近的学习中，大量使用到了地理编码与地理逆编码，然而不幸的是目前广泛在 R 中介绍的能完成该任务的包因为 API 的 Breaking Upgrade 很多功能已经失效了。尤其是意外的发现，目前的包主要由百度地图 API 作数据源，于是为了满足在 R 中</description>
+    </item>
+    
+  </channel>
+</rss>

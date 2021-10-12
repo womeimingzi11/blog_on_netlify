@@ -38,9 +38,5 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-public
-static/figures
-blogdown
-
 # Rmarkdown to Markdown, local
 /rmd2md

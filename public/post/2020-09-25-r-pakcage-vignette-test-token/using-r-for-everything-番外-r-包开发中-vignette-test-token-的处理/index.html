@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    Using R 番外: R 包开发中 vignette/test token 的处理 | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">Using R 番外: R 包开发中 vignette/test token 的处理</h2>
+    <div class="post_content">
+      
+<script src="2020-09-25-r-包开发中-vignette-test-token-的处理_files/header-attrs/header-attrs.js"></script>
+
+
+<p>作为一个不怎么 Skr 的 API Wrapper，最近花式的用到了高德地图的地理编码/逆编码服务，与其散乱各处每次都要反复修改 function 代码，不如干脆就封装成 package，还能方便自己和团队今后的使用。</p>
+<p>作为年轻人（并不）的第一个 Package，当然是参考 Hadley 的经典手册<a href="https://r-pkgs.org/">《R Package》</a>，此外还参考了来自 Fong Chun Chan’s Blog 的 <a href="https://tinyheero.github.io/jekyll/update/2015/07/26/making-your-first-R-package.html">Making Your First R Package</a> 作为快速手册。Functions 编写的过程非常的愉快，毕竟只是 url 与 reques body 的组装，在 <a href="https://CRAN.R-project.org/package=httr">httr</a>, <a href="https://arxiv.org/abs/1403.2805">jsonlite</a> 以及 <a href="https://CRAN.R-project.org/package=xml2">XML2</a> 等三个主要包的帮助下，API Wrap 只不过是体力活。目前包正在 CRAN 审核，如果上线了应该又能水一篇文章，不过没上线也应该会水一篇……记账上吧先。</p>
+<p>然而，与写业务代码相比，提交包到 CRAN 没想到是最痛苦的。最主要的原因之一，就是作为一个 API 调用的包，几乎所有的操作都需要调用 token：</p>
+<ol style="list-style-type: decimal">
+<li>写 function，需要提供 key 参数（<em>高德提供 token，官方文档称为 key，为了统一，一并称为 key，下同</em>），这个很简单，单独赋值或者从 <code>getOption('amap_key')</code>中获取（<em>此为 function 中的逻辑，非 R 缺省操作，下同</em>）均可，无论是测试还实际业务都能轻松完成，也无需暴露 key；</li>
+<li>写 README，虽然不是 CRAN 强制要求的，但是作为肯定会在 GITHUB 开源的项目，README 必不可少，从 Rmarkdown 到 Markdown，因为是在本地编译，也可以从 Option 中获取，因此编译成的 Markdown 和原始 Rmarkdown 文件中均可隐去 key；</li>
+<li>写单元测试，这个就开始有坑了。虽然<code>devtools::test</code>可以通过测试，但是在<code>devtools::check()</code>中因为每次测试都是在独立的 NAMESPACE 中进行的，因此即便是设置了 <code>option(var1 = value1)</code>，在测试中的 <code>getOption('var1')</code> 依然返回 <code>NULL</code>，因此需要在测试中加入 key 的值，这就使得 token 会随着 package 的分发，对所有的用户可见；</li>
+<li>写 vignette，这个坑和单元测试情况相似，即便是 option 中加入了变量，依然不能保证可以正确编译，并且比较玄学的是某些情况下，可以从 option 中读取变量，但是在 R Studio 的 Build 页面中运行 check 又不可以获取，最终报错。而且即便是本地编译成功，如果不做任何额外的操作，发送到远端服务器后依然无法编译成功，原因也很简单对方的环境中毕竟没有 key 变量，因此需要在 vignette 相关部分加入 key 的值，再次会造成 key 的泄露。</li>
+</ol>
+<p>虽然，作为免费的 token，大概有心盗用的人也不会太多，况且 package 有人用没人用还是很难乐观的议题。然而，信息泄露总归是不好的。</p>
+<p>为了解决问题 3、4，花费了比写业务代码还久的时间，虽然有很大的概率不是最优，并且其实书里面有提到。但既然自己遇到了，并且 Stackoverflow 也有人提完，不如依然做个记录，万一能帮到同样没认真看书的朋友呢?</p>
+<div id="no-vignette-no-test-no-trouble" class="section level2">
+<h2>No vignette, No test, No Trouble?</h2>
+<p>最先想到的方法，当然是放弃。毕竟我们平日写 function，连注释都没有，写一个不怎么样的包，怎么还要写文档了呢?自己去悟不好么?</p>
+<p>关于 vignette 和 test 的必要性，这里就不再做科普了，感兴趣的朋友可以参考《R Package》中的章节 <a href="https://r-pkgs.org/vignettes.html"><em>Vignettes: long-form documentation</em></a> 以及 <a href="https://r-pkgs.org/tests.html"><em>Testing</em></a>。然而其实书里面<strong>好像是</strong>没讲到的问题是，远程检查代码的过程中会回报一个 Warning：</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Fig01_no_e_no_t_no_v.png" /></p>
+<p>诚然，Warning ~= Can’t be better，然而在 CRAN 提交的过程中，WARNING ~= ERROR</p>
+<blockquote>
+<p>Check results: I always state that there were no errors or warnings. Any NOTEs go in a bulleted list. For each NOTE, I include the message from R CMD check and a brief description of why I think it’s OK. If there were no NOTEs, I’d say “There were no ERRORs, WARNINGs or NOTEs —— R Package: Chapter 20.3 The submission process”</p>
+</blockquote>
+<p>虽然可以选择 Upload 到 CRAN，不过在 Review 步骤也很容易被返回。因此这种豁达的操作是行不通的。</p>
+</div>
+<div id="skip_on_cran-for-testthat" class="section level2">
+<h2>skip_on_cran() for testthat</h2>
+<p>在 test 部分想要解决这个问题，其实可以在 test 起始部分加入 skip_on_cran() 方法（下列代码第二行）</p>
+<pre class="r"><code># Test whether getAdmin can retrun right class withou to_tibble
+test_that(&quot;Reuturn raw respone with correct location&quot;, {
+    skip_on_cran()
+    res &lt;- getAdmin(&quot;四川省&quot;, to_table = F)
+    res_class &lt;- class(res)
+
+    expect_equal(any(stringr::str_detect(res_class, &quot;list&quot;)), TRUE)
+})</code></pre>
+<p>这个方法其实在 R Package: Chapter 12.5 CRAN notes 有提到：</p>
+<blockquote>
+<p>Tests need to run relatively quickly - aim for under a minute. Place skip_on_cran() at the beginning of long-running tests that shouldn’t be run on CRAN - they’ll still be run locally, but not on CRAN.</p>
+</blockquote>
+<p>不过一方面是因为看书不认真，另一方面只是注意到这方法 Hadley 的意图是加快测试时间，只在本地进行测试，因此忽略了这种无法在远端进行测试的场景。</p>
+<p>不过添加这个方法后问题也不是全然解决，因为正如前面所说，<code>devtools::check</code>中的单元测试会在单独的 NAMESPACE 中进行，因此即便是在本地运行，如果不单独指定 key，检查过程依然会失败。因此我们用到了<code>skip()</code>family 的另外一种形式<code>skip_if()</code>来进行了条件判断:即只有满足 condition 的时候才会进行单元测试，在本案例中具体而言就是 option 不存在 amap_key 参数，则不进行测试：</p>
+<pre class="r"><code>skip_if(is.null(getOption(&quot;amap_key&quot;)))</code></pre>
+<p>更多 skip 方法请参考<code>help(testthat::skip)</code></p>
+<p>no test 的 Warning 被解决，只不过因为 CRAN 会跳过测试步骤，处于保险起见，还是应该在本地进行更仔细的测试。</p>
+</div>
+<div id="not_cran-for-vignette" class="section level2">
+<h2>NOT_CRAN for vignette</h2>
+<p><strong>Note: 这个部分，虽然解决了 Warning 警告，但实际上处理并不完美：无法在文档中预览变量，实际上只是显示了静态代码块。如果有更好的解决方案，还望不吝赐教</strong></p>
+<p>在 Hadley 为 httr 编写的 vignette <a href="https://cran.r-project.org/web/packages/httr/vignettes/secrets.html">Managing secrets</a> 中对于如何处理保密的数据有了很充分的讨论。</p>
+<blockquote>
+<p>Vignettes pose additional challenges when an API requires authentication, because you don’t want to bundle your own credentials with the package! However, you can take advantage of the fact that the vignette is built locally, and only checked by CRAN.</p>
+</blockquote>
+<p>因为 Vignettes 是在本地进行编译的，因此我们可以指定仅仅使用 CRAN 进行检查工作（而非再次构建）。</p>
+<p>只要在首次调用 token 的代码块之前添加代码块设定 <code>knitr:opts_chunk$set</code>，通常是 vignette 文字开始之前，文档的 YAML Header 结束之后。</p>
+<pre class="r"><code>NOT_CRAN &lt;- identical(tolower(Sys.getenv(&quot;NOT_CRAN&quot;)), &quot;true&quot;),
+knitr::opts_chunk$set(purl = NOT_CRAN)</code></pre>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Fig02_chunk_set.png" /></p>
+<p>之后在所有需要调用 Token 的代码块中，将 eval 设定为 <code>eval = NOT_CRAN</code>，之后在 CRAN 检查中 vignette 构建的步骤便不会报 ERROR。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Fig03_eval_NOT_CRAN.png" />
+<em>图中有重复赋值，已修改</em></p>
+<p>在该方法中，会对 R 运行环境进行检查，如果当前环境为 CRAN 则不运行 vignette 文档中的代码块，也正因为如此，Rmarkdown 中的代码块也就不会返回执行内容，因此文档中也不会显示结果，代码块仅做静态展示之用。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Fig04_npreview.png" /></p>
+</div>
+<div id="错误的挣扎" class="section level2">
+<h2>错误的挣扎</h2>
+<p>在第二张图中，可以发现在使用 NOT_CRAN 来解决 vignette 错误之前，我还常使用 source R script 的方法解决问题，当时的设想很完美：将 <code>option(amap_key="My token")</code>写入外部文件，之后将外部文件放入 .Rbuildignore 中在 package 打包的过程中排除掉，是否就能得到完美的解决方案了呢?</p>
+<p>然而实际上，放入 .Rbuildignore 中的文件因为被排除在了打包之外，而构建 vignette 是完成打包之后方才进行，因此这种情况下是找不到文件地址的（因为没有在已经打包完成的library目录中）。</p>
+<p>通过这些方法，目前暂时实现了 0 error 0 warning，各位处理过相似问题的前辈如果有更合理的解决方案，还望能分享指点。</p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+</div>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2020-09-25T00:00:00Z class="date">Friday, September 25, 2020</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/r">R</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/package">package</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/vignette">vignette</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/token">token</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/shiny-apps-%E4%BD%BF%E7%94%A8-morethananova-%E8%BF%9B%E8%A1%8C-%E6%AD%A3%E7%A1%AE-%E7%9A%84%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C.zh-hans/" class="prev">R Shiny: 使用 moreThanANOVA 进行「正确」的显著性检验</a>
+      
+      
+      <a href="https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/" class="next">amapGeocode: 使用R进行高德地图地理编码/逆编码</a>
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>

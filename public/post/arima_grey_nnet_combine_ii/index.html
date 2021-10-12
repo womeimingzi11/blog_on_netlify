@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    Using R: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下） | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">Using R: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）</h2>
+    <div class="post_content">
+      
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>在上篇文章<a href="https://blog.washman.top/post/arima-grey-nnet-combine-forecast/">《R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）》</a>中，我们分别利用 ARIMA、GM(1,1) 和基于时间序列的神经网络对 Internet Usage per Minute 数据集进行了 20 条新记录的预测，简要代码如下：</p>
+<pre class="r"><code>set.seed(1234)
+data(&quot;WWWusage&quot;)
+
+# Select the first 80 records as the train dataset
+WWWusage_train &lt;-
+  WWWusage[1:80]
+
+# Select the last 20 records as the test dataset
+WWWusage_test &lt;-
+  WWWusage[81:100]
+
+library(&quot;forecast&quot;)
+# ARIMA model with best p,d,q combination by AAIC selection
+mod_arima &lt;-
+  auto.arima(WWWusage_train)
+
+# forecast another 20 records
+forecast_arima &lt;-
+  forecast(mod_arima, h = 20)
+
+# GM(1,1) model
+library(&quot;greyforecasting&quot;)
+
+# `term = 20` means forecasting another 20 records
+mod_gm &lt;-
+  gm(WWWusage_train, term = 20)
+
+# NNet model
+mod_nnet &lt;-
+  nnetar(WWWusage_train)
+
+# forecast another 20 records
+forecast_nnet &lt;-
+  forecast(mod_nnet, h = 20)</code></pre>
+<p>正如我们在上篇文章的结尾处所说，神经网络模型拥有最低的 RMSE，表明在一定程度上他可以相对良好的拟合我们的案例数据，然而 <span class="citation"><a href="#ref-hansenChallengesEconometricModel2005" role="doc-biblioref">Hansen</a> (<a href="#ref-hansenChallengesEconometricModel2005" role="doc-biblioref">2005</a>)</span> 认为使用最佳的混合模型组合取代单一模型能够长生更好的结果。</p>
+<p>因此混合预测模型应运而生，按照 <a href="https://cran.r-project.org/package=ForecastComb"><code>ForecastComb</code></a> 的说明，这类模型通过几何或回归的方式，将一组预测模型汇合为单独的预测模型。</p>
+<blockquote>
+<p>The R package ForecastComb presents functions to pool individual model forecasts using geometric- and regression-based forecast combination methods. ForecastComb combines the functionality of the packages ForecastCombinations and GeomComb under a unified user interface and convenience functions.</p>
+</blockquote>
+<p><code>ForecastComb</code> 详细使用指南可以参考 <span class="citation"><a href="#ref-christophForecastCombinationsUsing2019" role="doc-biblioref">Christoph, Raviv, and Roetzer</a> (<a href="#ref-christophForecastCombinationsUsing2019" role="doc-biblioref">2019</a>)</span>。</p>
+<div id="forecast-comb-101" class="section level2">
+<h2>Forecast Comb 101</h2>
+<div id="数据格式化" class="section level3">
+<h3>数据格式化</h3>
+<p>具体而言，<code>ForecastComb</code> 支持处理三种数据集：</p>
+<blockquote>
+<ol style="list-style-type: decimal">
+<li>Only training set;</li>
+<li>Training set + future forecasts</li>
+<li>Full training + test set</li>
+</ol>
+</blockquote>
+<p>在进行混合预测之前，我们首先需要通过 <a href="https://rdrr.io/cran/ForecastComb/man/foreccomb.html"><code>foreccomb</code></a> 将数据集转换为 <code>foreccomb</code> 类对象。</p>
+<p>参考其参数:</p>
+<pre class="r"><code>foreccomb(observed_vector, prediction_matrix, 
+          newobs = NULL, newpreds = NULL, 
+          byrow = FALSE, na.impute = TRUE, criterion = &quot;RMSE&quot;)</code></pre>
+<p>使用 <code>foreccomb</code> 格式化数据，我们至少需要提供观测值向量（<code>observed_vector</code>）以及多个模型的预测值矩阵（<code>prediction_matrix</code>）。其中 <code>prediction_matrix</code> 中每列为单一模型预测值。</p>
+<p>就我们的安利而言，我们需要将 <code>WWWusage_train</code> 定义为 <code>observed_vector</code>，并将 <code>mod_arima</code>, <code>mod_gm</code> 以及 <code>mod_nnet</code> 三个模型中的 Fitted Value 提取并合并为 <code>data.frame</code> 之后定义为 <code>prediction_matrix</code>。</p>
+<pre class="r"><code>df_fitted_by_mods &lt;-
+  data.frame(
+    arima = as.numeric(mod_arima$fitted),
+    gm = as.numeric(mod_gm$simulation),
+    nnet = as.numeric(mod_nnet$fitted)
+)
+
+knitr::kable(df_fitted_by_mods)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">arima</th>
+<th align="right">gm</th>
+<th align="right">nnet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">87.91200</td>
+<td align="right">88.0000</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">86.30366</td>
+<td align="right">127.4155</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">81.15244</td>
+<td align="right">127.3598</td>
+<td align="right">83.14060</td>
+</tr>
+<tr class="even">
+<td align="right">87.32344</td>
+<td align="right">127.3042</td>
+<td align="right">86.89844</td>
+</tr>
+<tr class="odd">
+<td align="right">83.88979</td>
+<td align="right">127.2485</td>
+<td align="right">86.22192</td>
+</tr>
+<tr class="even">
+<td align="right">83.43081</td>
+<td align="right">127.1929</td>
+<td align="right">84.84035</td>
+</tr>
+<tr class="odd">
+<td align="right">86.38455</td>
+<td align="right">127.1373</td>
+<td align="right">86.89844</td>
+</tr>
+<tr class="even">
+<td align="right">80.10926</td>
+<td align="right">127.0818</td>
+<td align="right">83.55223</td>
+</tr>
+<tr class="odd">
+<td align="right">88.62262</td>
+<td align="right">127.0263</td>
+<td align="right">87.60547</td>
+</tr>
+<tr class="even">
+<td align="right">89.56923</td>
+<td align="right">126.9707</td>
+<td align="right">90.95200</td>
+</tr>
+<tr class="odd">
+<td align="right">89.34744</td>
+<td align="right">126.9153</td>
+<td align="right">90.25237</td>
+</tr>
+<tr class="even">
+<td align="right">93.05023</td>
+<td align="right">126.8598</td>
+<td align="right">92.91612</td>
+</tr>
+<tr class="odd">
+<td align="right">106.88018</td>
+<td align="right">126.8044</td>
+<td align="right">107.52216</td>
+</tr>
+<tr class="even">
+<td align="right">105.72064</td>
+<td align="right">126.7490</td>
+<td align="right">110.16199</td>
+</tr>
+<tr class="odd">
+<td align="right">120.04024</td>
+<td align="right">126.6936</td>
+<td align="right">122.12901</td>
+</tr>
+<tr class="even">
+<td align="right">137.62819</td>
+<td align="right">126.6382</td>
+<td align="right">139.03600</td>
+</tr>
+<tr class="odd">
+<td align="right">145.66687</td>
+<td align="right">126.5829</td>
+<td align="right">147.08846</td>
+</tr>
+<tr class="even">
+<td align="right">151.15265</td>
+<td align="right">126.5276</td>
+<td align="right">151.16116</td>
+</tr>
+<tr class="odd">
+<td align="right">154.04517</td>
+<td align="right">126.4723</td>
+<td align="right">153.49332</td>
+</tr>
+<tr class="even">
+<td align="right">147.41174</td>
+<td align="right">126.4170</td>
+<td align="right">147.21139</td>
+</tr>
+<tr class="odd">
+<td align="right">147.03795</td>
+<td align="right">126.3618</td>
+<td align="right">144.62680</td>
+</tr>
+<tr class="even">
+<td align="right">146.35771</td>
+<td align="right">126.3065</td>
+<td align="right">144.56693</td>
+</tr>
+<tr class="odd">
+<td align="right">151.53086</td>
+<td align="right">126.2513</td>
+<td align="right">148.83363</td>
+</tr>
+<tr class="even">
+<td align="right">135.11412</td>
+<td align="right">126.1962</td>
+<td align="right">137.58690</td>
+</tr>
+<tr class="odd">
+<td align="right">123.62527</td>
+<td align="right">126.1410</td>
+<td align="right">124.83029</td>
+</tr>
+<tr class="even">
+<td align="right">133.95742</td>
+<td align="right">126.0859</td>
+<td align="right">131.90867</td>
+</tr>
+<tr class="odd">
+<td align="right">146.43963</td>
+<td align="right">126.0308</td>
+<td align="right">144.79762</td>
+</tr>
+<tr class="even">
+<td align="right">152.26300</td>
+<td align="right">125.9757</td>
+<td align="right">152.15441</td>
+</tr>
+<tr class="odd">
+<td align="right">150.77263</td>
+<td align="right">125.9207</td>
+<td align="right">150.66859</td>
+</tr>
+<tr class="even">
+<td align="right">145.40585</td>
+<td align="right">125.8657</td>
+<td align="right">144.62680</td>
+</tr>
+<tr class="odd">
+<td align="right">142.93133</td>
+<td align="right">125.8107</td>
+<td align="right">141.36986</td>
+</tr>
+<tr class="even">
+<td align="right">135.45720</td>
+<td align="right">125.7557</td>
+<td align="right">136.01915</td>
+</tr>
+<tr class="odd">
+<td align="right">129.54920</td>
+<td align="right">125.7007</td>
+<td align="right">130.56519</td>
+</tr>
+<tr class="even">
+<td align="right">129.83295</td>
+<td align="right">125.6458</td>
+<td align="right">130.38460</td>
+</tr>
+<tr class="odd">
+<td align="right">131.56674</td>
+<td align="right">125.5909</td>
+<td align="right">132.65891</td>
+</tr>
+<tr class="even">
+<td align="right">126.50583</td>
+<td align="right">125.5360</td>
+<td align="right">129.47603</td>
+</tr>
+<tr class="odd">
+<td align="right">123.88278</td>
+<td align="right">125.4812</td>
+<td align="right">126.00064</td>
+</tr>
+<tr class="even">
+<td align="right">127.02816</td>
+<td align="right">125.4263</td>
+<td align="right">128.47001</td>
+</tr>
+<tr class="odd">
+<td align="right">138.15757</td>
+<td align="right">125.3715</td>
+<td align="right">137.80578</td>
+</tr>
+<tr class="even">
+<td align="right">139.55717</td>
+<td align="right">125.3167</td>
+<td align="right">140.93649</td>
+</tr>
+<tr class="odd">
+<td align="right">142.08663</td>
+<td align="right">125.2620</td>
+<td align="right">141.84314</td>
+</tr>
+<tr class="even">
+<td align="right">143.20565</td>
+<td align="right">125.2072</td>
+<td align="right">142.71139</td>
+</tr>
+<tr class="odd">
+<td align="right">158.29032</td>
+<td align="right">125.1525</td>
+<td align="right">155.24808</td>
+</tr>
+<tr class="even">
+<td align="right">164.95937</td>
+<td align="right">125.0978</td>
+<td align="right">165.80278</td>
+</tr>
+<tr class="odd">
+<td align="right">172.98184</td>
+<td align="right">125.0432</td>
+<td align="right">172.64921</td>
+</tr>
+<tr class="even">
+<td align="right">170.42355</td>
+<td align="right">124.9885</td>
+<td align="right">171.46607</td>
+</tr>
+<tr class="odd">
+<td align="right">171.90379</td>
+<td align="right">124.9339</td>
+<td align="right">170.73737</td>
+</tr>
+<tr class="even">
+<td align="right">172.67058</td>
+<td align="right">124.8793</td>
+<td align="right">171.67232</td>
+</tr>
+<tr class="odd">
+<td align="right">171.67436</td>
+<td align="right">124.8247</td>
+<td align="right">170.82890</td>
+</tr>
+<tr class="even">
+<td align="right">176.37709</td>
+<td align="right">124.7702</td>
+<td align="right">174.26492</td>
+</tr>
+<tr class="odd">
+<td align="right">174.95512</td>
+<td align="right">124.7157</td>
+<td align="right">174.36043</td>
+</tr>
+<tr class="even">
+<td align="right">168.69337</td>
+<td align="right">124.6612</td>
+<td align="right">168.13930</td>
+</tr>
+<tr class="odd">
+<td align="right">173.60575</td>
+<td align="right">124.6067</td>
+<td align="right">170.82890</td>
+</tr>
+<tr class="even">
+<td align="right">175.43917</td>
+<td align="right">124.5522</td>
+<td align="right">174.26492</td>
+</tr>
+<tr class="odd">
+<td align="right">173.30112</td>
+<td align="right">124.4978</td>
+<td align="right">172.67612</td>
+</tr>
+<tr class="even">
+<td align="right">163.79201</td>
+<td align="right">124.4434</td>
+<td align="right">163.04148</td>
+</tr>
+<tr class="odd">
+<td align="right">163.09118</td>
+<td align="right">124.3890</td>
+<td align="right">159.70846</td>
+</tr>
+<tr class="even">
+<td align="right">146.94167</td>
+<td align="right">124.3347</td>
+<td align="right">145.80884</td>
+</tr>
+<tr class="odd">
+<td align="right">130.86621</td>
+<td align="right">124.2803</td>
+<td align="right">130.90889</td>
+</tr>
+<tr class="even">
+<td align="right">124.20251</td>
+<td align="right">124.2260</td>
+<td align="right">123.90240</td>
+</tr>
+<tr class="odd">
+<td align="right">113.20621</td>
+<td align="right">124.1718</td>
+<td align="right">114.57303</td>
+</tr>
+<tr class="even">
+<td align="right">105.79951</td>
+<td align="right">124.1175</td>
+<td align="right">105.42121</td>
+</tr>
+<tr class="odd">
+<td align="right">98.13525</td>
+<td align="right">124.0633</td>
+<td align="right">97.56579</td>
+</tr>
+<tr class="even">
+<td align="right">102.62906</td>
+<td align="right">124.0090</td>
+<td align="right">100.78698</td>
+</tr>
+<tr class="odd">
+<td align="right">95.36609</td>
+<td align="right">123.9549</td>
+<td align="right">96.62393</td>
+</tr>
+<tr class="even">
+<td align="right">100.76468</td>
+<td align="right">123.9007</td>
+<td align="right">99.35709</td>
+</tr>
+<tr class="odd">
+<td align="right">89.70514</td>
+<td align="right">123.8465</td>
+<td align="right">91.84973</td>
+</tr>
+<tr class="even">
+<td align="right">82.80494</td>
+<td align="right">123.7924</td>
+<td align="right">84.28110</td>
+</tr>
+<tr class="odd">
+<td align="right">82.08490</td>
+<td align="right">123.7383</td>
+<td align="right">83.14060</td>
+</tr>
+<tr class="even">
+<td align="right">84.93000</td>
+<td align="right">123.6843</td>
+<td align="right">85.46564</td>
+</tr>
+<tr class="odd">
+<td align="right">89.87680</td>
+<td align="right">123.6302</td>
+<td align="right">90.05750</td>
+</tr>
+<tr class="even">
+<td align="right">89.82193</td>
+<td align="right">123.5762</td>
+<td align="right">91.04678</td>
+</tr>
+<tr class="odd">
+<td align="right">86.49138</td>
+<td align="right">123.5222</td>
+<td align="right">87.92357</td>
+</tr>
+<tr class="even">
+<td align="right">82.40418</td>
+<td align="right">123.4682</td>
+<td align="right">84.37283</td>
+</tr>
+<tr class="odd">
+<td align="right">88.37005</td>
+<td align="right">123.4143</td>
+<td align="right">87.69998</td>
+</tr>
+<tr class="even">
+<td align="right">91.17750</td>
+<td align="right">123.3603</td>
+<td align="right">91.87126</td>
+</tr>
+<tr class="odd">
+<td align="right">92.16153</td>
+<td align="right">123.3064</td>
+<td align="right">92.91612</td>
+</tr>
+<tr class="even">
+<td align="right">90.43594</td>
+<td align="right">123.2525</td>
+<td align="right">91.27047</td>
+</tr>
+<tr class="odd">
+<td align="right">97.60234</td>
+<td align="right">123.1987</td>
+<td align="right">96.82519</td>
+</tr>
+<tr class="even">
+<td align="right">107.01698</td>
+<td align="right">123.1448</td>
+<td align="right">108.77635</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># The NNet model often generate NA value
+# please significantly consider how to
+# process NA value and how to explain
+
+# In this case, we use`na.impute = TRUE`
+# to solve NA value,
+# but it is not always the best practice
+
+library(&quot;ForecastComb&quot;)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
+<pre class="r"><code>fc_dat &lt;-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods,
+            na.impute = TRUE)</code></pre>
+<pre><code>## A subset of the individual forecasts included NA values and has been imputed.</code></pre>
+<pre class="r"><code>fc_dat</code></pre>
+<pre><code>## $Actual_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##  [1]  88  84  85  85  84  85  83  85  88  89  91  99 104 112 126 138 146 151 150
+## [20] 148 147 149 143 132 131 139 147 150 148 145 140 134 131 131 129 126 126 132
+## [39] 137 140 142 150 159 167 170 171 172 172 174 175 172 172 174 174 169 165 156
+## [58] 142 131 121 112 104 102  99  99  95  88  84  84  87  89  88  85  86  89  91
+## [77]  91  94 101 110
+## 
+## $Forecasts_Train
+##        arima       gm      nnet
+## 1   87.91200  88.0000 119.21442
+## 2   86.30366 127.4155 100.40488
+## 3   81.15244 127.3598  83.14060
+## 4   87.32344 127.3042  86.89844
+## 5   83.88979 127.2485  86.22192
+## 6   83.43081 127.1929  84.84035
+## 7   86.38455 127.1373  86.89844
+## 8   80.10926 127.0818  83.55223
+## 9   88.62262 127.0263  87.60547
+## 10  89.56923 126.9707  90.95200
+## 11  89.34744 126.9153  90.25237
+## 12  93.05023 126.8598  92.91612
+## 13 106.88018 126.8044 107.52216
+## 14 105.72064 126.7490 110.16199
+## 15 120.04024 126.6936 122.12901
+## 16 137.62819 126.6382 139.03600
+## 17 145.66687 126.5829 147.08846
+## 18 151.15265 126.5276 151.16116
+## 19 154.04517 126.4723 153.49332
+## 20 147.41174 126.4170 147.21139
+## 21 147.03795 126.3618 144.62680
+## 22 146.35771 126.3065 144.56693
+## 23 151.53086 126.2513 148.83363
+## 24 135.11412 126.1962 137.58690
+## 25 123.62527 126.1410 124.83029
+## 26 133.95742 126.0859 131.90867
+## 27 146.43963 126.0308 144.79762
+## 28 152.26300 125.9757 152.15441
+## 29 150.77263 125.9207 150.66859
+## 30 145.40585 125.8657 144.62680
+## 31 142.93133 125.8107 141.36986
+## 32 135.45720 125.7557 136.01915
+## 33 129.54920 125.7007 130.56519
+## 34 129.83295 125.6458 130.38460
+## 35 131.56674 125.5909 132.65891
+## 36 126.50583 125.5360 129.47603
+## 37 123.88278 125.4812 126.00064
+## 38 127.02816 125.4263 128.47001
+## 39 138.15757 125.3715 137.80578
+## 40 139.55717 125.3167 140.93649
+## 41 142.08663 125.2620 141.84314
+## 42 143.20565 125.2072 142.71139
+## 43 158.29032 125.1525 155.24808
+## 44 164.95937 125.0978 165.80278
+## 45 172.98184 125.0432 172.64921
+## 46 170.42355 124.9885 171.46607
+## 47 171.90379 124.9339 170.73737
+## 48 172.67058 124.8793 171.67232
+## 49 171.67436 124.8247 170.82890
+## 50 176.37709 124.7702 174.26492
+## 51 174.95512 124.7157 174.36043
+## 52 168.69337 124.6612 168.13930
+## 53 173.60575 124.6067 170.82890
+## 54 175.43917 124.5522 174.26492
+## 55 173.30112 124.4978 172.67612
+## 56 163.79201 124.4434 163.04148
+## 57 163.09118 124.3890 159.70846
+## 58 146.94167 124.3347 145.80884
+## 59 130.86621 124.2803 130.90889
+## 60 124.20251 124.2260 123.90240
+## 61 113.20621 124.1718 114.57303
+## 62 105.79951 124.1175 105.42121
+## 63  98.13525 124.0633  97.56579
+## 64 102.62906 124.0090 100.78698
+## 65  95.36609 123.9549  96.62393
+## 66 100.76468 123.9007  99.35709
+## 67  89.70514 123.8465  91.84973
+## 68  82.80494 123.7924  84.28110
+## 69  82.08490 123.7383  83.14060
+## 70  84.93000 123.6843  85.46564
+## 71  89.87680 123.6302  90.05750
+## 72  89.82193 123.5762  91.04678
+## 73  86.49138 123.5222  87.92357
+## 74  82.40418 123.4682  84.37283
+## 75  88.37005 123.4143  87.69998
+## 76  91.17750 123.3603  91.87126
+## 77  92.16153 123.3064  92.91612
+## 78  90.43594 123.2525  91.27047
+## 79  97.60234 123.1987  96.82519
+## 80 107.01698 123.1448 108.77635
+## 
+## $nmodels
+## [1] 3
+## 
+## $modelnames
+## [1] &quot;arima&quot; &quot;gm&quot;    &quot;nnet&quot; 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;foreccomb&quot;</code></pre>
+<p>在上述步骤中，我们生成了可用于混合模型训练的 <code>fc_dat</code> 数据集，但是应当注意到系统的错误提醒:</p>
+<blockquote>
+<p>non-finite value inf; using BIG value.</p>
+</blockquote>
+<blockquote>
+<p>A subset of the individual forecasts included NA values and has been imputed.</p>
+</blockquote>
+<p>另外通过查看 <code>fc_dat</code>，我们也不难注意到 nnet 第一个缺失值明显大于 <code>arima</code> 以及 <code>gm</code>，这也可能会造成后续预测的不准确，不过我们且看后续再进行进一步处理。</p>
+</div>
+<div id="模型拟合" class="section level3">
+<h3>模型拟合</h3>
+<p>使用 <a href="https://rdrr.io/cran/ForecastComb/man/auto_combine.html"><code>auto_combine</code></a> 可以进行混合预测，目前 <code>auto_combine</code> 支持根据 RMSE、MAE 以及 MAPE 确定最优混合参数。</p>
+<pre class="r"><code>auto_combine(fc_dat)</code></pre>
+<p>如果没有意外，这一步无法运行，会提示：</p>
+<pre class="r"><code>Error in `-.default`(observed_vector, prediction_matrix) : 
+  time-series/vector length mismatch</code></pre>
+<p>这是因为在 <code>foreccomb</code> 这一步中使用 <code>na.imputat = TRUE</code> 差值缺失值导致了数据趋势错误，故此我们尝试使用 ariam 和 gm 模型的预测值均值用作 nnet 模型预测值的缺失值进行填充：</p>
+<pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># Use the mean value of arima and gm 
+# as the missing value of nnet
+# but this may be not a good practice
+
+df_fitted_by_mods_miss_val_fix &lt;-
+  mutate(df_fitted_by_mods,
+         nnet = if_else(is.na(nnet),
+                        (arima+gm)/2, nnet))
+
+fc_dat_miss_val_fix &lt;-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods_miss_val_fix,
+            na.impute = FALSE)
+
+fc_dat_miss_val_fix</code></pre>
+<pre><code>## $Actual_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##  [1]  88  84  85  85  84  85  83  85  88  89  91  99 104 112 126 138 146 151 150
+## [20] 148 147 149 143 132 131 139 147 150 148 145 140 134 131 131 129 126 126 132
+## [39] 137 140 142 150 159 167 170 171 172 172 174 175 172 172 174 174 169 165 156
+## [58] 142 131 121 112 104 102  99  99  95  88  84  84  87  89  88  85  86  89  91
+## [77]  91  94 101 110
+## 
+## $Forecasts_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##        arima       gm      nnet
+##  1  87.91200  88.0000  87.95600
+##  2  86.30366 127.4155 106.85958
+##  3  81.15244 127.3598  83.14060
+##  4  87.32344 127.3042  86.89844
+##  5  83.88979 127.2485  86.22192
+##  6  83.43081 127.1929  84.84035
+##  7  86.38455 127.1373  86.89844
+##  8  80.10926 127.0818  83.55223
+##  9  88.62262 127.0263  87.60547
+## 10  89.56923 126.9707  90.95200
+## 11  89.34744 126.9153  90.25237
+## 12  93.05023 126.8598  92.91612
+## 13 106.88018 126.8044 107.52216
+## 14 105.72064 126.7490 110.16199
+## 15 120.04024 126.6936 122.12901
+## 16 137.62819 126.6382 139.03600
+## 17 145.66687 126.5829 147.08846
+## 18 151.15265 126.5276 151.16116
+## 19 154.04517 126.4723 153.49332
+## 20 147.41174 126.4170 147.21139
+## 21 147.03795 126.3618 144.62680
+## 22 146.35771 126.3065 144.56693
+## 23 151.53086 126.2513 148.83363
+## 24 135.11412 126.1962 137.58690
+## 25 123.62527 126.1410 124.83029
+## 26 133.95742 126.0859 131.90867
+## 27 146.43963 126.0308 144.79762
+## 28 152.26300 125.9757 152.15441
+## 29 150.77263 125.9207 150.66859
+## 30 145.40585 125.8657 144.62680
+## 31 142.93133 125.8107 141.36986
+## 32 135.45720 125.7557 136.01915
+## 33 129.54920 125.7007 130.56519
+## 34 129.83295 125.6458 130.38460
+## 35 131.56674 125.5909 132.65891
+## 36 126.50583 125.5360 129.47603
+## 37 123.88278 125.4812 126.00064
+## 38 127.02816 125.4263 128.47001
+## 39 138.15757 125.3715 137.80578
+## 40 139.55717 125.3167 140.93649
+## 41 142.08663 125.2620 141.84314
+## 42 143.20565 125.2072 142.71139
+## 43 158.29032 125.1525 155.24808
+## 44 164.95937 125.0978 165.80278
+## 45 172.98184 125.0432 172.64921
+## 46 170.42355 124.9885 171.46607
+## 47 171.90379 124.9339 170.73737
+## 48 172.67058 124.8793 171.67232
+## 49 171.67436 124.8247 170.82890
+## 50 176.37709 124.7702 174.26492
+## 51 174.95512 124.7157 174.36043
+## 52 168.69337 124.6612 168.13930
+## 53 173.60575 124.6067 170.82890
+## 54 175.43917 124.5522 174.26492
+## 55 173.30112 124.4978 172.67612
+## 56 163.79201 124.4434 163.04148
+## 57 163.09118 124.3890 159.70846
+## 58 146.94167 124.3347 145.80884
+## 59 130.86621 124.2803 130.90889
+## 60 124.20251 124.2260 123.90240
+## 61 113.20621 124.1718 114.57303
+## 62 105.79951 124.1175 105.42121
+## 63  98.13525 124.0633  97.56579
+## 64 102.62906 124.0090 100.78698
+## 65  95.36609 123.9549  96.62393
+## 66 100.76468 123.9007  99.35709
+## 67  89.70514 123.8465  91.84973
+## 68  82.80494 123.7924  84.28110
+## 69  82.08490 123.7383  83.14060
+## 70  84.93000 123.6843  85.46564
+## 71  89.87680 123.6302  90.05750
+## 72  89.82193 123.5762  91.04678
+## 73  86.49138 123.5222  87.92357
+## 74  82.40418 123.4682  84.37283
+## 75  88.37005 123.4143  87.69998
+## 76  91.17750 123.3603  91.87126
+## 77  92.16153 123.3064  92.91612
+## 78  90.43594 123.2525  91.27047
+## 79  97.60234 123.1987  96.82519
+## 80 107.01698 123.1448 108.77635
+## 
+## $nmodels
+## [1] 3
+## 
+## $modelnames
+## [1] &quot;arima&quot; &quot;gm&quot;    &quot;nnet&quot; 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;foreccomb&quot;</code></pre>
+<p>再次进行混合预测：</p>
+<pre class="r"><code>mod_comb &lt;-
+  auto_combine(fc_dat_miss_val_fix)</code></pre>
+<pre><code>## Optimization algorithm chooses number of retained models for trimmed eigenvector approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
+<pre><code>## Loading required package: forecast</code></pre>
+<pre><code>## Optimization algorithm chooses number of retained models for trimmed bias-corrected eigenvector approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
+<pre><code>## Optimization algorithm chooses trim factor for trimmed mean approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized trim factor: 0.34</code></pre>
+<pre><code>## Optimization algorithm chooses trim factor for winsorized mean approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized trim factor: 0.5</code></pre>
+<pre class="r"><code>mod_comb</code></pre>
+<pre><code>## $Method
+## [1] &quot;Ordinary Least Squares Regression&quot;
+## 
+## $Models
+## [1] &quot;arima&quot; &quot;gm&quot;    &quot;nnet&quot; 
+## 
+## $Fitted
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##  [1]  87.60187  88.64077  82.35508  88.23902  85.05656  84.54363  87.37633
+##  [8]  81.42104  89.46373  90.54932  90.29842  93.85551 107.45621 106.57138
+## [15] 120.44347 137.62928 145.50485 150.78402 153.57908 147.10121 146.58597
+## [22] 145.95903 150.96563 135.22288 123.87977 133.78489 146.04048 151.84668
+## [29] 150.38495 145.07980 142.60139 135.41781 129.65758 129.90293 131.63598
+## [36] 126.80058 124.17198 127.20710 137.99064 139.47555 141.84413 142.92213
+## [43] 157.53086 164.32235 172.10282 169.68603 170.98753 171.74831 170.78065
+## [50] 175.30235 174.00844 167.87406 172.53751 174.43893 172.37890 163.05166
+## [57] 162.18794 146.51256 130.83818 124.28445 113.61943 106.24429  98.72029
+## [64] 103.03691  96.12530 101.23568  90.63426  83.82711  83.09189  85.84321
+## [71]  90.66480  90.67887  87.42765  83.45698  89.12495  91.96486  92.93137
+## [78]  91.24424  98.15692 107.54875
+## 
+## $Accuracy_Train
+##                    ME    RMSE      MAE        MPE     MAPE       ACF1 Theil&#39;s U
+## Test set 3.552443e-16 3.02758 2.402171 -0.0741498 2.056542 -0.0140366 0.6035688
+## 
+## $Input_Data
+## $Input_Data$Actual_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##  [1]  88  84  85  85  84  85  83  85  88  89  91  99 104 112 126 138 146 151 150
+## [20] 148 147 149 143 132 131 139 147 150 148 145 140 134 131 131 129 126 126 132
+## [39] 137 140 142 150 159 167 170 171 172 172 174 175 172 172 174 174 169 165 156
+## [58] 142 131 121 112 104 102  99  99  95  88  84  84  87  89  88  85  86  89  91
+## [77]  91  94 101 110
+## 
+## $Input_Data$Forecasts_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##        arima       gm      nnet
+##  1  87.91200  88.0000  87.95600
+##  2  86.30366 127.4155 106.85958
+##  3  81.15244 127.3598  83.14060
+##  4  87.32344 127.3042  86.89844
+##  5  83.88979 127.2485  86.22192
+##  6  83.43081 127.1929  84.84035
+##  7  86.38455 127.1373  86.89844
+##  8  80.10926 127.0818  83.55223
+##  9  88.62262 127.0263  87.60547
+## 10  89.56923 126.9707  90.95200
+## 11  89.34744 126.9153  90.25237
+## 12  93.05023 126.8598  92.91612
+## 13 106.88018 126.8044 107.52216
+## 14 105.72064 126.7490 110.16199
+## 15 120.04024 126.6936 122.12901
+## 16 137.62819 126.6382 139.03600
+## 17 145.66687 126.5829 147.08846
+## 18 151.15265 126.5276 151.16116
+## 19 154.04517 126.4723 153.49332
+## 20 147.41174 126.4170 147.21139
+## 21 147.03795 126.3618 144.62680
+## 22 146.35771 126.3065 144.56693
+## 23 151.53086 126.2513 148.83363
+## 24 135.11412 126.1962 137.58690
+## 25 123.62527 126.1410 124.83029
+## 26 133.95742 126.0859 131.90867
+## 27 146.43963 126.0308 144.79762
+## 28 152.26300 125.9757 152.15441
+## 29 150.77263 125.9207 150.66859
+## 30 145.40585 125.8657 144.62680
+## 31 142.93133 125.8107 141.36986
+## 32 135.45720 125.7557 136.01915
+## 33 129.54920 125.7007 130.56519
+## 34 129.83295 125.6458 130.38460
+## 35 131.56674 125.5909 132.65891
+## 36 126.50583 125.5360 129.47603
+## 37 123.88278 125.4812 126.00064
+## 38 127.02816 125.4263 128.47001
+## 39 138.15757 125.3715 137.80578
+## 40 139.55717 125.3167 140.93649
+## 41 142.08663 125.2620 141.84314
+## 42 143.20565 125.2072 142.71139
+## 43 158.29032 125.1525 155.24808
+## 44 164.95937 125.0978 165.80278
+## 45 172.98184 125.0432 172.64921
+## 46 170.42355 124.9885 171.46607
+## 47 171.90379 124.9339 170.73737
+## 48 172.67058 124.8793 171.67232
+## 49 171.67436 124.8247 170.82890
+## 50 176.37709 124.7702 174.26492
+## 51 174.95512 124.7157 174.36043
+## 52 168.69337 124.6612 168.13930
+## 53 173.60575 124.6067 170.82890
+## 54 175.43917 124.5522 174.26492
+## 55 173.30112 124.4978 172.67612
+## 56 163.79201 124.4434 163.04148
+## 57 163.09118 124.3890 159.70846
+## 58 146.94167 124.3347 145.80884
+## 59 130.86621 124.2803 130.90889
+## 60 124.20251 124.2260 123.90240
+## 61 113.20621 124.1718 114.57303
+## 62 105.79951 124.1175 105.42121
+## 63  98.13525 124.0633  97.56579
+## 64 102.62906 124.0090 100.78698
+## 65  95.36609 123.9549  96.62393
+## 66 100.76468 123.9007  99.35709
+## 67  89.70514 123.8465  91.84973
+## 68  82.80494 123.7924  84.28110
+## 69  82.08490 123.7383  83.14060
+## 70  84.93000 123.6843  85.46564
+## 71  89.87680 123.6302  90.05750
+## 72  89.82193 123.5762  91.04678
+## 73  86.49138 123.5222  87.92357
+## 74  82.40418 123.4682  84.37283
+## 75  88.37005 123.4143  87.69998
+## 76  91.17750 123.3603  91.87126
+## 77  92.16153 123.3064  92.91612
+## 78  90.43594 123.2525  91.27047
+## 79  97.60234 123.1987  96.82519
+## 80 107.01698 123.1448 108.77635
+## 
+## 
+## $Predict
+## function (object, newpreds) 
+## {
+##     coef &lt;- c(object$Intercept, object$Weights)
+##     pred &lt;- as.vector(coef %*% t(cbind(1, newpreds)))
+##     return(pred)
+## }
+## &lt;bytecode: 0x7fa895a6fb88&gt;
+## &lt;environment: namespace:ForecastComb&gt;
+## 
+## $Intercept
+## [1] -1.326066
+## 
+## $Weights
+## [1] 0.91320942 0.03167767 0.06660417
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;foreccomb_res&quot;</code></pre>
+<p>结果显示通过 Ordinary Least Squares Regression (最小二乘法) 进行混合预测可以得到最小的 RMSE，此时 arima、gm、nnet 三模型的权重依次是 0.9132094, 0.0316777, 0.0666042。然而我们依然应该使用测试集验证模型方可用于进一步的预测。</p>
+</div>
+<div id="模型验证" class="section level3">
+<h3>模型验证</h3>
+<div id="自动完成" class="section level4">
+<h4>自动完成</h4>
+<p>模型验证可以在 <code>auto_combine</code> 之前的数据预处理过程中一并完成：</p>
+<pre class="r"><code>df_pred_by_mods &lt;-
+  data.frame(
+    arima = as.numeric(forecast_arima$mean),
+    gm = as.numeric(mod_gm$forecasts),
+    nnet = as.numeric(forecast_nnet$mean)
+)
+
+fc_train_n_test &lt;-
+  foreccomb(observed_vector = WWWusage_train,
+            prediction_matrix = df_fitted_by_mods_miss_val_fix,
+            newobs = WWWusage_test,
+            newpreds = as.matrix(df_pred_by_mods),
+            na.impute = FALSE)
+
+mod_train_n_test_comb &lt;-
+  auto_combine(fc_train_n_test)</code></pre>
+<pre><code>## Optimization algorithm chooses number of retained models for trimmed eigenvector approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
+<pre><code>## Optimization algorithm chooses number of retained models for trimmed bias-corrected eigenvector approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
+<pre><code>## Optimization algorithm chooses trim factor for trimmed mean approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized trim factor: 0.34</code></pre>
+<pre><code>## Optimization algorithm chooses trim factor for winsorized mean approach...</code></pre>
+<pre><code>## Algorithm finished. Optimized trim factor: 0.5</code></pre>
+<pre class="r"><code>fc_train_n_test</code></pre>
+<pre><code>## $Actual_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##  [1]  88  84  85  85  84  85  83  85  88  89  91  99 104 112 126 138 146 151 150
+## [20] 148 147 149 143 132 131 139 147 150 148 145 140 134 131 131 129 126 126 132
+## [39] 137 140 142 150 159 167 170 171 172 172 174 175 172 172 174 174 169 165 156
+## [58] 142 131 121 112 104 102  99  99  95  88  84  84  87  89  88  85  86  89  91
+## [77]  91  94 101 110
+## 
+## $Forecasts_Train
+## Time Series:
+## Start = 1 
+## End = 80 
+## Frequency = 1 
+##        arima       gm      nnet
+##  1  87.91200  88.0000  87.95600
+##  2  86.30366 127.4155 106.85958
+##  3  81.15244 127.3598  83.14060
+##  4  87.32344 127.3042  86.89844
+##  5  83.88979 127.2485  86.22192
+##  6  83.43081 127.1929  84.84035
+##  7  86.38455 127.1373  86.89844
+##  8  80.10926 127.0818  83.55223
+##  9  88.62262 127.0263  87.60547
+## 10  89.56923 126.9707  90.95200
+## 11  89.34744 126.9153  90.25237
+## 12  93.05023 126.8598  92.91612
+## 13 106.88018 126.8044 107.52216
+## 14 105.72064 126.7490 110.16199
+## 15 120.04024 126.6936 122.12901
+## 16 137.62819 126.6382 139.03600
+## 17 145.66687 126.5829 147.08846
+## 18 151.15265 126.5276 151.16116
+## 19 154.04517 126.4723 153.49332
+## 20 147.41174 126.4170 147.21139
+## 21 147.03795 126.3618 144.62680
+## 22 146.35771 126.3065 144.56693
+## 23 151.53086 126.2513 148.83363
+## 24 135.11412 126.1962 137.58690
+## 25 123.62527 126.1410 124.83029
+## 26 133.95742 126.0859 131.90867
+## 27 146.43963 126.0308 144.79762
+## 28 152.26300 125.9757 152.15441
+## 29 150.77263 125.9207 150.66859
+## 30 145.40585 125.8657 144.62680
+## 31 142.93133 125.8107 141.36986
+## 32 135.45720 125.7557 136.01915
+## 33 129.54920 125.7007 130.56519
+## 34 129.83295 125.6458 130.38460
+## 35 131.56674 125.5909 132.65891
+## 36 126.50583 125.5360 129.47603
+## 37 123.88278 125.4812 126.00064
+## 38 127.02816 125.4263 128.47001
+## 39 138.15757 125.3715 137.80578
+## 40 139.55717 125.3167 140.93649
+## 41 142.08663 125.2620 141.84314
+## 42 143.20565 125.2072 142.71139
+## 43 158.29032 125.1525 155.24808
+## 44 164.95937 125.0978 165.80278
+## 45 172.98184 125.0432 172.64921
+## 46 170.42355 124.9885 171.46607
+## 47 171.90379 124.9339 170.73737
+## 48 172.67058 124.8793 171.67232
+## 49 171.67436 124.8247 170.82890
+## 50 176.37709 124.7702 174.26492
+## 51 174.95512 124.7157 174.36043
+## 52 168.69337 124.6612 168.13930
+## 53 173.60575 124.6067 170.82890
+## 54 175.43917 124.5522 174.26492
+## 55 173.30112 124.4978 172.67612
+## 56 163.79201 124.4434 163.04148
+## 57 163.09118 124.3890 159.70846
+## 58 146.94167 124.3347 145.80884
+## 59 130.86621 124.2803 130.90889
+## 60 124.20251 124.2260 123.90240
+## 61 113.20621 124.1718 114.57303
+## 62 105.79951 124.1175 105.42121
+## 63  98.13525 124.0633  97.56579
+## 64 102.62906 124.0090 100.78698
+## 65  95.36609 123.9549  96.62393
+## 66 100.76468 123.9007  99.35709
+## 67  89.70514 123.8465  91.84973
+## 68  82.80494 123.7924  84.28110
+## 69  82.08490 123.7383  83.14060
+## 70  84.93000 123.6843  85.46564
+## 71  89.87680 123.6302  90.05750
+## 72  89.82193 123.5762  91.04678
+## 73  86.49138 123.5222  87.92357
+## 74  82.40418 123.4682  84.37283
+## 75  88.37005 123.4143  87.69998
+## 76  91.17750 123.3603  91.87126
+## 77  92.16153 123.3064  92.91612
+## 78  90.43594 123.2525  91.27047
+## 79  97.60234 123.1987  96.82519
+## 80 107.01698 123.1448 108.77635
+## 
+## $Actual_Test
+##  [1] 121 135 145 149 156 165 171 175 177 182 193 204 208 210 215 222 228 226 222
+## [20] 220
+## 
+## $Forecasts_Test
+##          arima       gm     nnet
+##  [1,] 117.0633 123.0910 121.0024
+##  [2,] 121.4699 123.0372 132.9642
+##  [3,] 124.2189 122.9835 142.8745
+##  [4,] 125.9340 122.9297 149.8028
+##  [5,] 127.0039 122.8760 154.0405
+##  [6,] 127.6714 122.8223 155.9769
+##  [7,] 128.0878 122.7686 155.8329
+##  [8,] 128.3476 122.7150 153.6791
+##  [9,] 128.5097 122.6614 149.6578
+## [10,] 128.6108 122.6078 144.4252
+## [11,] 128.6739 122.5542 139.2503
+## [12,] 128.7132 122.5006 135.3176
+## [13,] 128.7378 122.4471 133.1738
+## [14,] 128.7531 122.3936 132.7999
+## [15,] 128.7626 122.3401 133.8105
+## [16,] 128.7686 122.2867 135.6047
+## [17,] 128.7723 122.2332 137.5464
+## [18,] 128.7746 122.1798 139.1455
+## [19,] 128.7761 122.1264 140.1396
+## [20,] 128.7770 122.0731 140.4769
+## 
+## $nmodels
+## [1] 3
+## 
+## $modelnames
+## [1] &quot;arima&quot; &quot;gm&quot;    &quot;nnet&quot; 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;foreccomb&quot;</code></pre>
+<p>此时可以通过 <code>mod_train_n_test_comb$Forecasts_Test</code> 获得模型预测值，通过 <code>Forecasts_Test$Accuracy_Test</code> 获得包含 RMSE 在内的预测准确度指标。</p>
+</div>
+<div id="手动实现" class="section level4">
+<h4>手动实现</h4>
+<p>然而在某些情况下，在这个案例中 <code>auto_combine</code> 会报遇到报错：</p>
+<pre class="error"><code>Error in newpred_matrix %*% weights : 
+  requires numeric/complex matrix/vector arguments</code></pre>
+<p>好在，案例中使用了最小二乘法，也就是线性回归，所以通过截距与斜率（变量的权重）也很容易手动混合预测：</p>
+<pre class="r"><code>library(&quot;purrr&quot;)
+forecast_comb &lt;-
+  mod_comb$Intercept +
+  reduce(map2(mod_comb$Weights, df_pred_by_mods, `*`),`+`)
+
+forecast_comb</code></pre>
+<pre><code>##  [1] 117.5358 122.3549 125.5237 127.5496 128.8073 129.5441 129.9131 130.0052
+##  [9] 129.8836 129.6258 129.3370 129.1093 128.9873 128.9746 129.0490 129.1722
+## [17] 129.3033 129.4102 129.4760 129.4976</code></pre>
+<pre class="r"><code>rmse_comb &lt;-
+  sqrt(mean((as.numeric(forecast_comb) - as.numeric(WWWusage_test))^2, na.rm = TRUE))
+
+rmse_comb</code></pre>
+<pre><code>## [1] 65.56671</code></pre>
+<p>混合预测模型的 RMSE = 65.5667112，与<a href="https://blog.washman.top/post/arima-grey-nnet-combine-forecast/">上篇中</a> ARIMA 模型性能相似，实际上根据 arima、gm、nnet 三模型的权重 0.9132094, 0.0316777, 0.0666042 就不难猜出，此案例中混合模型结果应该是相当接近于 ARIMA 的预测结果的。</p>
+<p>至于如何选择模型，还需要根据实际的应用情况进一步考虑。</p>
+</div>
+</div>
+<div id="尾声" class="section level3">
+<h3>尾声</h3>
+<p>截止至 2021 年 5 月，<a href="https://github.com/ceweiss/ForecastComb"><code>ForecastComb</code></a> 距离<a href="https://github.com/ceweiss/ForecastComb/commit/5ea735d106b1d21a8cc43fce0b613676a6507c37">上一次提交</a>已经过去将近 3 年，程序运行不顺利在所难免——就像我们提到的 <code>auto_combine</code> 报错。此外， 并非所有的场景都会选择出最小二乘法用作组合模型的方法，但是只要阅读 <code>ForecastComb</code> <a href="https://github.com/ceweiss/ForecastComb/tree/master/R">源代码中的 R 脚本</a>，通过手动实现预测也并不困难。</p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-christophForecastCombinationsUsing2019" class="csl-entry">
+Christoph, E., Eran Raviv, and Gernot Roetzer. 2019. <span>“Forecast <span>Combinations</span> in <span>R</span> Using the <span>ForecastComb Package</span>.”</span> <em>The R Journal</em> 10 (January): 262. <a href="https://doi.org/10.32614/RJ-2018-052">https://doi.org/10.32614/RJ-2018-052</a>.
+</div>
+<div id="ref-hansenChallengesEconometricModel2005" class="csl-entry">
+Hansen, Bruce E. 2005. <span>“Challenges for Econometric Model Selection.”</span> <em>Econometric Theory</em> 21 (01). <a href="https://doi.org/10.1017/S0266466605050048">https://doi.org/10.1017/S0266466605050048</a>.
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2021-04-29T00:00:00Z class="date">Thursday, April 29, 2021</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/arima">ARIMA</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">机器学习</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C">神经网络</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E7%81%B0%E8%89%B2%E6%A8%A1%E5%9E%8B">灰色模型</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/grey-model">Grey Model</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/gm11">GM(1,1)</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/combine">Combine</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E6%B7%B7%E5%90%88">混合</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E9%A2%84%E6%B5%8B">预测</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97">时间序列</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E5%85%AC%E5%85%B1%E5%8D%AB%E7%94%9F">公共卫生</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E6%B5%81%E8%A1%8C%E7%97%85%E5%AD%A6">流行病学</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/arima-grey-nnet-combine-forecast/" class="prev">Using R : 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）</a>
+      
+      
+      <a href="https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/" class="next">Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</a>
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>

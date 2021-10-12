@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.75.1" />
+
+
+<title>设备管理器中的 MVSI Card Reader USB Device driver 是什么？如何移除其占用盘符？ - 洗衣机的博客</title>
+<meta property="og:title" content="设备管理器中的 MVSI Card Reader USB Device driver 是什么？如何移除其占用盘符？ - 洗衣机的博客">
+
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/%3cnil%3e"
+         width=""
+         height=""
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">设备管理器中的 MVSI Card Reader USB Device driver 是什么？如何移除其占用盘符？</h1>
+
+    
+    <span class="article-date">2020-03-23</span>
+    
+
+    <div class="article-content">
+      <p>最近微电脑添置了一块机械硬盘，毕竟在 SSD 价格飞涨的这个时期里，原本计划一步到位 1T NVME 的计划被腰斩至 512 GB。虽然日常的使用中不会遇到任何问题，但是想要保存一些资料依然有捉襟见肘的局促感。</p>
+<p>然而当硬盘安装停当，需要设定盘符之时，却发现盘符编号已经被占用了。原本电脑中的 NVME 硬盘仅一个分区 C 盘，按照预想机械硬盘应该紧接着设定为 D 盘。然而设定菜单中新盘符却只能 E 盘起跳，这说明有一个设备占用了 D 盘。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-27-53.png" alt=""></p>
+<p>然而实际情况是电脑除了一块 NVME 硬盘并没有其他的存储设备。查看设备管理器的磁盘把驱动器组。发现除了 <strong>NVME 硬盘</strong>（HS-SSD-C2000pro 512G 具体产品是海康 C2000 Pro）、<strong>机械硬盘</strong> （HGST XXXX 日立企业硬盘）、<strong>Hyper-V 虚拟硬盘</strong>（Microsoft 虚拟磁盘，这个与本次的讨论无关）之外，还有一个名为 <strong>MVSI Card Reader USB Device driver</strong> 的设备。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-29-47.png" alt="Snipaste_2020-03-22_21-29-47"></p>
+<p>按照设备的名字，大概是一款 USB 读卡器。然而我的机箱本身(TT 启航者 F1 静音版)并没有读卡器，况且我也没有接入其他的 USB 读卡器，莫非是鼠标键盘又抽风了——毕竟曾经遇到过 USB 键鼠插入电脑后无法引导设备的奇葩故障。</p>
+<p>不过在尝试插拔键鼠之前，还是决定先把这个 MVSI Card Reader USB Device driver 搜一搜看看是个什么东西。不幸的是搜到的有效结果并不是非常丰富。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-31-24.png" alt="Snipaste_2020-03-22_21-31-24"></p>
+<p>虽然第一个条目似乎是设备的驱动下载，但是点进去就有一股浓浓的不能解决问题的感觉。简介基本上是模式化的内容，并没有设备本身相关的内容。截图也是与文无关的样子，虽然提供了驱动程序下载的链接，但是我并不需要下载驱动呀，Windows 已经帮我装好驱动了，故此先将设备放在一边。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-14-33.png" alt="Snipaste_2020-03-22_22-14-33"></p>
+<p>第二个搜索条目……日语的？先不看了……</p>
+<p>第三个搜索条目，欸，JBL Pebbles？虽然页面内并没有出现任何 MVSI 字样，但是巧合的是，我的电脑上也接入了一台 JBL Pebbles USB 音箱。</p>
+<p>此时再扫一眼第二条搜索条目，似乎说到了 uaudio0 字样？虽然对于设备 unix 下的访问名称不熟悉——其实插到我的 MBP 下就能查看了，但是谁让我懒呢——不过 audio 大概是音频设备的相关的吧。耐着性子看作者的 Tweet，似乎在说自己的 JBL Pebbles 插入电脑后也会有一个 Removable SCSI 设备，名字也是  MVSI Card Reader USB Device driver。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-30-53.png" alt="Snipaste_2020-03-22_21-30-53"></p>
+<p>考虑到巧合不会同时出现两次（无来源，我现编的），果断拔下 JBL Pebbles，设备管理器中的  MVSI Card Reader USB Device driver 设备消失，在磁盘管理器中也能将机械硬盘设置成为 D 盘了，done！</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-17-07.png" alt="Snipaste_2020-03-22_22-17-07"></p>
+<p>事后回想起来，猜测是因为采用 USB 连接电脑的 JBL Pebbles 音箱会采用 USB DAC 的方式来实现工作。但巧合的是这台 USB DAC 还预留了读卡器的接口，虽然 JBL Pebbles 并没有读卡的功能。</p>
+<p>不过虽然盘符的问题已经解决了，但是其实还有一个小瑕疵，那就是 Windows Traybar 里面会一直有一个快速移除设备的图标，并且总有一个省略号设备，且无法点击。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-09-17.png" alt="Snipaste_2020-03-22_22-09-17"></p>
+<p>解决方法也很简单，只要从设备管理器中选中 MVSI Card Reader USB Device driver 然后将其禁用即可。目前没有发现副作用。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-17-07.png" alt="Snipaste_2020-03-22_22-17-07"></p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vignette on 洗衣机的博客</title>
+    <link>https://blog.washman.top/tags/vignette/</link>
+    <description>Recent content in vignette on 洗衣机的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy;{year}, All Rights Reserved</copyright>
+    <lastBuildDate>Fri, 25 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/vignette/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using R 番外: R 包开发中 vignette/test token 的处理</title>
+      <link>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</link>
+      <pubDate>Fri, 25 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</guid>
+      <description>作为一个不怎么 Skr 的 API Wrapper，最近花式的用到了高德地图的地理编码/逆编码服务，与其散乱各处每次都要反复修改 function 代码，不如干脆就封装成 package，还能方便自己和团队今后的使用。 作为年轻人（并不）</description>
+    </item>
+    
+  </channel>
+</rss>

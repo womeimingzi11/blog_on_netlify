@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    Using R: 使用 Zotero 为 Rmarkdown 插入参考文献 | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</h2>
+    <div class="post_content">
+      
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="如何在-blogdown-中处理参考文献" class="section level1">
+<h1>如何在 blogdown 中处理参考文献？</h1>
+<div id="什么是-blogdown" class="section level2">
+<h2>什么是 blogdown？</h2>
+<p>其入门手册标题 <a href="https://bookdown.org/yihui/blogdown/">blogdown: Creating Websites with R Markdown</a> 是对 <a href="https://github.com/rstudio/bookdown">blogdown</a> 最恰当最简洁的解释。实际上笔者自己的<a href="~https://blog.washman.top~">博客</a>正是使用 blogdown 构建。</p>
+</div>
+<div id="什么是参考文献" class="section level2">
+<h2>什么是参考文献？</h2>
+<p>证明我说的话不是乱讲的底气（误</p>
+</div>
+<div id="为什么要处理参考文献" class="section level2">
+<h2>为什么要处理参考文献</h2>
+<p>首先需要确定的是，手动添加参考文献是不在本文的讨论范围内的，毕竟 Copy &amp; Paste 似乎只需要管理好剪切板（Clipboard）就已经完成了绝大多数工作，且这就是纯文本的处理。然而，在我个人看来手动粘贴参考文献最终会发展参考灾难，不是这一次出错就是下一次出错，而且改参考文献格式的痛苦谁试谁知道。</p>
+<p>常见的参考文献管理工具大致有 EndNote、Mendeley、Zotero 管理库。得益于师兄师姐的流行，基于中科院大用户版的EndNote大概是国内普及程度最高的参考文献管理工具之一（此处没有文献支持，就显得很没底气）。然而考虑到支持正版人人有责，且EndNote在macOS诡异的UX以及通用型不强的样式管理又及对手稿的污染性插入，所有笔者个人选择了 Zotero 作为参考文献管理工具。Why not Mendeley？不知为何，这软件总是处理不好 Who et, al 2021 这种句内引用，所以放弃。不过这并不是说软件有问题，大概率是笔者没有搞清楚而已。</p>
+<p>不过参考文献管理工具的选择并非本文的核心内容，我们需要的是将参考文献导出为 bib (Bibliography) 而已。</p>
+</div>
+<div id="one-more-step-upon-r-markdown" class="section level2">
+<h2>One More Step upon R Markdown</h2>
+<p>在讨论 blogdown 插入参考文献之前，我们先说回 R Markdown 插入参考文献，毕竟 blogdown 也只是 R Markdown 更进一步的应用。根据 2.1 in bookdown 的阐述，R Markdown 通过 <a href="https://yihui.org/knitr/">knitr</a> 中 <code>knitr::knit</code> 渲染为 Markdown 文件，随后 Markdown 通过 <a href="https://pandoc.org">Pandoc</a> 渲染为目标格式。而对于参考文献样样式的处理就是发生在 Pandoc 的转换过程中。根据 <a href="https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html">R Markdown 参考手册</a>，可以使用手工插入 Bibliography 文件中文献标记的方法半手工的插入参考文献。</p>
+<div class="figure">
+<img src="https://bookdown.org/yihui/rmarkdown-cookbook/images/workflow.png" alt="" />
+<p class="caption">A diagram illustrating how an R Markdown document is converted to the final output document</p>
+</div>
+<p>然而这种方法虽然可以杜绝参考文献引用错误且能方便的修改格式——只要<a href="https://citationstyles.org">引入自定义好的 <code>csl</code> (Citation Style) 文件</a>即可。然而手动插入参考文献本身效率也是比较低下的，相较于 Zotero 在 Microsoft Word 中的 <code>Zotero Citation Addon</code> 也没有那么优雅。更要命的是 Zotero 只有在将文献导出为 bib 文件的时候才会为其生成一个 Citation Keys，这就意味着需要再打开 bib 文件，定位到文献位置，查找 Citation Keys 才能在 R Markdown 中引用。</p>
+<div class="figure">
+<img src="https://www.zotero.org/support/_media/word_integration/citation-dialog-select-5.png?w=294&amp;cache=nocache&amp;tok=f7bc33" alt="" />
+<p class="caption">Add Citations in MS Word</p>
+</div>
+<p>不好用就改造它，<a href="https://retorque.re/zotero-better-bibtex">Better BibTeX for Zotero</a> 和 <a href="https://github.com/paleolimbot/rbbt">rbbt</a> 登场！</p>
+<div id="把参考文献优雅引入-r-markdown-分三步" class="section level3">
+<h3>把参考文献优雅引入 R Markdown 分三步</h3>
+<div id="step1设置-citation-key" class="section level4">
+<h4>Step1，设置 Citation Key</h4>
+<p>首先解决 Citation Keys 获取繁琐的问题。使用 <a href="https://retorque.re/zotero-better-bibtex">Better BibTeX for Zotero</a> （下称 BBT）可以增强 Zotero 对 bib 文件的支持能力。首先 BBT 在文献倒入 Zotero 数据库的同时就会为其生成一个唯一的 Citation Keys。</p>
+<div class="figure">
+<img src="https://libapps.s3.amazonaws.com/accounts/137515/images/Citekey.png" alt="" />
+<p class="caption">Citation Keys generated by BBT (retrieved from <a href="https://guides.library.iit.edu/c.php?g=720120&amp;p=6296986" class="uri">https://guides.library.iit.edu/c.php?g=720120&amp;p=6296986</a>)</p>
+</div>
+<p>对于大多数用户来说，BBT 默认的设置以及 Citation Key 生成模式已经足够使用了。不过对于多个数据库或者多设备同步的用户来说 patternA 和 pattern_b 等不同格式的混用也是非常的令人困扰。根据 BBT 官方设置指南，可以按照作者姓名及其各种变体、日期、备注信息、页码、期刊、关键字、标题以及几乎 Zotero 参考条目中的任何信息的任何格式用作 Citation Key 的格式，据日可自定义字段参考<a href="https://retorque.re/zotero-better-bibtex/citing/">Generating citekeys for your references</a>。</p>
+<p>以我在 Zotero 中使用的格式例如 <em>jiangContaminationShortchainChlorinated2018</em> 为例，如何进行这样的设置呢？</p>
+<p>首先在 Zotero 的 Preference 中找到 Better BibTeX 选项卡，随后在 Citation keys 页面中的 Citation key kormat 设置样式，例如： <code>[auth:lower][shorttitle3_3][year]</code></p>
+<p>其中 <code>auth：lower</code> 代表将第一作者英文名小写，<code>shorttitle3_3</code> 代表选取文献标题的前三个字符，<code>year</code> 则代表文献出版年份。</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.39.50%402x.png" alt="" />
+<p class="caption">BBT Preference</p>
+</div>
+<p>当论文生成 Citation Key 并已经在 RMarkdown 中引用之后，大概没人希望 Citation Key 会再次发生变化。为了避免在之后刷新数据库或者其他操作导致 Citation Key 变化，选中参考文献，通常笔者会选中 Zotero 库中的所有文献，点击右键 Better BibTe - Pin BibTex Key 就可以锁定 Citation Key。</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.46.50%402x.png" alt="" />
+<p class="caption">Pin BibTex Key</p>
+</div>
+<p>这样后续的操作，例如修改作者名字和论文名（Typo 是敌人），将不会改变 Citation Key，也就不会导致参考文献引用的失败。</p>
+</div>
+<div id="step-2导出-bibliography-参考文献-可跳过" class="section level4">
+<h4>Step 2，导出 Bibliography 参考文献 —— 可跳过</h4>
+<p>这里还是以 Zotero 为例，选中需要使用的 Library，将其导出为 bib 文件即可。</p>
+<p>不过这还不是最优雅的使用方法，每次都要手动导出，也是很累的！怎么办？后面继续看！</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2015.51.32%402x.png" alt="" />
+<p class="caption">Export Bib</p>
+</div>
+</div>
+<div id="step-3一键插入参考文献" class="section level4">
+<h4>Step 3，一键插入参考文献</h4>
+<p>首先在 RMarkdown 中 YAML Header 部分引入 Step 2 导出的 bib 文件，例如：</p>
+<pre><code>---
+title: &#39;R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）&#39;
+author: Han Chen
+date: &#39;2021-04-26&#39;
+
+## A bib file which is generated by Zotero
+bibliography: references.bib
+---</code></pre>
+<p>随后在 RStudio 中安装 <a href="https://github.com/paleolimbot/rbbt">rbbt</a>:</p>
+<pre><code>remotes::install_github(&quot;paleolimbot/rbbt&quot;)</code></pre>
+<p>随后在 RStudio 的 Addins 中应该可以看到 rbbt 相关的按钮。</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.29.50%402x.png" alt="" />
+<p class="caption">rbbt button</p>
+</div>
+<p>点击 Insert Zotero Citation 按钮就会弹出 Zotero 文献的选择弹窗，选取后可自动插入 RMakdown 中。</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.32.47%402x.png" alt="" />
+<p class="caption">rbbt addon</p>
+</div>
+<p>不过点击 Addin 也是挺麻烦的，不如给这个功能设置快捷键。在 RStudio 最顶端的 Tools 菜单中，选择 Modify Keyboard Shortcuts，在弹出页面中搜索 Insert Zotero Citation 便可给该功能设置快捷方式，这里我们设置成 CMD/Ctrl + M 插入（毕竟是 Mendeley 的老用户……</p>
+<div class="figure">
+<img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-09-14%20at%2016.36.15%402x.png" alt="" />
+<p class="caption">RStudio Shortcuts</p>
+</div>
+<p>上面这些操作看起来还不错是吧？不过，每次添加新的文献到 Zotoer 并将其引用到文章中依然要在 Zotero 中导出才好，这完全不像是现代化的操作模式。</p>
+<p>rbbt 根据引用文献，自动从 Zotero 生成 bib 文件的功能。</p>
+<p>其方法如下：</p>
+<pre><code>rbbt::bbt_update_bib(path_rmd = &quot;manuscript.Rmd&quot;, path_bib = &quot;references.bib&quot;, translator = &quot;bibtex&quot;s)</code></pre>
+<p>上述命令会检查 <code>manuscript.Rmd</code> 文件中的所有 LaTeX 引文标记，并按照 <code>bibtex</code> 的格式，输出为 <code>references.bib</code> 文件（在 YAML Header 部分定义）。这一操作，在 Addins 中也有定义：Update bibliography for current document</p>
+<p>对于普通的 Rmarkdown 文件，上面的全套操作基本能满足插入引文的需求。然而，对于 blogdown 渲染文章来说，上述的操作有一个小问题：knitr 对于 blogdown 的渲染几乎是一键式操作，所以在执行之前，还需要手动 Update bibliography for current document，这还是不够自动化！</p>
+</div>
+</div>
+<div id="通过-knitr-渲染-blogdown" class="section level3">
+<h3>通过 knitr 渲染 Blogdown</h3>
+<p>想要解决这个问题，方法也很简单，只要在第一个引文标记出现之前，自动化的运行 <code>rbbt::bbt_update_bib</code> 就可以自动化生成最新的参考文献目录。</p>
+<p>具体来说，通常 Rmd 文件在 YAML Header 之后会跟</p>
+<pre><code>{r include=FALSE}
+knitr::opts_knit$set(tidy = TRUE,
+                     cache = TRUE)</code></pre>
+<p>这样一段代码，其实是对 knitr 进行初始化的设置，同样的道理，我们可以在 knitr 对正文开始渲染之前也插入一段代码，更新并生成 bibliography 文件：</p>
+<pre><code># Collect cited reference from current RMarkdown file into references.bib file
+rbbt::bbt_write_bib(&quot;references.bib&quot;,
+                    rbbt::bbt_detect_citations(&quot;index.zh-hans.Rmd&quot;), 
+                    overwrite = TRUE)</code></pre>
+<p>注意，默认设置下 knitr 对文件渲染过程中，文件所在目录即为 word directory，因此如无特殊需求， <code>index.zh-hans.Rmd</code> 和 <code>references.bib</code> 均无需添加路径。</p>
+<p>这段代码可以添加到最开始的 knitr 初始化代码块中，也可以自行添加新的代码块，通过将代码块设置为 include = FALSE 即可将代码块从最终文档中隐藏。</p>
+<p>至此，使用 Zotero 自动化处理 Rmarkdown 中参考文献的方法就完成了。</p>
+<p>上篇文章 <a href="https://blog.washman.top/post/arima-grey-nnet-combine-forecast">R for Everything: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（上）</a>，便是使用此方法插入文献。</p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+</div>
+</div>
+</div>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2021-09-14T00:00:00Z class="date">Tuesday, September 14, 2021</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/zotero">Zotero</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/rmarkdown">Rmarkdown</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/cite">cite</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/bibliography">bibliography</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/rbbt">rbbt</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/package">package</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/" class="prev">Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</a>
+      
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>

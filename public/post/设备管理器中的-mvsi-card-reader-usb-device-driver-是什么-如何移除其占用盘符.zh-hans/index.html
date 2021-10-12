@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    设备管理器中的 MVSI Card Reader USB Device driver 是什么？如何移除其占用盘符？ | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">设备管理器中的 MVSI Card Reader USB Device driver 是什么？如何移除其占用盘符？</h2>
+    <div class="post_content">
+      <p>最近微电脑添置了一块机械硬盘，毕竟在 SSD 价格飞涨的这个时期里，原本计划一步到位 1T NVME 的计划被腰斩至 512 GB。虽然日常的使用中不会遇到任何问题，但是想要保存一些资料依然有捉襟见肘的局促感。</p>
+<p>然而当硬盘安装停当，需要设定盘符之时，却发现盘符编号已经被占用了。原本电脑中的 NVME 硬盘仅一个分区 C 盘，按照预想机械硬盘应该紧接着设定为 D 盘。然而设定菜单中新盘符却只能 E 盘起跳，这说明有一个设备占用了 D 盘。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-27-53.png" alt=""></p>
+<p>然而实际情况是电脑除了一块 NVME 硬盘并没有其他的存储设备。查看设备管理器的磁盘把驱动器组。发现除了 <strong>NVME 硬盘</strong>（HS-SSD-C2000pro 512G 具体产品是海康 C2000 Pro）、<strong>机械硬盘</strong> （HGST XXXX 日立企业硬盘）、<strong>Hyper-V 虚拟硬盘</strong>（Microsoft 虚拟磁盘，这个与本次的讨论无关）之外，还有一个名为 <strong>MVSI Card Reader USB Device driver</strong> 的设备。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-29-47.png" alt="Snipaste_2020-03-22_21-29-47"></p>
+<p>按照设备的名字，大概是一款 USB 读卡器。然而我的机箱本身(TT 启航者 F1 静音版)并没有读卡器，况且我也没有接入其他的 USB 读卡器，莫非是鼠标键盘又抽风了——毕竟曾经遇到过 USB 键鼠插入电脑后无法引导设备的奇葩故障。</p>
+<p>不过在尝试插拔键鼠之前，还是决定先把这个 MVSI Card Reader USB Device driver 搜一搜看看是个什么东西。不幸的是搜到的有效结果并不是非常丰富。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-31-24.png" alt="Snipaste_2020-03-22_21-31-24"></p>
+<p>虽然第一个条目似乎是设备的驱动下载，但是点进去就有一股浓浓的不能解决问题的感觉。简介基本上是模式化的内容，并没有设备本身相关的内容。截图也是与文无关的样子，虽然提供了驱动程序下载的链接，但是我并不需要下载驱动呀，Windows 已经帮我装好驱动了，故此先将设备放在一边。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-14-33.png" alt="Snipaste_2020-03-22_22-14-33"></p>
+<p>第二个搜索条目……日语的？先不看了……</p>
+<p>第三个搜索条目，欸，JBL Pebbles？虽然页面内并没有出现任何 MVSI 字样，但是巧合的是，我的电脑上也接入了一台 JBL Pebbles USB 音箱。</p>
+<p>此时再扫一眼第二条搜索条目，似乎说到了 uaudio0 字样？虽然对于设备 unix 下的访问名称不熟悉——其实插到我的 MBP 下就能查看了，但是谁让我懒呢——不过 audio 大概是音频设备的相关的吧。耐着性子看作者的 Tweet，似乎在说自己的 JBL Pebbles 插入电脑后也会有一个 Removable SCSI 设备，名字也是  MVSI Card Reader USB Device driver。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_21-30-53.png" alt="Snipaste_2020-03-22_21-30-53"></p>
+<p>考虑到巧合不会同时出现两次（无来源，我现编的），果断拔下 JBL Pebbles，设备管理器中的  MVSI Card Reader USB Device driver 设备消失，在磁盘管理器中也能将机械硬盘设置成为 D 盘了，done！</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-17-07.png" alt="Snipaste_2020-03-22_22-17-07"></p>
+<p>事后回想起来，猜测是因为采用 USB 连接电脑的 JBL Pebbles 音箱会采用 USB DAC 的方式来实现工作。但巧合的是这台 USB DAC 还预留了读卡器的接口，虽然 JBL Pebbles 并没有读卡的功能。</p>
+<p>不过虽然盘符的问题已经解决了，但是其实还有一个小瑕疵，那就是 Windows Traybar 里面会一直有一个快速移除设备的图标，并且总有一个省略号设备，且无法点击。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-09-17.png" alt="Snipaste_2020-03-22_22-09-17"></p>
+<p>解决方法也很简单，只要从设备管理器中选中 MVSI Card Reader USB Device driver 然后将其禁用即可。目前没有发现副作用。</p>
+<p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/Snipaste_2020-03-22_22-17-07.png" alt="Snipaste_2020-03-22_22-17-07"></p>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2020-03-23T00:00:00Z class="date">Monday, March 23, 2020</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/windows%E9%A9%B1%E5%8A%A8">Windows驱动</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E7%A1%AC%E4%BB%B6">硬件</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/%E9%A9%B1%E5%8A%A8">驱动</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/2020-02-19-ggplot2-rasterlayer-visualizaiton/%E4%BD%BF%E7%94%A8-ggplot2-%E7%BB%98%E5%88%B6-rasterlayer-%E5%9C%B0%E5%9B%BE.zh-hans/" class="prev">Using R: 使用 ggplot2 绘制 RasterLayer 地图</a>
+      
+      
+      <a href="https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/" class="next">Using R: ggplot2 可视化 RDA 结果</a>
+      
+    </div>
+    <aside id="comments">
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>
