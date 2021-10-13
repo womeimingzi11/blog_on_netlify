@@ -40,5 +40,3 @@ vignettes/*.pdf
 
 # Rmarkdown to Markdown, local
 /rmd2md
-
-App_Privacy_Report*
