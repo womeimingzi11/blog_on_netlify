@@ -12,7 +12,7 @@ defaultContentLanguage = "zh-hans"
 #defaultContentLanguageInSubdir = true
 hasCJKLanguage = true
 
-copyright = "&copy;{year}, All Rights Reserved"
+# copyright = "&copy;{year}, All Rights Reserved. [鲁ICP备2021032727号-1](https://beian.miit.gov.cn)"
 
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$", "_files$"]
 ## Change this two to switch between different language
@@ -21,8 +21,20 @@ languageCode = "zh-cn"  # For RSS, view https://www.rssboard.org/rss-language-co
 # Add your Google Analytics identifier: UA-XXXXXXXX-X
 googleAnalytics = ""
 
-#[taxonomies]
-#tag = "tags"
+[params.comment]
+type = "valine"
+
+[params.comment.valine]
+appid = "p28b16bttr3Y0SUO2PWhuyMn-gzGzoHsz"
+appkey = "HPGrnuJVajkgFhHjDSde7Xuc"
+placeholder = "欢迎讨论～"
+avatar = "mm"
+pageSize = 10.0
+visitor = false
+recordIP = true
+highlight = true
+meta = "nick,mail"
+requiredFields = "nick,mail"
 
 [author]
 name = "Han Chen"
@@ -37,9 +49,6 @@ mainSections = [
 # paginate of archives, tags and categories
 listPaginate = 20
 postLicense = ""
-
-[params.comment]
-type = "none"
 
 # Menu links along the sidebar navigation.
 [[menu.main]]

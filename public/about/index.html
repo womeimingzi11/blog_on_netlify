@@ -108,6 +108,29 @@
       
     </div>
     <aside id="comments">
+    <div id="vcomments"></div>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <script type="text/javascript">
+          const meta = 'nick,mail'.split(',').filter(function (item) {
+              return ['nick','mail','link'].indexOf(item) > -1;
+          });
+          const requiredFields = 'nick,mail'.split(',').filter(function(item) {
+            return ['nick', 'mail'].indexOf(item) > -1;
+          })
+          new Valine({
+              el: '#vcomments',
+              appId: 'p28b16bttr3Y0SUO2PWhuyMn-gzGzoHsz',
+              appKey: 'HPGrnuJVajkgFhHjDSde7Xuc',
+              placeholder: '欢迎讨论～',
+              avatar: 'mm',
+              pageSize: '10' || 10,
+              visitor: false ,
+              highlight: true ,
+              recordIP: true ,
+              requiredFields: requiredFields || undefined,
+              meta: meta || undefined,
+      });
+    </script>
 </aside>
 
   

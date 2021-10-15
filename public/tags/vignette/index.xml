@@ -6,7 +6,6 @@
     <description>Recent content in vignette on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>&amp;copy;{year}, All Rights Reserved</copyright>
     <lastBuildDate>Fri, 25 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/vignette/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Using R 番外: R 包开发中 vignette/test token 的处理</title>
