@@ -6,16 +6,7 @@
     <description>Recent content in ecology on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 28 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/ecology/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Using R: ggplot2 可视化 RDA 结果</title>
-      <link>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</link>
-      <pubDate>Tue, 28 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</guid>
-      <description>关于 RDA（Redundancy analysis 冗余分析）是什么，相信对于已经有可视化需求的同学来说已经不用更多的解释了。 在 R 中常用来进行 RDA 分析和绘制工作的是 vegan 和 ggvegan 这两个包。然而，在实际使用中，最常遇到的问题是虽然</description>
-    </item>
-    
+    <lastBuildDate>Wed, 19 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/ecology/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Using R: 使用 ggplot2 绘制 RasterLayer 地图</title>
       <link>https://blog.washman.top/post/2020-02-19-ggplot2-rasterlayer-visualizaiton/%E4%BD%BF%E7%94%A8-ggplot2-%E7%BB%98%E5%88%B6-rasterlayer-%E5%9C%B0%E5%9B%BE.zh-hans/</link>

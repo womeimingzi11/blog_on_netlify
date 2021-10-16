@@ -47,7 +47,7 @@ app_privacy_report_tb <-
                     cls = "tbl")
 
 glimpse(app_privacy_report_tb)
-knitr::kable(head(app_privacy_report_tb))
+head(app_privacy_report_tb)
 ```
 
 三天记录下所有 App 总共有 19687 条隐私请求，不过由于记录是成对出现的，即开始请求——请求结束，所以说请求次数只有一半`r nrow(app_privacy_report_tb)/2`呃，怎么说呢，就还挺勤劳的吧。
@@ -225,8 +225,6 @@ mj_time_tb <-
     begin = mj_time_begin_end_tb$intervalEnd[[1]],
     duration = mj_time_begin_end_tb$intervalEnd[[1]] - mj_time_begin_end_tb$intervalBegin[[1]]
   )
-
-skimr::skim()
 
 mj_time_tb %>% 
   mutate(

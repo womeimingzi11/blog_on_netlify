@@ -6,16 +6,7 @@
     <description>Recent content in package on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/package/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</title>
-      <link>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</link>
-      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</guid>
-      <description>如何在 blogdown 中处理参考文献？ 什么是 blogdown？ 其入门手册标题 blogdown: Creating Websites with R Markdown 是对 blogdown 最恰当最简洁的解释。实际上笔者自己的博客正是使用 blogdown 构建。 什么是参考文献？ 证明我说的话不是乱讲的底气（误 为什么要处理参考文</description>
-    </item>
-    
+    <lastBuildDate>Sun, 25 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/package/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’</title>
       <link>https://blog.washman.top/post/2021-04-25-rjava-error-configuration-failed-for-package-rjava/</link>
@@ -23,24 +14,6 @@
       
       <guid>https://blog.washman.top/post/2021-04-25-rjava-error-configuration-failed-for-package-rjava/</guid>
       <description>rJava 是 R 语言中经常会遇到的依赖包，例如使用 xlsx 包便需要 rJava 依赖（readxl也是不错的选择）， 然而安装 rJava很难不让人感觉：rJava, an interface to nightmere instead an interface for R to use java. 所以我尝试总结目前遇到的安装并配置 rJava 过程中</description>
-    </item>
-    
-    <item>
-      <title>amapGeocode: 使用R进行高德地图地理编码/逆编码</title>
-      <link>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</link>
-      <pubDate>Fri, 09 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</guid>
-      <description>在最近的学习中，大量使用到了地理编码与地理逆编码，然而不幸的是目前广泛在 R 中介绍的能完成该任务的包因为 API 的 Breaking Upgrade 很多功能已经失效了。尤其是意外的发现，目前的包主要由百度地图 API 作数据源，于是为了满足在 R 中</description>
-    </item>
-    
-    <item>
-      <title>Using R 番外: R 包开发中 vignette/test token 的处理</title>
-      <link>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</link>
-      <pubDate>Fri, 25 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</guid>
-      <description>作为一个不怎么 Skr 的 API Wrapper，最近花式的用到了高德地图的地理编码/逆编码服务，与其散乱各处每次都要反复修改 function 代码，不如干脆就封装成 package，还能方便自己和团队今后的使用。 作为年轻人（并不）</description>
     </item>
     
   </channel>

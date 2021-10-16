@@ -87,7 +87,7 @@ no test 的 Warning 被解决，只不过因为 CRAN 会跳过测试步骤，处
 
 只要在首次调用 token 的代码块之前添加代码块设定 `knitr:opts_chunk$set`，通常是 vignette 文字开始之前，文档的 YAML Header 结束之后。
 
-```{r NOT_CRAN, eval=FALSE}
+```r
 NOT_CRAN <- identical(tolower(Sys.getenv("NOT_CRAN")), "true"),
 knitr::opts_chunk$set(purl = NOT_CRAN)
 ```

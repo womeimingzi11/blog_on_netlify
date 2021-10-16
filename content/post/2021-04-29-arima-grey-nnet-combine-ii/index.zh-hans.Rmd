@@ -103,7 +103,7 @@ foreccomb(observed_vector, prediction_matrix,
 df_fitted_by_mods <-
   data.frame(
     arima = as.numeric(mod_arima$fitted),
-    gm = as.numeric(mod_gm$simulation),
+    gm = as.numeric(mod_gm$fitted),
     nnet = as.numeric(mod_nnet$fitted)
 )
 

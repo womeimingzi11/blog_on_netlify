@@ -20,12 +20,14 @@ draft: yes
 
 
 <p>前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。</p>
-<p>B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：</p>
+<p>既然想要总结分析在 B 站的动态，数据获取必然是最重要的，然而 B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：</p>
 <p><a href="https://github.com/SocialSisterYi/bilibili-API-collect">SocialSisterYi/bilibili-API-collect</a></p>
-<div id="设置-cookies" class="section level2">
-<h2>设置 Cookies</h2>
-<p>本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，单就第一步设置 cookies 就花费良久。</p>
-<p>参考 bilibili-API-collect 项目（下称项目）中<a href="%22https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md%22">API认证与鉴权</a>中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。</p>
+<p><a href="https://github.com/SocialSisterYi/bilibili-API-collect">SocialSisterYi/bilibili-API-collect</a>（下文简称<strong>项目</strong>），通过对 B 站 Web 端、移动端以及 TV 端等诸多来源的 B 站 API 进行收集整理，汇总了一份较为全面的非官方 API 文档。</p>
+<p>本文基于项目，利用 R 语言对笔者在 B 站的历史记录进行分析总结。</p>
+<div id="设置登陆信息" class="section level2">
+<h2>设置登陆信息</h2>
+<p>既然要访问历史记录，毫无疑问需要设置登陆信息。根据项目中的<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md">API 认证与鉴权</a>以及<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/login/login_info.md">登录基本信息</a>的说明，首先设置 Cookies 信息，然而本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，设置 cookies 就耗时良久。</p>
+<p>根据 <a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md">API 认证与鉴权</a>中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。</p>
 <p>这不难，直接 Chrome + F12 调试模式，Application 选项卡直接查看即可。</p>
 <p><img src="https://raw.fastgit.org/womeimingzi11/self-image/main//202110110017317.png" />
 然而，这里获取的 SESSDATA 和 bili_jct 是经过转义了的，因此在使用 <code>httr::set_cookies</code> 生成 cookies 时程序默认会再次转译，然后就报错了……就这个问题，我已经在 <a href="https://github.com/r-lib/httr/pull/706">httr 提交了新的 PR</a> 试图解决，至于能不能合并以及什么时候会合并，就不得而知了。</p>
@@ -44,356 +46,325 @@ cookies &lt;-
 </div>
 <div id="获取历史记录" class="section level2">
 <h2>获取历史记录</h2>
+<p>首先是查询历史记录，在<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%EF%BC%88%E6%97%A7%EF%BC%89">历史记录</a>章节中提供了新/旧两个 API.</p>
+<blockquote>
+<p><a href="http://api.bilibili.com/x/web-interface/history/cursor" class="uri">http://api.bilibili.com/x/web-interface/history/cursor</a></p>
+<p><a href="http://api.bilibili.com/x/v2/history" class="uri">http://api.bilibili.com/x/v2/history</a></p>
+</blockquote>
+<p>虽然新的 API 可以请求到包括视频、直播和专栏在内的多种观看记录，然而笔者仅从 B 站观看视频，因此旧 API 就足够，其次旧版 API 可以返回更多的历史记录，也特别适合本次案例。</p>
+<p>此外，为了获取尽可能多的观看记录，这里还使用 <code>pn</code> 控制历史记录偏移量，pn 每增大一，请求记录就往更久方向移动 300 条。笔者经过实验，发现该案例中最多请求到 <code>pn=4</code>。那么我们就分别执行 4 次请求并合并。其中请求在返回对象的 <code>$data</code> 中。</p>
 <pre class="r"><code>library(&quot;jsonlite&quot;)
-history_resp &lt;-
-httr::GET(url = &quot;http://api.bilibili.com/x/web-interface/history/cursor&quot;, 
-          config = cookies,
-          query = list(ps = 30))
+library(&quot;pillar&quot;)
+library(&quot;purrr&quot;)
+library(&quot;dplyr&quot;)
+library(&quot;tibble&quot;)
 
-hitory_content &lt;-
-  httr::content(history_resp, type = &quot;text&quot;)</code></pre>
-<pre><code>## No encoding supplied: defaulting to UTF-8.</code></pre>
-<pre class="r"><code>jsonlite::fromJSON(hitory_content)</code></pre>
-<pre><code>## $code
-## [1] 0
+pn_ls &lt;-
+  c(1:4)
+
+history_resp_ls &lt;-
+  map(pn_ls,
+      function(pn){
+        history_resp &lt;-
+          httr::GET(url = 
+                      &quot;http://api.bilibili.com/x/v2/history&quot;,
+                    config = cookies,
+                    query = list(pn = pn))
+        
+        history_content &lt;-
+          httr::content(history_resp, type = &quot;text&quot;)
+        
+        # The response of GET is a json
+        history_from_json &lt;-
+          jsonlite::fromJSON(history_content)
+        
+        # The history records are in `data`
+        history_from_json$data
+        }
+      )
+
+history_tb &lt;-
+  reduce(history_resp_ls, bind_rows) %&gt;% 
+  as_tibble()
+
+glimpse(history_tb)</code></pre>
+<pre><code>## Rows: 1,200
+## Columns: 37
+## $ aid           &lt;int&gt; 548555070, 763529824, 590703462, 208522684, 208528325, 4…
+## $ videos        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ tid           &lt;int&gt; 228, 212, 239, 182, 17, 228, 228, 21, 21, 21, 213, 21, 1…
+## $ tname         &lt;chr&gt; &quot;人文历史&quot;, &quot;美食侦探&quot;, &quot;家居房产&quot;, &quot;影视杂谈&quot;, &quot;单机游…
+## $ copyright     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ pic           &lt;chr&gt; &quot;http://i0.hdslb.com/bfs/archive/0faed6cddf7023bc15e3574…
+## $ title         &lt;chr&gt; &quot;职场溃败？婚恋贬值？堕胎弑父？日韩女权为啥被男权“反杀…
+## $ pubdate       &lt;int&gt; 1634297417, 1634357105, 1632710912, 1634349464, 16343424…
+## $ ctime         &lt;int&gt; 1634292246, 1634357107, 1632710912, 1634349464, 16343424…
+## $ desc          &lt;chr&gt; &quot;脱钩躺平的日本女权为什么让男性成了赢家？\n魔怔对轰的韩…
+## $ state         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ duration      &lt;int&gt; 1118, 740, 365, 2375, 784, 1864, 1323, 192, 723, 1092, 5…
+## $ mission_id    &lt;int&gt; 166436, 149948, 122681, NA, NA, 118047, 63528, 151951, N…
+## $ rights        &lt;df[,12]&gt; &lt;data.frame[26 x 12]&gt;
+## $ owner         &lt;df[,3]&gt; &lt;data.frame[26 x 3]&gt;
+## $ stat          &lt;df[,11]&gt; &lt;data.frame[26 x 11]&gt;
+## $ dynamic       &lt;chr&gt; &quot;脱钩躺平的日本女权为什么让男性成了赢家？\n魔怔对轰…
+## $ cid           &lt;int&gt; 425484290, 425687871, 415232261, 425816695, 425771863…
+## $ dimension     &lt;df[,3]&gt; &lt;data.frame[26 x 3]&gt;
+## $ short_link_v2 &lt;chr&gt; &quot;https://b23.tv/BV1wq4y157j2&quot;, &quot;https://b23.tv/BV1qr…
+## $ favorite      &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, …
+## $ type          &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,…
+## $ sub_type      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ device        &lt;int&gt; 2, 1, 2, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4,…
+## $ page          &lt;df[,8]&gt; &lt;data.frame[26 x 8]&gt;
+## $ count         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ progress      &lt;int&gt; 1077, 648, 1, 17, 332, 172, 2, -1, 113, 31, 123, -1, 571…
+## $ view_at       &lt;int&gt; 1634370752, 1634362956, 1634359009, 1634349864, 16343498…
+## $ kid           &lt;int&gt; 548555070, 763529824, 590703462, 208522684, 208528325, 4…
+## $ business      &lt;chr&gt; &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;…
+## $ redirect_link &lt;chr&gt; &quot;https://www.bilibili.com/video/av548555070&quot;, &quot;https://w…
+## $ bvid          &lt;chr&gt; &quot;BV1wq4y157j2&quot;, &quot;BV1qr4y1278D&quot;, &quot;BV1Wq4y1o7N6&quot;, &quot;BV1hh41…
+## $ season_id     &lt;int&gt; NA, NA, NA, NA, NA, 29416, 29416, NA, NA, NA, NA, NA, NA…
+## $ up_from_v2    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, 8, 8, 8, NA, 8, 9, NA, NA, N…
+## $ redirect_url  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ bangumi       &lt;df[,7]&gt; &lt;data.frame[26 x 7]&gt;
+## $ cheese        &lt;df[,5]&gt; &lt;data.frame[26 x 5]&gt;</code></pre>
+<pre class="r"><code>head(history_tb)</code></pre>
+<pre><code>## # A tibble: 6 × 37
+##         aid videos   tid tname   copyright pic   title pubdate  ctime desc  state
+##       &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;chr&gt;       &lt;int&gt; &lt;chr&gt; &lt;chr&gt;   &lt;int&gt;  &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+## 1 548555070      1   228 人文历…         1 http… 职场…  1.63e9 1.63e9 &quot;脱…      0
+## 2 763529824      1   212 美食侦…         1 http… 我竟…  1.63e9 1.63e9 &quot;被…      0
+## 3 590703462      1   239 家居房…         1 http… 实拍…  1.63e9 1.63e9 &quot;&quot;        0
+## 4 208522684      1   182 影视杂…         1 http… 【米…  1.63e9 1.63e9 &quot;【…      0
+## 5 208528325      1    17 单机游…         1 http… 红警…  1.63e9 1.63e9 &quot;&quot;        0
+## 6 462713993      1   228 人文历…         1 http… 美国…  1.63e9 1.63e9 &quot;本…      0
+## # … with 26 more variables: duration &lt;int&gt;, mission_id &lt;int&gt;, rights &lt;df[,12]&gt;,
+## #   owner &lt;df[,3]&gt;, stat &lt;df[,11]&gt;, dynamic &lt;chr&gt;, cid &lt;int&gt;,
+## #   dimension &lt;df[,3]&gt;, short_link_v2 &lt;chr&gt;, favorite &lt;lgl&gt;, type &lt;int&gt;,
+## #   sub_type &lt;int&gt;, device &lt;int&gt;, page &lt;df[,8]&gt;, count &lt;int&gt;, progress &lt;int&gt;,
+## #   view_at &lt;int&gt;, kid &lt;int&gt;, business &lt;chr&gt;, redirect_link &lt;chr&gt;, bvid &lt;chr&gt;,
+## #   season_id &lt;int&gt;, up_from_v2 &lt;int&gt;, redirect_url &lt;chr&gt;, bangumi &lt;df[,7]&gt;,
+## #   cheese &lt;df[,5]&gt;</code></pre>
+<pre class="r"><code>summary(history_tb)</code></pre>
+<pre><code>##       aid                videos            tid           tname          
+##  Min.   :  2599625   Min.   : 1.000   Min.   : 17.0   Length:1200       
+##  1st Qu.:335748249   1st Qu.: 1.000   1st Qu.: 21.0   Class :character  
+##  Median :548441262   Median : 1.000   Median :138.0   Mode  :character  
+##  Mean   :553406301   Mean   : 1.123   Mean   :118.3                     
+##  3rd Qu.:763034751   3rd Qu.: 1.000   3rd Qu.:199.0                     
+##  Max.   :976108546   Max.   :49.000   Max.   :239.0                     
+##                                                                         
+##    copyright         pic               title              pubdate         
+##  Min.   :1.000   Length:1200        Length:1200        Min.   :1.437e+09  
+##  1st Qu.:1.000   Class :character   Class :character   1st Qu.:1.611e+09  
+##  Median :1.000   Mode  :character   Mode  :character   Median :1.630e+09  
+##  Mean   :1.157                                         Mean   :1.618e+09  
+##  3rd Qu.:1.000                                         3rd Qu.:1.632e+09  
+##  Max.   :2.000                                         Max.   :1.634e+09  
+##                                                                           
+##      ctime               desc               state             duration      
+##  Min.   :1.497e+09   Length:1200        Min.   :-100.000   Min.   :    9.0  
+##  1st Qu.:1.611e+09   Class :character   1st Qu.:   0.000   1st Qu.:  108.8  
+##  Median :1.630e+09   Mode  :character   Median :   0.000   Median :  314.0  
+##  Mean   :1.618e+09                      Mean   :  -0.755   Mean   :  496.5  
+##  3rd Qu.:1.632e+09                      3rd Qu.:   0.000   3rd Qu.:  672.5  
+##  Max.   :1.634e+09                      Max.   :   0.000   Max.   :11296.0  
+##                                                                             
+##    mission_id    
+##  Min.   : 10923  
+##  1st Qu.: 24246  
+##  Median : 84241  
+##  Mean   : 77959  
+##  3rd Qu.:118047  
+##  Max.   :199678  
+##  NA&#39;s   :560     
+##       rights.bp           rights.elec        rights.download       rights.movie          rights.pay           rights.hd5        rights.no_reprint     rights.autoplay      rights.ugc_pay     rights.is_cooperation  rights.ugc_pay_preview  rights.no_background
+##  Min.   :0            Min.   :0            Min.   :0            Min.   :0            Min.   :0.0000       Min.   :0.00         Min.   :0.0000000    Min.   :0.0000       Min.   :0            Min.   :0.0000000    Min.   :0            Min.   :0                
+##  1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0.0000       1st Qu.:0.00         1st Qu.:1.0000000    1st Qu.:1.0000       1st Qu.:0            1st Qu.:0.0000000    1st Qu.:0            1st Qu.:0                
+##  Median :0            Median :0            Median :0            Median :0            Median :0.0000       Median :0.00         Median :1.0000000    Median :1.0000       Median :0            Median :0.0000000    Median :0            Median :0                
+##  Mean   :0            Mean   :0            Mean   :0            Mean   :0            Mean   :0.0025       Mean   :0.45         Mean   :0.8133333    Mean   :0.9925       Mean   :0            Mean   :0.0316667    Mean   :0            Mean   :0                
+##  3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0.0000       3rd Qu.:1.00         3rd Qu.:1.0000000    3rd Qu.:1.0000       3rd Qu.:0            3rd Qu.:0.0000000    3rd Qu.:0            3rd Qu.:0                
+##  Max.   :0            Max.   :0            Max.   :0            Max.   :0            Max.   :1.0000       Max.   :1.00         Max.   :1.0000000    Max.   :1.0000       Max.   :0            Max.   :1.0000000    Max.   :0            Max.   :0                
+##                                                                                                                                                                                                                                                                  
+##       owner.mid             owner.name            owner.face     
+##  Min.   :     28457    Length:1200           Length:1200         
+##  1st Qu.:  25876945    Class :character      Class :character    
+##  Median : 339521128    Mode  :character      Mode  :character    
+##  Mean   : 482978659    NA                    NA                  
+##  3rd Qu.: 544336675    NA                    NA                  
+##  Max.   :2119441601    NA                    NA                  
+##                                                                  
+##       stat.aid             stat.view          stat.danmaku          stat.reply          stat.favorite          stat.coin           stat.share          stat.now_rank        stat.his_rank          stat.like          stat.dislike    
+##  Min.   :  2599625    Min.   :     342     Min.   :     0.00    Min.   :    0.00     Min.   :     0.0     Min.   :     0.0     Min.   :     0.00    Min.   :0            Min.   :  0.0000     Min.   :      0.0    Min.   :0          
+##  1st Qu.:335748249    1st Qu.:  143143     1st Qu.:   252.75    1st Qu.:  236.00     1st Qu.:   575.8     1st Qu.:   410.8     1st Qu.:    93.75    1st Qu.:0            1st Qu.:  0.0000     1st Qu.:   5783.2    1st Qu.:0          
+##  Median :548441262    Median :  463840     Median :  1001.50    Median :  672.50     Median :  2535.0     Median :  2303.0     Median :   537.50    Median :0            Median :  0.0000     Median :  18102.0    Median :0          
+##  Mean   :553406301    Mean   : 1265402     Mean   :  4445.64    Mean   : 1656.88     Mean   : 13284.8     Mean   : 21799.3     Mean   :  4757.16    Mean   :0            Mean   :  6.1483     Mean   :  67042.3    Mean   :0          
+##  3rd Qu.:763034751    3rd Qu.: 1420766     3rd Qu.:  3782.00    3rd Qu.: 1786.00     3rd Qu.:  8644.8     3rd Qu.: 11958.2     3rd Qu.:  2452.25    3rd Qu.:0            3rd Qu.:  0.0000     3rd Qu.:  67681.8    3rd Qu.:0          
+##  Max.   :976108546    Max.   :26731623     Max.   :175758.00    Max.   :36855.00     Max.   :727994.0     Max.   :954554.0     Max.   :279190.00    Max.   :0            Max.   :819.0000     Max.   :1442109.0    Max.   :0          
+##                                                                                                                                                                                                                                       
+##    dynamic               cid           
+##  Length:1200        Min.   :  4062651  
+##  Class :character   1st Qu.:284416165  
+##  Mode  :character   Median :398991118  
+##                     Mean   :340534630  
+##                     3rd Qu.:409446128  
+##                     Max.   :425816695  
+##                                        
+##    dimension.width     dimension.height     dimension.rotate  
+##  Min.   : 318.000     Min.   : 240.000     Min.   :0.0000000  
+##  1st Qu.:1280.000     1st Qu.:1080.000     1st Qu.:0.0000000  
+##  Median :1920.000     Median :1080.000     Median :0.0000000  
+##  Mean   :1831.462     Mean   :1231.765     Mean   :0.0016667  
+##  3rd Qu.:1920.000     3rd Qu.:1080.000     3rd Qu.:0.0000000  
+##  Max.   :4096.000     Max.   :4320.000     Max.   :1.0000000  
+##                                                               
+##  short_link_v2       favorite            type           sub_type      
+##  Length:1200        Mode :logical   Min.   : 3.000   Min.   :0.00000  
+##  Class :character   FALSE:1168      1st Qu.: 3.000   1st Qu.:0.00000  
+##  Mode  :character   TRUE :32        Median : 3.000   Median :0.00000  
+##                                     Mean   : 3.012   Mean   :0.01833  
+##                                     3rd Qu.: 3.000   3rd Qu.:0.00000  
+##                                     Max.   :10.000   Max.   :7.00000  
+##                                                                       
+##      device     
+##  Min.   :1.000  
+##  1st Qu.:1.000  
+##  Median :1.000  
+##  Mean   :2.227  
+##  3rd Qu.:4.000  
+##  Max.   :4.000  
+##                 
+##                           page.cid                                                   page.page                                                   page.from                                                   page.part                                                 page.duration                                                  page.vid                                                  page.weblink                         page.dimension.width     dimension.height    dimension.rotate 
+##  Min.   :  4062651                                           Min.   :1.000000                                            Length:1200                                                 Length:1200                                                 Min.   :   7.000                                            Length:1200                                                 Length:1200                                                 Min.   : 318.000    Min.   : 240.000    Min.   :0.000000      
+##  1st Qu.:282782401                                           1st Qu.:1.000000                                            Class :character                                            Class :character                                            1st Qu.: 106.000                                            Class :character                                            Class :character                                            1st Qu.:1280.000    1st Qu.:1080.000    1st Qu.:0.000000      
+##  Median :398092893                                           Median :1.000000                                            Mode  :character                                            Mode  :character                                            Median : 304.000                                            Mode  :character                                            Mode  :character                                            Median :1920.000    Median :1080.000    Median :0.000000      
+##  Mean   :339880276                                           Mean   :1.011775                                            NA                                                          NA                                                          Mean   : 454.854                                            NA                                                          NA                                                          Mean   :1830.565    Mean   :1230.074    Mean   :0.001682      
+##  3rd Qu.:409349167                                           3rd Qu.:1.000000                                            NA                                                          NA                                                          3rd Qu.: 662.000                                            NA                                                          NA                                                          3rd Qu.:1920.000    3rd Qu.:1080.000    3rd Qu.:0.000000      
+##  Max.   :425816695                                           Max.   :5.000000                                            NA                                                          NA                                                          Max.   :6276.000                                            NA                                                          NA                                                          Max.   :4096.000    Max.   :4320.000    Max.   :1.000000      
+##  NA&#39;s   :11                                                  NA&#39;s   :11                                                  NA                                                          NA                                                          NA&#39;s   :11                                                  NA                                                          NA                                                          NA&#39;s   :11          NA&#39;s   :11          NA&#39;s   :11            
+##      count           progress         view_at               kid           
+##  Min.   : 1.000   Min.   :  -1.0   Min.   :1.630e+09   Min.   :    27040  
+##  1st Qu.: 1.000   1st Qu.:  -1.0   1st Qu.:1.631e+09   1st Qu.:335656946  
+##  Median : 1.000   Median :   1.0   Median :1.632e+09   Median :548358156  
+##  Mean   : 1.124   Mean   : 120.9   Mean   :1.632e+09   Mean   :549728250  
+##  3rd Qu.: 1.000   3rd Qu.: 101.2   3rd Qu.:1.633e+09   3rd Qu.:762993506  
+##  Max.   :49.000   Max.   :2334.0   Max.   :1.634e+09   Max.   :976108546  
+##  NA&#39;s   :8                                                                
+##    business         redirect_link          bvid             season_id      
+##  Length:1200        Length:1200        Length:1200        Min.   :  107.0  
+##  Class :character   Class :character   Class :character   1st Qu.:  651.5  
+##  Mode  :character   Mode  :character   Mode  :character   Median : 3491.0  
+##                                                           Mean   :10603.4  
+##                                                           3rd Qu.:24492.5  
+##                                                           Max.   :32364.0  
+##                                                           NA&#39;s   :1085     
+##    up_from_v2    redirect_url      
+##  Min.   : 1.00   Length:1200       
+##  1st Qu.: 8.00   Class :character  
+##  Median :10.00   Mode  :character  
+##  Mean   :17.18                     
+##  3rd Qu.:20.00                     
+##  Max.   :36.00                     
+##  NA&#39;s   :1000                      
+##                                                                          bangumi.ep_id                                                                                                                                                   bangumi.title                                                                                                                                                 bangumi.long_title                                                                                                                                            bangumi.episode_status                                                                                                                                              bangumi.follow                                                                                                                                                  bangumi.cover                                                                           bangumi.season.season_id      season.title     season.season_status   season.is_finish   season.total_count  season.newest_ep_id  season.newest_ep_index  season.season_type
+##  Min.   :330566.0                                                                                                                                                Length:1200                                                                                                                                                     Length:1200                                                                                                                                                     Min.   : 2.0                                                                                                                                                    Min.   :0                                                                                                                                                       Length:1200                                                                                                                                                     Min.   :27040       Length:1200         Min.   : 2.0000     Min.   :0.0000      Min.   :-1.0000     Min.   :330566      Length:1200         Min.   :2.0000                  
+##  1st Qu.:339391.0                                                                                                                                                Class :character                                                                                                                                                Class :character                                                                                                                                                1st Qu.: 2.0                                                                                                                                                    1st Qu.:0                                                                                                                                                       Class :character                                                                                                                                                1st Qu.:31395       Class :character    1st Qu.: 2.0000     1st Qu.:0.5000      1st Qu.:-1.0000     1st Qu.:359631      Class :character    1st Qu.:2.0000                  
+##  Median :384953.0                                                                                                                                                Mode  :character                                                                                                                                                Mode  :character                                                                                                                                                Median : 2.0                                                                                                                                                    Median :0                                                                                                                                                       Mode  :character                                                                                                                                                Median :34041       Mode  :character    Median : 8.0000     Median :1.0000      Median : 1.0000     Median :416137      Mode  :character    Median :3.0000                  
+##  Mean   :378549.3                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Mean   : 6.0                                                                                                                                                    Mean   :0                                                                                                                                                       NA                                                                                                                                                              Mean   :34280       NA                  Mean   : 7.5714     Mean   :0.7143      Mean   : 0.7143     Mean   :391129      NA                  Mean   :3.1429                  
+##  3rd Qu.:416009.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              3rd Qu.:10.5                                                                                                                                                    3rd Qu.:0                                                                                                                                                       NA                                                                                                                                                              3rd Qu.:38450       NA                  3rd Qu.:13.0000     3rd Qu.:1.0000      3rd Qu.: 1.0000     3rd Qu.:423589      NA                  3rd Qu.:3.0000                  
+##  Max.   :423526.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Max.   :13.0                                                                                                                                                    Max.   :0                                                                                                                                                       NA                                                                                                                                                              Max.   :39189       NA                  Max.   :13.0000     Max.   :1.0000      Max.   : 5.0000     Max.   :424760      NA                  Max.   :7.0000                  
+##  NA&#39;s   :1193                                                                                                                                                    NA                                                                                                                                                              NA                                                                                                                                                              NA&#39;s   :1193                                                                                                                                                    NA&#39;s   :1193                                                                                                                                                    NA                                                                                                                                                              NA&#39;s   :1193        NA                  NA&#39;s   :1193        NA&#39;s   :1193        NA&#39;s   :1193        NA&#39;s   :1193        NA                  NA&#39;s   :1193                    
+##   cheese.season_id     cheese.number     cheese.long_title      cheese.cover     cheese.update_info
+##  Min.   :359         Length:1200         Length:1200         Length:1200         Length:1200       
+##  1st Qu.:359         Class :character    Class :character    Class :character    Class :character  
+##  Median :359         Mode  :character    Mode  :character    Mode  :character    Mode  :character  
+##  Mean   :359         NA                  NA                  NA                  NA                
+##  3rd Qu.:359         NA                  NA                  NA                  NA                
+##  Max.   :359         NA                  NA                  NA                  NA                
+##  NA&#39;s   :1199        NA                  NA                  NA                  NA</code></pre>
+<p>对于数据的每一列的含义，项目中<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>均有解释。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？</p>
+</div>
+<div id="数据整理" class="section level2">
+<h2>数据整理</h2>
+<p>根据此前的 <code>summary()</code> 操作，我们发现记录观看时间的 <code>view_at</code> 键值大致为 1634370752 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。</p>
+<pre class="r"><code>library(&quot;lubridate&quot;)
+
+histroy_view_time_tb &lt;-
+  history_tb %&gt;%
+  transmute(
+    view_at =
+      as.POSIXct(view_at, origin = &quot;1970-01-01&quot;),
+    date = date(view_at),
+    time = round(local_time(view_at, units = &quot;hours&quot;)),
+    dow = wday(view_at, week_start = 1)
+  )</code></pre>
+</div>
+<div id="我到底看了多久的视频" class="section level2">
+<h2>我到底看了多久的视频？</h2>
+</div>
+<div id="什么时候才会看-b-站" class="section level2">
+<h2>什么时候才会看 B 站？</h2>
+<p>之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。</p>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:lubridate&#39;:
 ## 
-## $message
-## [1] &quot;0&quot;
-## 
-## $ttl
-## [1] 1
-## 
-## $data
-## $data$cursor
-## $data$cursor$max
-## [1] 455511840
-## 
-## $data$cursor$view_at
-## [1] 1633836096
-## 
-## $data$cursor$business
-## [1] &quot;archive&quot;
-## 
-## $data$cursor$ps
-## [1] 30
-## 
-## 
-## $data$tab
-##      type name
-## 1 archive 视频
-## 2    live 直播
-## 3 article 专栏
-## 
-## $data$list
-##                                                                                  title
-## 1                                                【B站API】api研究笔记ep1-视频基本信息
-## 2                                                        R语言中的Rest API 之plumber包
-## 3                                 逛吃全球最大的山姆旗舰店，小伙把后备箱装满花了多少钱
-## 4                                                        那天下午我在拍摄间睡了一觉...
-## 5                                         使命召唤系列 《 幽灵（西蒙莱利）的前世今生》
-## 6     洗碗时在妈妈面前突然吃海绵刷，喝洗洁精！？妈妈真的吓坏了哈哈哈哈哈哈哈哈哈哈哈哈
-## 7                在火锅店做吃播时被隔壁桌频繁找茬，差点当场打起来！？吓到的姐姐竟然...
-## 8                               韩国淘气弟弟挑衅在上私教课的姐姐, 姐姐究竟能不能坚持!?
-## 9                           私人健身教练在弟弟面前公然占姐姐便宜，愤怒的弟弟居然。。。
-## 10      淘气儿子竟然把杂草铺满床铺，洁癖妈妈的新家变成猪圈了？！医院的wifi真快呀。。。
-## 11                        肌肉山山】家里突然多出了一个弟弟？姐姐都不敢相信自己的眼睛！
-## 12                      淘气弟弟在独居姐姐床下偷藏一整天？！这次真的差点被打住院了。。
-## 13                             淘气弟弟在姐姐房间偷偷藏下100个闹钟？！姐姐真实反应笑喷
-## 14                                                           我 把 亲 姐 姐 薅 秃 了？
-## 15                      当着好朋友的面！生吃他的宠物金鱼？！他会原谅我吗哈哈哈哈哈哈哈
-## 16                                    突然给暗恋的美女老师送礼物！怎么才能让她接受！？
-## 17                                    妈，我有喜欢的女生了！就是你俩交流可能有点困难～
-## 18                          28岁韩国小伙，背井离乡来到温州，竟在街头被陌生人暴打。。。
-## 19                            极限反杀！假扮成公园里的一棵“树”？竟把男朋友吓到。。。
-## 20                                        我要失恋了？韩国亲姐姐当场发飙让我分手。。。
-## 21 邋遢女友得知韩国公婆20min后到达中国！要求立刻见面，女友紧张爆表，代入感极强。。。。
-## 22                                   发给其他女生的暧昧信息误发给女友了...我该怎么办？
-## 23                                                我的朋友不知道相机开着就表白了。。。
-## 24                                                              沃夫冈 美食探店¥37？？
-## 25                                  红警核弹在金字塔顶端！必须捷足先登先占领科技武器！
-## 26                        行尸走肉11-7，生存小队裹尸皮搜刮物资，联邦营地显露人性卑劣！
-## 27                              四度拜相，八年执政，安倍晋三的权力之路【历史调研室14】
-## 28                                      士为知己者死！文在寅的复仇之路【历史调研室06】
-## 29                                              法国最后的英雄：戴高乐【历史调研室20】
-## 30                          执掌德国15年，全世界最有权势的女人：默克尔【历史调研室07】
-##    long_title
-## 1            
-## 2            
-## 3            
-## 4            
-## 5            
-## 6            
-## 7            
-## 8            
-## 9            
-## 10           
-## 11           
-## 12           
-## 13           
-## 14           
-## 15           
-## 16           
-## 17           
-## 18           
-## 19           
-## 20           
-## 21           
-## 22           
-## 23           
-## 24           
-## 25           
-## 26           
-## 27           
-## 28           
-## 29           
-## 30           
-##                                                                           cover
-## 1                                                                              
-## 2                                                                              
-## 3  http://i1.hdslb.com/bfs/archive/2fbf38e65995bccf7aba2cf9befee03f7b4f81bd.jpg
-## 4  http://i1.hdslb.com/bfs/archive/8685fb42d808dd966179fd9a82324f6ee62dcc0c.jpg
-## 5  http://i0.hdslb.com/bfs/archive/865cd06ad0336f47d95c9c9aca601772a97848fa.jpg
-## 6  http://i2.hdslb.com/bfs/archive/f4ab17389b8d3114a50ca74f694466050f39ca70.jpg
-## 7  http://i1.hdslb.com/bfs/archive/de7519f2f93d531bcdc3552beef05116884699cf.jpg
-## 8  http://i0.hdslb.com/bfs/archive/576ff5a4b4833651e314a511e5ebc872fb89455a.jpg
-## 9  http://i1.hdslb.com/bfs/archive/1e0cc4c94f79285fc92274f72eb62ce9a2d4d81a.jpg
-## 10 http://i2.hdslb.com/bfs/archive/59b33746f65ede1a71660fe8bcc7f1a7c05f0f0e.jpg
-## 11 http://i1.hdslb.com/bfs/archive/5329f04df4817d25d7f412a109fe029948712b2d.jpg
-## 12 http://i1.hdslb.com/bfs/archive/b9750ed3044f68389b3f2612660cbfad0f1cf783.jpg
-## 13 http://i1.hdslb.com/bfs/archive/c9858264588483199fe9b0d65258e1d68fcd9c4e.jpg
-## 14 http://i0.hdslb.com/bfs/archive/14a40fad396b81ac8afa9f4cc1d5e080aeba0f66.jpg
-## 15 http://i2.hdslb.com/bfs/archive/c143877a39344e06802f58533de87956795c5630.jpg
-## 16 http://i0.hdslb.com/bfs/archive/fe5c7b7f52a4364fe55ccde3f734cea94c8b9736.jpg
-## 17 http://i2.hdslb.com/bfs/archive/2768c45ced32f47e448fb653d6c0ecc4e664aae0.jpg
-## 18 http://i2.hdslb.com/bfs/archive/54254a222a7811d10e83768fea23f372ae69d2f7.jpg
-## 19 http://i1.hdslb.com/bfs/archive/666ca7af0d52467b7edcd6ae91e7ece1b57ba881.jpg
-## 20 http://i2.hdslb.com/bfs/archive/b01ff53f0a1d9318a36c176918a353f51a105ee7.jpg
-## 21 http://i2.hdslb.com/bfs/archive/bc83d11a4682685f334cd3ec5589259bcb2c1335.jpg
-## 22 http://i0.hdslb.com/bfs/archive/17231d5a42cd2eee0e36c42852f62744bbccc7ee.jpg
-## 23 http://i2.hdslb.com/bfs/archive/639dc764919c9e298dd9fb33f0857433e3d19708.jpg
-## 24 http://i1.hdslb.com/bfs/archive/3f6f816373e1aa68452f33de150c6e8d42646d67.jpg
-## 25 http://i1.hdslb.com/bfs/archive/12a6b7509501997dec6529f35c08f6884db5516a.jpg
-## 26 http://i0.hdslb.com/bfs/archive/b488991f97c26f23883e0ccdcbc2f77996788dfd.jpg
-## 27 http://i0.hdslb.com/bfs/archive/c45a96b993aff963a8ac0fc3de61b5532f6592bd.jpg
-## 28 http://i0.hdslb.com/bfs/archive/368fb7e6e71c42002835e54d489905d3e249c874.jpg
-## 29 http://i2.hdslb.com/bfs/archive/4a44fc8aa3a060a4c462c6dbfcf426fc8e66d36b.jpg
-## 30 http://i1.hdslb.com/bfs/archive/db69cf448a78b2ee10c8aeefb79422f608464eea.jpg
-##                                                                           covers
-## 1  https://i0.hdslb.com/bfs/article/00497c8df7130f22e5b953694b8931a22d32f133.jpg
-## 2  https://i0.hdslb.com/bfs/article/85f913243f056a0e6b39eff951c132cd650d7ac9.jpg
-## 3                                                                           NULL
-## 4                                                                           NULL
-## 5                                                                           NULL
-## 6                                                                           NULL
-## 7                                                                           NULL
-## 8                                                                           NULL
-## 9                                                                           NULL
-## 10                                                                          NULL
-## 11                                                                          NULL
-## 12                                                                          NULL
-## 13                                                                          NULL
-## 14                                                                          NULL
-## 15                                                                          NULL
-## 16                                                                          NULL
-## 17                                                                          NULL
-## 18                                                                          NULL
-## 19                                                                          NULL
-## 20                                                                          NULL
-## 21                                                                          NULL
-## 22                                                                          NULL
-## 23                                                                          NULL
-## 24                                                                          NULL
-## 25                                                                          NULL
-## 26                                                                          NULL
-## 27                                                                          NULL
-## 28                                                                          NULL
-## 29                                                                          NULL
-## 30                                                                          NULL
-##    uri history.oid history.epid history.bvid history.page history.cid
-## 1           207146            0                         0     4815593
-## 2          4043639            0                         0           0
-## 3        591124684            0 BV1Qq4y1d7pA            1   422802996
-## 4        848459398            0 BV1cL4y167yJ            1   421873504
-## 5        378435911            0 BV1Lf4y1c72d            1   422629934
-## 6         89668938            0 BV1y7411j7VA            1   153153221
-## 7         79622814            0 BV19J41167xA            1   136271394
-## 8         76138054            0 BV1GJ411m7By            1   130242689
-## 9        837678571            0 BV15g4y187nr            1   174723816
-## 10       795638493            0 BV1tC4y1H745            1   192770875
-## 11        33730471            0 BV1jb411F7mj            1    59054530
-## 12        98096611            0 BV12E411c7X5            1   167448073
-## 13        78991140            0 BV1FJ411C7qW            1   135176563
-## 14       245603330            0 BV1mv411b7Gk            1   265024331
-## 15       673086030            0 BV1CU4y1t7VX            1   338794011
-## 16       290316102            0 BV1Yf4y1p7j8            1   331638881
-## 17       758217477            0 BV1C64y1d7Uj            1   339973647
-## 18       504311584            0 BV1eg411M7sT            1   374485697
-## 19       334759585            0 BV1WA411w7vg            1   388937518
-## 20       420251816            0 BV163411i7vt            1   402075653
-## 21       250590960            0 BV1Ev411A71J            1   410256238
-## 22       420877218            0 BV1j341117sf            1   419450883
-## 23       806027859            0 BV1H34y1S7FP            1   422715702
-## 24       975997409            0 BV1744y1x7PK            1   422403985
-## 25       591109597            0 BV1oq4y1d7cF            1   422647652
-## 26       420971385            0 BV11341117xZ            1   422579731
-## 27       457002510            0 BV1H5411b73i            1   236443567
-## 28       882939610            0 BV1hK4y1b7TJ            1   185145589
-## 29       332146096            0 BV1TA411N7m3            1   313797684
-## 30       455511840            0 BV1L541147hi            1   188829166
-##                                                    history.part
-## 1                                                              
-## 2                                                              
-## 3  山姆超市的零食真的好吃吗？小伙逛完全球最大的山姆店，钱包空了
-## 4                          不得不说这是我自己最喜欢的一个广告了
-## 5                  使命召唤系列 《 幽灵（西蒙莱利）的前世今生》
-## 6                                                          2555
-## 7                                                       C0003_2
-## 8                                                 hanniu zuihou
-## 9                                                      健身欧巴
-## 10                                               妈妈茅草床最终
-## 11                                                   P1000429_1
-## 12                                                    寄生虫fin
-## 13                                                         1122
-## 14                                                     姐姐脱发
-## 15                                                          123
-## 16                                                          522
-## 17                                                         7775
-## 18                                                          009
-## 19                                                           66
-## 20                                                           rr
-## 21                                                          551
-## 22                                                          621
-## 23                                                          551
-## 24                                                       沃夫冈
-## 25                                                     先抢核弹
-## 26                                                     行尸11-7
-## 27       四度拜相，八年执政，安倍晋三的权力之路【历史调研室14】
-## 28                               士为知己者死！文在寅的复仇之路
-## 29                       法国最后的英雄：戴高乐【历史调研室20】
-## 30                   执掌德国15年，全世界最有权势的女人：默克尔
-##    history.business history.dt videos   author_name
-## 1      article-list          2      0   社会易姐QwQ
-## 2           article          2      0 stone的小石头
-## 3           archive          4      1  拜托了小翔哥
-## 4           archive          4      1    摸鱼事务所
-## 5           archive          4      1      老戴在此
-## 6           archive          4      1      肌肉山山
-## 7           archive          4      1      肌肉山山
-## 8           archive          4      1      肌肉山山
-## 9           archive          4      1      肌肉山山
-## 10          archive          4      1      肌肉山山
-## 11          archive          4      1      肌肉山山
-## 12          archive          4      1      肌肉山山
-## 13          archive          4      1      肌肉山山
-## 14          archive          4      1      肌肉山山
-## 15          archive          4      1      肌肉山山
-## 16          archive          4      1      肌肉山山
-## 17          archive          4      1      肌肉山山
-## 18          archive          4      1      肌肉山山
-## 19          archive          4      1      肌肉山山
-## 20          archive          4      1      肌肉山山
-## 21          archive          4      1      肌肉山山
-## 22          archive          4      1      肌肉山山
-## 23          archive          4      1      肌肉山山
-## 24          archive          4      1    真探唐仁杰
-## 25          archive          4      1     红警HBK08
-## 26          archive          4      1      大熊观影
-## 27          archive          2      1    历史调研室
-## 28          archive          2      1    历史调研室
-## 29          archive          2      1    历史调研室
-## 30          archive          2      1    历史调研室
-##                                                                  author_face
-## 1  http://i0.hdslb.com/bfs/face/aebb2639a0d47f2ce1fec0631f412eaf53d4a0be.jpg
-## 2  http://i0.hdslb.com/bfs/face/46b2dc9d4d5c78518fdf45dd9a5873b8ee312ad6.jpg
-## 3  http://i0.hdslb.com/bfs/face/e3f34781933482a76d175cafcbf57370288de93e.jpg
-## 4  http://i1.hdslb.com/bfs/face/93c8bd776691b3b114b5e06f5c8dff96a28f7c82.jpg
-## 5  http://i0.hdslb.com/bfs/face/23e0957755d11f8249df336550e9d2101ab962d4.jpg
-## 6  http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 7  http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 8  http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 9  http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 10 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 11 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 12 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 13 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 14 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 15 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 16 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 17 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 18 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 19 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 20 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 21 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 22 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 23 http://i2.hdslb.com/bfs/face/6e5a82548b843ea4196dc62dd6b33f74eb481768.jpg
-## 24 http://i1.hdslb.com/bfs/face/f82b7cb6e6b9e2351bb201f668af10b66b4d0d5c.jpg
-## 25 http://i0.hdslb.com/bfs/face/66ab5bd4e218aeb663e13b6871b46b2894800416.jpg
-## 26 http://i2.hdslb.com/bfs/face/0ef4038977b5314bf15be1d4b5781762038411ba.jpg
-## 27 http://i0.hdslb.com/bfs/face/5e687a2a90670e6b8e14b4f635ec38eb99f7e5eb.jpg
-## 28 http://i0.hdslb.com/bfs/face/5e687a2a90670e6b8e14b4f635ec38eb99f7e5eb.jpg
-## 29 http://i0.hdslb.com/bfs/face/5e687a2a90670e6b8e14b4f635ec38eb99f7e5eb.jpg
-## 30 http://i0.hdslb.com/bfs/face/5e687a2a90670e6b8e14b4f635ec38eb99f7e5eb.jpg
-##    author_mid    view_at progress badge show_title duration current total
-## 1   293793435 1633874905        0  专栏                   0             0
-## 2   231068868 1633874873        0  专栏                   0             0
-## 3   353539995 1633867560       -1                       609             0
-## 4   327757321 1633866943       -1                       156             0
-## 5     2142762 1633866771       14                       630             0
-## 6   203708804 1633866750       -1                       455             0
-## 7   203708804 1633851242       -1                       602             0
-## 8   203708804 1633850637       -1                       604             0
-## 9   203708804 1633850048       -1                       617             0
-## 10  203708804 1633849431      115                       601             0
-## 11  203708804 1633849312       -1                       320             0
-## 12  203708804 1633849048       -1                       620             0
-## 13  203708804 1633848485       -1                       602             0
-## 14  203708804 1633847961       -1                       606             0
-## 15  203708804 1633847380       -1                       541             0
-## 16  203708804 1633846828       82                       508             0
-## 17  203708804 1633846771       -1                       506             0
-## 18  203708804 1633846325      389                       663             0
-## 19  203708804 1633846033      497                       543             0
-## 20  203708804 1633845614       -1                       604             0
-## 21  203708804 1633845002      502                       507             0
-## 22  203708804 1633844502      529                       538             0
-## 23  203708804 1633843965       -1                       623             0
-## 24  544336675 1633843352       -1                       181             0
-## 25 1629347259 1633843162       -1                       877             0
-## 26  268819811 1633842218       -1                       619             0
-## 27  519872016 1633838541        2                       763             0
-## 28  519872016 1633838538        0                       718             0
-## 29  519872016 1633837637     1464                      1476             0
-## 30  519872016 1633836096      625                       632             0
-##    new_desc is_finish is_fav       kid tag_name live_status
-## 1                   0      0    207146                    0
-## 2                   0      0   4043639                    0
-## 3                   0      0 591124684 美食测评           0
-## 4                   0      0 848459398     搞笑           0
-## 5                   0      0 378435911 单机游戏           0
-## 6                   0      0  89668938     搞笑           0
-## 7                   0      0  79622814     搞笑           0
-## 8                   0      0  76138054     搞笑           0
-## 9                   0      0 837678571     搞笑           0
-## 10                  0      0 795638493     搞笑           0
-## 11                  0      0  33730471     搞笑           0
-## 12                  0      0  98096611     搞笑           0
-## 13                  0      0  78991140     搞笑           0
-## 14                  0      0 245603330     搞笑           0
-## 15                  0      0 673086030     搞笑           0
-## 16                  0      0 290316102     搞笑           0
-## 17                  0      0 758217477     搞笑           0
-## 18                  0      0 504311584     搞笑           0
-## 19                  0      0 334759585     搞笑           0
-## 20                  0      0 420251816     搞笑           0
-## 21                  0      0 250590960     搞笑           0
-## 22                  0      0 420877218     搞笑           0
-## 23                  0      0 806027859     搞笑           0
-## 24                  0      0 975997409 美食侦探           0
-## 25                  0      0 591109597 单机游戏           0
-## 26                  0      0 420971385 影视杂谈           0
-## 27                  0      0 457002510 人文历史           0
-## 28                  0      0 882939610 人文历史           0
-## 29                  0      0 332146096 人文历史           0
-## 30                  0      0 455511840 人文历史           0</code></pre>
+##     stamp</code></pre>
+<pre class="r"><code>view_date_p &lt;-
+  histroy_view_time_tb %&gt;%
+  group_by(date) %&gt;%
+  count() %&gt;%
+  ggplot(aes(x = date, y = n)) +
+  geom_line() +
+  scale_x_date(
+    &quot;&quot;,
+    date_breaks = &quot;7 day&quot;)
+
+view_time_p &lt;-
+  histroy_view_time_tb %&gt;%
+  group_by(time) %&gt;%
+  count() %&gt;%
+  ggplot(aes(x = time, y = n)) +
+  geom_col() +
+  scale_x_continuous(
+    &quot;Time of Day&quot;,
+    limits = c(0, 24))
+
+view_dow_p &lt;-
+  histroy_view_time_tb %&gt;%
+  group_by(dow) %&gt;%
+  count() %&gt;%
+  ggplot(aes(x = dow, y = n)) +
+  geom_col() +
+  scale_x_continuous(&quot;Day of Week&quot;)
+
+view_bottom_grid_p &lt;-
+  plot_grid(view_time_p,
+            view_dow_p,
+            labels = c(&quot;B&quot;, &quot;C&quot;))</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_col).</code></pre>
+<pre class="r"><code>view_title_p &lt;-
+  ggdraw() +
+  draw_label(
+    &quot;Number of viewed videos (individual)&quot;, 
+    fontface = &quot;bold&quot;
+  ) +
+  theme(
+    plot.margin = margin(0, 0, 0, 0)
+  )
+
+view_grid_p &lt;-
+  plot_grid(
+    view_date_p,
+    view_bottom_grid_p,
+    view_title_p,
+    labels = c(&quot;A&quot;, &quot;&quot;, &quot;&quot;),
+    rel_heights = c(1, 1, .1),
+    nrow = 3)
+
+view_grid_p</code></pre>
+<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/when_view_viz-1.png" width="672" /></p>
+<p>从可视化结果来看，9月2日、9月23日以及10月2日我看了比往常更多个B站频。此外周三、周四以及周六我刷视频个数似乎更多，然而最有趣的是，我到底是个怎样的夜猫子哇，为什么凌晨一点会刷那么多的视频？？？？注意身体哇<del>少年</del>中年。</p>
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 </div>

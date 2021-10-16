@@ -18,15 +18,19 @@ draft: yes
 
 前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。
 
-B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：
+既然想要总结分析在 B 站的动态，数据获取必然是最重要的，然而 B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：
 
 [SocialSisterYi/bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
 
-## 设置 Cookies
+[SocialSisterYi/bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)（下文简称**项目**），通过对 B 站 Web 端、移动端以及 TV 端等诸多来源的 B 站 API 进行收集整理，汇总了一份较为全面的非官方 API 文档。
 
-本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，单就第一步设置 cookies 就花费良久。
+本文基于项目，利用 R 语言对笔者在 B 站的历史记录进行分析总结。
 
-参考 bilibili-API-collect 项目（下称项目）中[API认证与鉴权]("https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md")中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。
+## 设置登陆信息
+
+既然要访问历史记录，毫无疑问需要设置登陆信息。根据项目中的[API 认证与鉴权](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md)以及[登录基本信息](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/login/login_info.md)的说明，首先设置 Cookies 信息，然而本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，设置 cookies 就耗时良久。
+
+根据 [API 认证与鉴权](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md)中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。
 
 这不难，直接 Chrome + F12 调试模式，Application 选项卡直接查看即可。
 
@@ -58,17 +62,140 @@ source("set_cookies_background.R")
 
 ## 获取历史记录
 
-```{r get_history, cache=TRUE}
+首先是查询历史记录，在[历史记录](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%EF%BC%88%E6%97%A7%EF%BC%89)章节中提供了新/旧两个 API.
+
+> http://api.bilibili.com/x/web-interface/history/cursor
+>
+> http://api.bilibili.com/x/v2/history
+
+虽然新的 API 可以请求到包括视频、直播和专栏在内的多种观看记录，然而笔者仅从 B 站观看视频，因此旧 API 就足够，其次旧版 API 可以返回更多的历史记录，也特别适合本次案例。
+
+此外，为了获取尽可能多的观看记录，这里还使用 `pn` 控制历史记录偏移量，pn 每增大一，请求记录就往更久方向移动 300 条。笔者经过实验，发现该案例中最多请求到 `pn=4`。那么我们就分别执行 4 次请求并合并。其中请求在返回对象的 `$data` 中。
+
+```{r get_history, cache=TRUE, message=FALSE}
 library("jsonlite")
-history_resp <-
-httr::GET(url = "http://api.bilibili.com/x/web-interface/history/cursor", 
-          config = cookies,
-          query = list(ps = 30))
+library("pillar")
+library("purrr")
+library("dplyr")
+library("tibble")
 
-hitory_content <-
-  httr::content(history_resp, type = "text")
+pn_ls <-
+  c(1:4)
 
-jsonlite::fromJSON(hitory_content)
+history_resp_ls <-
+  map(pn_ls,
+      function(pn){
+        history_resp <-
+          httr::GET(url = 
+                      "http://api.bilibili.com/x/v2/history",
+                    config = cookies,
+                    query = list(pn = pn))
+        
+        history_content <-
+          httr::content(history_resp, type = "text")
+        
+        # The response of GET is a json
+        history_from_json <-
+          jsonlite::fromJSON(history_content)
+        
+        # The history records are in `data`
+        history_from_json$data
+        }
+      )
+
+history_tb <-
+  reduce(history_resp_ls, bind_rows) %>% 
+  as_tibble()
+
+glimpse(history_tb)
+head(history_tb)
+summary(history_tb)
 ```
+对于数据的每一列的含义，项目中[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)均有解释。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？
+
+## 数据整理
+
+根据此前的 `summary()` 操作，我们发现记录观看时间的 `view_at` 键值大致为 `r history_tb$view_at[1]` 这样的形式，根据经验此处应为 Unix 时间戳，使用 `as.POSIXct` 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。
+
+```{r data_transform, cache=TRUE, message=FALSE}
+library("lubridate")
+
+histroy_view_time_tb <-
+  history_tb %>%
+  transmute(
+    view_at =
+      as.POSIXct(view_at, origin = "1970-01-01"),
+    date = date(view_at),
+    time = round(local_time(view_at, units = "hours")),
+    dow = wday(view_at, week_start = 1)
+  )
+```
+
+## 我到底看了多久的视频？
+
+
+## 什么时候才会看 B 站？
+
+之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。
+
+```{r when_view_viz, cache=TRUE, message=TRUE}
+library("ggplot2")
+library("cowplot")
+
+view_date_p <-
+  histroy_view_time_tb %>%
+  group_by(date) %>%
+  count() %>%
+  ggplot(aes(x = date, y = n)) +
+  geom_line() +
+  scale_x_date(
+    "",
+    date_breaks = "7 day")
+
+view_time_p <-
+  histroy_view_time_tb %>%
+  group_by(time) %>%
+  count() %>%
+  ggplot(aes(x = time, y = n)) +
+  geom_col() +
+  scale_x_continuous(
+    "Time of Day",
+    limits = c(0, 24))
+
+view_dow_p <-
+  histroy_view_time_tb %>%
+  group_by(dow) %>%
+  count() %>%
+  ggplot(aes(x = dow, y = n)) +
+  geom_col() +
+  scale_x_continuous("Day of Week")
+
+view_bottom_grid_p <-
+  plot_grid(view_time_p,
+            view_dow_p,
+            labels = c("B", "C"))
+view_title_p <-
+  ggdraw() +
+  draw_label(
+    "Number of viewed videos (individual)", 
+    fontface = "bold"
+  ) +
+  theme(
+    plot.margin = margin(0, 0, 0, 0)
+  )
+
+view_grid_p <-
+  plot_grid(
+    view_date_p,
+    view_bottom_grid_p,
+    view_title_p,
+    labels = c("A", "", ""),
+    rel_heights = c(1, 1, .1),
+    nrow = 3)
+
+view_grid_p
+```
+
+从可视化结果来看，9月2日、9月23日以及10月2日我看了比往常更多个B站频。此外周三、周四以及周六我刷视频个数似乎更多，然而最有趣的是，我到底是个怎样的夜猫子哇，为什么凌晨一点会刷那么多的视频？？？？注意身体哇<del>少年</del>中年。
 
 欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！

@@ -16,23 +16,5 @@
       <description>TL:DR 使用 moreThanANOVA 可以自动选择适当的方法显著性检验并输出多重比较的图表（如题图） ANOVA 不是万金油 显著性检验可以说是自然科学领域中最常见的操作，毕竟探究处理间是否有差异、区域间特征异同是后续探索以及假设的第一步。 然而</description>
     </item>
     
-    <item>
-      <title>Using R: 方差分解（Variation partition）变量筛选与显著性标注</title>
-      <link>https://blog.washman.top/post/2020-05-11-vpart-and-significant/%E6%96%B9%E5%B7%AE%E5%88%86%E8%A7%A3%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A0%87%E6%B3%A8.zh-hans/</link>
-      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/2020-05-11-vpart-and-significant/%E6%96%B9%E5%B7%AE%E5%88%86%E8%A7%A3%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A0%87%E6%B3%A8.zh-hans/</guid>
-      <description>何为反差分解？ 关于方差分解的数学原理，在 GUSTA ME 这篇文章 Variation partitioning 有非常清晰且容易理解的介绍。 引用经管之家网友 lovecather668 在var中方差分解的意义 中的回答： VAR中的方差分解是分析影响内生变量的结构冲击的贡献度。例如，有</description>
-    </item>
-    
-    <item>
-      <title>Using R: ggplot2 可视化 RDA 结果</title>
-      <link>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</link>
-      <pubDate>Tue, 28 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</guid>
-      <description>关于 RDA（Redundancy analysis 冗余分析）是什么，相信对于已经有可视化需求的同学来说已经不用更多的解释了。 在 R 中常用来进行 RDA 分析和绘制工作的是 vegan 和 ggvegan 这两个包。然而，在实际使用中，最常遇到的问题是虽然</description>
-    </item>
-    
   </channel>
 </rss>

@@ -2,22 +2,22 @@
 title: 'Using R: 时间序列预测—— ARIMA、灰色模型 GM(1,1)、神经网络与混合预测（下）'
 author: Han Chen
 date: '2021-04-29'
-slug: arima_grey_nnet_combine_ii
 categories:
   - Using R for Everything
-tags: 
-  - ARIMA
-  - 机器学习
-  - 神经网络
-  - 灰色模型
-  - Grey Model
-  - GM(1,1)
-  - Combine
-  - 混合
-  - 预测
-  - 时间序列
+tags:
   - 公共卫生
+  - 灰色模型
+  - 混合
+  - 机器学习
   - 流行病学
+  - 神经网络
+  - 时间序列
+  - 预测
+  - ARIMA
+  - Combine
+  - GM(1,1)
+  - Grey Model
+slug: arima_grey_nnet_combine_ii
 bibliography: references.bib
 ---
 
@@ -87,7 +87,7 @@ forecast_nnet &lt;-
 <pre class="r"><code>df_fitted_by_mods &lt;-
   data.frame(
     arima = as.numeric(mod_arima$fitted),
-    gm = as.numeric(mod_gm$simulation),
+    gm = as.numeric(mod_gm$fitted),
     nnet = as.numeric(mod_nnet$fitted)
 )
 
@@ -808,8 +808,10 @@ fc_dat_miss_val_fix</code></pre>
 ## [78]  91.24424  98.15692 107.54875
 ## 
 ## $Accuracy_Train
-##                    ME    RMSE      MAE        MPE     MAPE       ACF1 Theil&#39;s U
-## Test set 3.552443e-16 3.02758 2.402171 -0.0741498 2.056542 -0.0140366 0.6035688
+##                     ME    RMSE      MAE        MPE     MAPE       ACF1
+## Test set -1.776303e-16 3.02758 2.402171 -0.0741498 2.056542 -0.0140366
+##          Theil&#39;s U
+## Test set 0.6035688
 ## 
 ## $Input_Data
 ## $Input_Data$Actual_Train
@@ -918,7 +920,7 @@ fc_dat_miss_val_fix</code></pre>
 ##     pred &lt;- as.vector(coef %*% t(cbind(1, newpreds)))
 ##     return(pred)
 ## }
-## &lt;bytecode: 0x7fa895a6fb88&gt;
+## &lt;bytecode: 0x7f8ce5df1d00&gt;
 ## &lt;environment: namespace:ForecastComb&gt;
 ## 
 ## $Intercept

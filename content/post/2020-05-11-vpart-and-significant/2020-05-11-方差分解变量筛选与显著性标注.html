@@ -40,8 +40,8 @@ tags:
 <pre class="r"><code># suppressMessages will hide message from loading package, it makes the output clearer
 library(tidyverse)
 # col_types = cols() will suppress message about the column type to make the output clearer
-df_com &lt;- read_csv(&#39;assets/2020-04-28-post/df_com_smp.csv&#39;, col_types = cols())
-df_env &lt;- read_csv(&#39;assets/2020-04-28-post/df_env_smp.csv&#39;, col_types = cols())
+df_com &lt;- read_csv(&#39;../assets/2020-04-28-post/df_com_smp.csv&#39;, col_types = cols())
+df_env &lt;- read_csv(&#39;../assets/2020-04-28-post/df_env_smp.csv&#39;, col_types = cols())
 
 # Take a glimpse about the structure of data frame
 glimpse(df_com)</code></pre>
@@ -115,7 +115,7 @@ rda_back</code></pre>
 ##   PC1   PC2   PC3   PC4   PC5 
 ## 755.6 247.3 108.6  46.6  13.5</code></pre>
 <pre class="r"><code>rda_frwd</code></pre>
-<pre><code>## Call: rda(formula = df_com ~ MOI + TN + SOC + NO3, data = df_env)
+<pre><code>## Call: rda(formula = df_com ~ MOI + NO3 + TN + SOC, data = df_env)
 ## 
 ##                 Inertia Proportion Rank
 ## Total         2031.7341     1.0000     
@@ -190,7 +190,7 @@ anova(rda(formula_soil, data = df_env))</code></pre>
 ## 
 ## Model: rda(formula = df_com ~ Condition(pH) + Condition(MOI) + Condition(TN) + Condition(TP) + Condition(NO3) + Condition(SOC) + MAT, data = df_env)
 ##           Df Variance      F Pr(&gt;F)  
-## Model      1    21.82 2.6443  0.049 *
+## Model      1    21.82 2.6443  0.063 .
 ## Residual 142  1171.56                
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>

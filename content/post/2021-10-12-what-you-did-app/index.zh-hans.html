@@ -75,149 +75,19 @@ glimpse(app_privacy_report_tb)</code></pre>
 ## $ firstTimeStamp          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 ## $ hits                    &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 ## $ initiatedType           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
-<pre class="r"><code>knitr::kable(head(app_privacy_report_tb))</code></pre>
-<table>
-<colgroup>
-<col width="9%" />
-<col width="10%" />
-<col width="4%" />
-<col width="16%" />
-<col width="6%" />
-<col width="13%" />
-<col width="3%" />
-<col width="4%" />
-<col width="3%" />
-<col width="3%" />
-<col width="5%" />
-<col width="4%" />
-<col width="6%" />
-<col width="2%" />
-<col width="6%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">accessor.identifier</th>
-<th align="left">accessor.identifierType</th>
-<th align="left">category</th>
-<th align="left">identifier</th>
-<th align="left">kind</th>
-<th align="left">timeStamp</th>
-<th align="left">type</th>
-<th align="left">bundleID</th>
-<th align="left">context</th>
-<th align="left">domain</th>
-<th align="left">domainOwner</th>
-<th align="right">domainType</th>
-<th align="left">firstTimeStamp</th>
-<th align="right">hits</th>
-<th align="left">initiatedType</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">60E8004B-D969-4ABB-B83F-460663BCC29F</td>
-<td align="left">intervalBegin</td>
-<td align="left">2021-10-08T13:30:43.340+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">60E8004B-D969-4ABB-B83F-460663BCC29F</td>
-<td align="left">intervalEnd</td>
-<td align="left">2021-10-08T13:34:21.646+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">865B785C-DC0E-40CF-8D12-786129863544</td>
-<td align="left">intervalBegin</td>
-<td align="left">2021-10-08T13:34:24.636+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">865B785C-DC0E-40CF-8D12-786129863544</td>
-<td align="left">intervalEnd</td>
-<td align="left">2021-10-08T13:34:53.426+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">7626338D-D923-4563-8AC5-BD7ABDAA7A25</td>
-<td align="left">intervalBegin</td>
-<td align="left">2021-10-08T13:34:58.327+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">com.xiaomi.mihome</td>
-<td align="left">bundleID</td>
-<td align="left">location</td>
-<td align="left">7626338D-D923-4563-8AC5-BD7ABDAA7A25</td>
-<td align="left">intervalEnd</td>
-<td align="left">2021-10-08T13:35:08.440+08:00</td>
-<td align="left">access</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-</tbody>
-</table>
+<pre class="r"><code>head(app_privacy_report_tb)</code></pre>
+<pre><code>## # A tibble: 6 × 15
+##   accessor.identif… accessor.identif… category identifier  kind  timeStamp type 
+##   &lt;chr&gt;             &lt;chr&gt;             &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt;
+## 1 com.xiaomi.mihome bundleID          location 60E8004B-D… inte… 2021-10-… acce…
+## 2 com.xiaomi.mihome bundleID          location 60E8004B-D… inte… 2021-10-… acce…
+## 3 com.xiaomi.mihome bundleID          location 865B785C-D… inte… 2021-10-… acce…
+## 4 com.xiaomi.mihome bundleID          location 865B785C-D… inte… 2021-10-… acce…
+## 5 com.xiaomi.mihome bundleID          location 7626338D-D… inte… 2021-10-… acce…
+## 6 com.xiaomi.mihome bundleID          location 7626338D-D… inte… 2021-10-… acce…
+## # … with 8 more variables: bundleID &lt;chr&gt;, context &lt;chr&gt;, domain &lt;chr&gt;,
+## #   domainOwner &lt;chr&gt;, domainType &lt;dbl&gt;, firstTimeStamp &lt;chr&gt;, hits &lt;dbl&gt;,
+## #   initiatedType &lt;chr&gt;</code></pre>
 <p>三天记录下所有 App 总共有 19687 条隐私请求，不过由于记录是成对出现的，即开始请求——请求结束，所以说请求次数只有一半9843.5呃，怎么说呢，就还挺勤劳的吧。</p>
 <p>我们首先关注 accessor.identifier (App ID), category (访问分类), kind（时间戳类型）,timeStamp (时间戳), type (大类) 这几列，选择上述列并设置为合适的数据类型。</p>
 <pre class="r"><code>main_tb &lt;-
@@ -675,119 +545,10 @@ cat_to_type_tb %&gt;%
 <pre class="r"><code>mj_time_tb &lt;-
   tibble(
     begin = mj_time_begin_end_tb$intervalEnd[[1]],
-    duration = mj_time_begin_end_tb$intervalEnd[[1]] - mj_time_begin_end_tb$intervalBegin[[1]],
-    category = mj_time_begin_end_tb$category
+    duration = mj_time_begin_end_tb$intervalEnd[[1]] - mj_time_begin_end_tb$intervalBegin[[1]]
   )
 
 mj_time_tb %&gt;% 
-  group_by(category) %&gt;% 
-  skimr::skim()</code></pre>
-<table>
-<caption>(#tab:mijia_tile)Data summary</caption>
-<tbody>
-<tr class="odd">
-<td align="left">Name</td>
-<td align="left">Piped data</td>
-</tr>
-<tr class="even">
-<td align="left">Number of rows</td>
-<td align="left">4531</td>
-</tr>
-<tr class="odd">
-<td align="left">Number of columns</td>
-<td align="left">3</td>
-</tr>
-<tr class="even">
-<td align="left">_______________________</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">Column type frequency:</td>
-<td align="left"></td>
-</tr>
-<tr class="even">
-<td align="left">difftime</td>
-<td align="left">1</td>
-</tr>
-<tr class="odd">
-<td align="left">POSIXct</td>
-<td align="left">1</td>
-</tr>
-<tr class="even">
-<td align="left">________________________</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">Group variables</td>
-<td align="left">category</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: difftime</strong></p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">skim_variable</th>
-<th align="left">category</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="left">min</th>
-<th align="left">max</th>
-<th align="left">median</th>
-<th align="right">n_unique</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">duration</td>
-<td align="left">location</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="left">10.01 secs</td>
-<td align="left">1129.66 secs</td>
-<td align="left">10.19 secs</td>
-<td align="right">2052</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: POSIXct</strong></p>
-<table style="width:100%;">
-<colgroup>
-<col width="12%" />
-<col width="7%" />
-<col width="8%" />
-<col width="12%" />
-<col width="17%" />
-<col width="17%" />
-<col width="17%" />
-<col width="7%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">skim_variable</th>
-<th align="left">category</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="left">min</th>
-<th align="left">max</th>
-<th align="left">median</th>
-<th align="right">n_unique</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">begin</td>
-<td align="left">location</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="left">2021-10-08 05:34:21</td>
-<td align="left">2021-10-10 12:06:44</td>
-<td align="left">2021-10-08 21:26:44</td>
-<td align="right">4531</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>mj_time_tb %&gt;% 
   mutate(
     hour_of_day =
       hour(begin)
