@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # Rmarkdown to Markdown, local
 /rmd2md
+
+# ignore local_header files
+^local_*.R
