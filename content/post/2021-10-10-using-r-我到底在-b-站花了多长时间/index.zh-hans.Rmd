@@ -54,7 +54,7 @@ cookies <-
 
 ```{r set_cookies, include=FALSE}
 library("httr")
-source("set_cookies_background.R")
+source("local_set_cookies_background.R")
 ```
 
 在后续的操作中，只要在请求中附上 `cookies` 即可。
