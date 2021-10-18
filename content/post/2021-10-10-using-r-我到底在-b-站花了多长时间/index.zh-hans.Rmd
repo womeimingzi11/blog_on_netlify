@@ -1,7 +1,7 @@
 ---
 title: 'Using R: 我到底在 B 站花了多长时间？'
 author: Han Chen
-date: "Last edited at `r Sys.Date()`"
+date: "`r Sys.Date()`"
 slug: []
 categories:
   - Analysis

@@ -5,11 +5,12 @@
     <link>https://blog.washman.top/tags/httr/</link>
     <description>Recent content in httr on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language><atom:link href="https://blog.washman.top/tags/httr/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 18 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/httr/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Using R: 我到底在 B 站花了多长时间？</title>
       <link>https://blog.washman.top/post/2021-10-10-using-r-%E6%88%91%E5%88%B0%E5%BA%95%E5%9C%A8-b-%E7%AB%99%E8%8A%B1%E4%BA%86%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 18 Oct 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.washman.top/post/2021-10-10-using-r-%E6%88%91%E5%88%B0%E5%BA%95%E5%9C%A8-b-%E7%AB%99%E8%8A%B1%E4%BA%86%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4/</guid>
       <description>前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。 既然想要总结分析在 B 站的动态，数据获取必然是最重</description>
