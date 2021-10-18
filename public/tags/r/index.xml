@@ -88,5 +88,14 @@
       <description>Han (chenhan28@gmail.com) 在最近刚刚完成的一篇 SCI 文章中，为了描述实验的采样范围，通过 ggplot2 包 (Wickham et al. 2019) 将一组 RasterLayer 绘制成为了青藏高原的地形图。考虑到使用 R 绘制地图的中文内容较少，我们进行一次回顾。 PS 因为不是地理方面的文章/专业，所以</description>
     </item>
     
+    <item>
+      <title>Using R: 我到底在 B 站花了多长时间？</title>
+      <link>https://blog.washman.top/post/2021-10-10-using-r-%E6%88%91%E5%88%B0%E5%BA%95%E5%9C%A8-b-%E7%AB%99%E8%8A%B1%E4%BA%86%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2021-10-10-using-r-%E6%88%91%E5%88%B0%E5%BA%95%E5%9C%A8-b-%E7%AB%99%E8%8A%B1%E4%BA%86%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4/</guid>
+      <description>前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。 既然想要总结分析在 B 站的动态，数据获取必然是最重</description>
+    </item>
+    
   </channel>
 </rss>
