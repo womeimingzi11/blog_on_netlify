@@ -13,6 +13,9 @@ tags:
   - R
   - 爬虫
   - httr
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -26,6 +29,16 @@ tags:
 <link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
 
+<div id="TOC">
+<ul>
+<li><a href="#设置登陆信息">设置登陆信息</a></li>
+<li><a href="#获取历史记录">获取历史记录</a></li>
+<li><a href="#数据整理">数据整理</a></li>
+<li><a href="#我到底看了多久的视频">我到底看了多久的视频？</a></li>
+<li><a href="#什么时候才会看-b-站">什么时候才会看 B 站？</a></li>
+<li><a href="#我看了哪类视频">我看了哪类视频？</a></li>
+</ul>
+</div>
 
 <p>前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。</p>
 <p>既然想要总结分析在 B 站的动态，数据获取必然是最重要的，然而 B 站似乎并未提供公开的 API 供查询，幸而已有热心网友分享：</p>
