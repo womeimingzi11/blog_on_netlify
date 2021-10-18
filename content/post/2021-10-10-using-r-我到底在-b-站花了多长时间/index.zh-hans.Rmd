@@ -322,7 +322,7 @@ histroy_tidy_tb %>%
 
 文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。这里我们把 `tibble` 对象保存为 `Parquet` 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 [apache/arrow](https://github.com/apache/arrow/tree/master/r)。
 
-```{r save_tb}
+```{r save_tb, cache=TRUE, message=FALSE, warning=FALSE}
 library(arrow)
 write_parquet(histroy_tidy_tb, sink = "../assets/bilibili_histroy_tidy_tb.parquet")
 ```
