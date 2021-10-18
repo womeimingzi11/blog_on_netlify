@@ -1,7 +1,7 @@
 ---
 title: 'Using R: 我到底在 B 站花了多长时间？'
 author: Han Chen
-date: '2021-10-10'
+date: "Last edited at `r Sys.Date()`"
 slug: []
 categories:
   - Analysis
@@ -13,7 +13,7 @@ tags:
   - R
   - 爬虫
   - httr
-draft: yes
+# draft: yes
 ---
 
 前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。
@@ -107,22 +107,32 @@ history_tb <-
   reduce(history_resp_ls, bind_rows) %>% 
   as_tibble()
 
-glimpse(history_tb)
+# glimpse(history_tb)
 head(history_tb)
 summary(history_tb)
 ```
-对于数据的每一列的含义，项目中[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)均有解释。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？
+对于数据的每一列的含义，项目中[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)均有说明。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？
 
 ## 数据整理
 
-根据此前的 `summary()` 操作，我们发现记录观看时间的 `view_at` 键值大致为 `r history_tb$view_at[1]` 这样的形式，根据经验此处应为 Unix 时间戳，使用 `as.POSIXct` 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。
+根据此前的 `summary()` 以及[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)中的说明。`duration` 键值为视频长度，`progress` 为视频播放进度，对于完播视频其键值为 `-1`。为了便于计算播放时长，我们将 `duration` 与 `progress` 结合输出为 `play_time` 以计算播放时间。
+
+记录观看时间的 `view_at` 键值为 `r history_tb$view_at[1]` 这样的形式，根据经验此处应为 Unix 时间戳，使用 `as.POSIXct` 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。同样的方法来处理 `pubdate`。
+
+代表分区大类的 `tid` 键值类型为数值型，然而根据其实际意义，应与 `tname` 结合使用，通过 `forcats::fct_reorder` 根据 `tid` 对 `tname` 进行排序。
 
 ```{r data_transform, cache=TRUE, message=FALSE}
 library("lubridate")
+library("forcats")
 
-histroy_view_time_tb <-
+histroy_tidy_tb <-
   history_tb %>%
-  transmute(
+  mutate(
+    tname = fct_reorder(tname, tid),
+    play_time = 
+      if_else(progress<0, duration, progress),
+    pubdate = 
+      as.POSIXct(pubdate, origin = "1970-01-01"),
     view_at =
       as.POSIXct(view_at, origin = "1970-01-01"),
     date = date(view_at),
@@ -133,51 +143,68 @@ histroy_view_time_tb <-
 
 ## 我到底看了多久的视频？
 
+首先我们回答第一个问题，这段时间我到底看了多久的 B 站视频？
+
+```{r video_duration, cache=TRUE}
+total_sec <- histroy_tidy_tb %>% 
+  summarise(
+    min = min(view_at),
+    max = max(view_at),
+    total = sum(play_time))
+
+total_sec
+```
+
+从 `r total_sec$min` 到  `r total_sec$max` 总共看视频 `r total_sec$total` 秒！也就是`r round(total_sec$total/3600, digits = 2)` 小时！妈见打系列了属于是。
 
 ## 什么时候才会看 B 站？
 
 之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。
 
-```{r when_view_viz, cache=TRUE, message=TRUE}
+```{r when_view_viz, cache=TRUE, message=TRUE, warning=FALSE}
 library("ggplot2")
 library("cowplot")
 
 view_date_p <-
-  histroy_view_time_tb %>%
+  histroy_tidy_tb %>%
   group_by(date) %>%
-  count() %>%
-  ggplot(aes(x = date, y = n)) +
+  summarise(duration_sum = sum(play_time, na.rm = TRUE)/3600) %>%
+  ggplot(aes(x = date, y = duration_sum)) +
   geom_line() +
   scale_x_date(
     "",
-    date_breaks = "7 day")
+    date_breaks = "7 day") +
+  ylab("Total Play Duration\n(Hour)")
 
 view_time_p <-
-  histroy_view_time_tb %>%
+  histroy_tidy_tb %>%
   group_by(time) %>%
-  count() %>%
-  ggplot(aes(x = time, y = n)) +
+  summarise(duration_mean = mean(play_time, na.rm = TRUE)/3600) %>%
+  ggplot(aes(x = time, y = duration_mean)) +
   geom_col() +
   scale_x_continuous(
     "Time of Day",
-    limits = c(0, 24))
+    limits = c(0, 24)) +
+  ylab("Mean Play Duration\n(Hour/day)")
 
 view_dow_p <-
-  histroy_view_time_tb %>%
+  histroy_tidy_tb %>%
   group_by(dow) %>%
-  count() %>%
-  ggplot(aes(x = dow, y = n)) +
+  summarise(duration_mean = mean(play_time, na.rm = TRUE)/3600) %>%
+  ggplot(aes(x = dow, y = duration_mean)) +
   geom_col() +
-  scale_x_continuous("Day of Week")
+  scale_x_continuous("Day of Week") +
+  ylab("Mean Play Duration\n(Hour/day)")
 
 view_bottom_grid_p <-
   plot_grid(view_time_p,
             view_dow_p,
             labels = c("B", "C"))
+
 view_title_p <-
   ggdraw() +
   draw_label(
-    "Number of viewed videos (individual)", 
+    "Play Duration (Hour)", 
     fontface = "bold"
   ) +
   theme(
@@ -196,6 +223,109 @@ view_grid_p <-
 view_grid_p
 ```
 
-从可视化结果来看，9月2日、9月23日以及10月2日我看了比往常更多个B站频。此外周三、周四以及周六我刷视频个数似乎更多，然而最有趣的是，我到底是个怎样的夜猫子哇，为什么凌晨一点会刷那么多的视频？？？？注意身体哇<del>少年</del>中年。
+从可视化结果来看9月23号到10月2日我看了比往常更多个B站频。此外周一周二我刷视频时间似乎更久，然而最有趣的是，我到底是个怎样的夜猫子哇，居然凌晨也不休息？？？？注意身体哇<del>少年</del>中年。
 
+## 我看了哪类视频？
+
+既然花费了那么久看视频，那么我到底看了什么视频呢？
+
+```{r category_viz, cache=TRUE, message=TRUE, warning=FALSE, fig.height=12}
+library(forcats)
+library(showtext)
+
+showtext_auto()
+
+histroy_tidy_tb %>% 
+  select(
+    tname,
+    play_time
+  ) %>% 
+  group_by(tname) %>% 
+  summarise(duration_sum = sum(play_time, na.rm = TRUE)/3600) %>% 
+  mutate(tname = fct_reorder(
+    tname, duration_sum
+  )) %>% 
+  ggplot(aes(x = tname,
+             y = duration_sum)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "播放时长 （小时）",
+       y = "子分类") +
+  theme(text = element_text(family = "source-han-sans-cn"))
+```
+
+再来看看不同时间看视频类型有没有什么差别。按照 `time` 和 `tname` 分类，观察每天不同类型视频的时常。
+
+```{r category_time_viz, cache=TRUE, message=FALSE, warning=FALSE}
+showtext_auto()
+
+histroy_tidy_tb %>% 
+  group_by(time, tname) %>%
+  summarise(duration_mean_by_type = mean(play_time, na.rm = TRUE)/3600)  %>%
+  select(
+    tname, time, duration_mean_by_type
+  ) %>% 
+  ggplot(aes(x = time,
+             y = duration_mean_by_type,
+             fill = tname
+             )) +
+  geom_col()
+```
+
+然而因为分类过于丰富了，反而看不出规律了。为了便于数据可视化，我们这里尝试将播放时长较短的类型合并，将类别播放总时间低于整体播放总时间 1% 的视频分类归为其它。
+
+```{r tname_to_type_viz, cache=TRUE, message=FALSE, warning=FALSE}
+library("colorspace")
+
+history_type_aggregate_tb <-
+  histroy_tidy_tb %>%
+  select(tname,
+         play_time) %>%
+  group_by(tname) %>%
+  summarise(duration_sum = sum(play_time, na.rm = TRUE) / 3600) %>%
+  mutate(percentage = duration_sum / sum(duration_sum),
+         tname = as.character(tname)) %>%
+  mutate(type = if_else(percentage >= .01, tname, 'other')) %>%
+  group_by(type) %>%
+  summarise(duration_sum = sum(duration_sum)) %>% 
+  arrange(desc(duration_sum))
+
+knitr::kable(history_type_aggregate_tb)
+
+showtext_auto()
+
+histroy_tidy_tb %>% 
+  mutate(
+    tname = as.character(tname),
+    type = if_else(tname %in% history_type_aggregate_tb$type, 
+                   tname,
+                   "other"
+    )) %>% 
+  group_by(time, type) %>%
+  summarise(duration_mean_by_type = mean(play_time, na.rm = TRUE)/3600)  %>%
+  select(
+    type, time, duration_mean_by_type
+  ) %>% 
+  ggplot(aes(x = time,
+             y = duration_mean_by_type,
+             fill = type,
+             label = type
+  )) +
+  geom_col() +
+  labs(x = "时间",
+       y = "播放时长\n(小时)",
+       fill = "视频类别") +
+  theme_classic() +
+  scale_fill_discrete_sequential("Batlow")
+```
+
+看起来，我仍然是那个爱看别人打游戏的少年，一天中只要看 B 站，就会花时间看单机游戏。其次在凌晨和中午就比较喜欢看影视杂谈类的视频。最后到了半下午和晚上，就喜欢看美食类的节目……果然是个几百斤的孩子呢（摊手
+
+文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。这里我们把 `tibble` 对象保存为 `Parquet` 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 [apache/arrow](https://github.com/apache/arrow/tree/master/r)。
+
+```{r save_tb}
+library(arrow)
+write_parquet(histroy_tidy_tb, sink = "../assets/bilibili_histroy_tidy_tb.parquet")
+```
+---
 欢迎通过[邮箱](mailto://chenhan28@gmail.com)，[微博](https://weibo.com/womeimingzi11), [Twitter](https://twitter.com/chenhan1992)以及[知乎](https://www.zhihu.com/people/womeimingzi)与我联系。也欢迎关注[我的博客](https://blog.washman.top/)。如果能对[我的 Github](https://github.com/womeimingzi11) 感兴趣，就再欢迎不过啦！

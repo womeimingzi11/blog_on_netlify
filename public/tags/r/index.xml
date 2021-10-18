@@ -6,7 +6,25 @@
     <description>Recent content in R on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 11 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using R: iOS App 背着我们干了啥？</title>
+      <link>https://blog.washman.top/post/2021-10-12-what-you-did-app/</link>
+      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2021-10-12-what-you-did-app/</guid>
+      <description>最近随着 iOS 15 中「记录 App 活动」功能的加入，以微信为代表的一类软件频繁读写用户信息的行为被抓了现形。具体的新闻可以阅读 Hackl0us 发布在知乎的记录. 虽然微信在 10 月 11 日发布了新版似乎修复了这个问题，然而美团针对每 5 分</description>
+    </item>
+    
+    <item>
+      <title>Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</title>
+      <link>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</guid>
+      <description>最近跑的一段程序，其中需要对栅格文件进行批量读写，然而使用多 session 的并行无法批量处理 raster 文件，而基于 fork 策略的并行方法又无法在 Windows 中调用。于是只能考虑在 Unix 或者 Linux 中完成。然而，手头 MacBook 性能不足，PC 上面虽然装了 Ryzentosh 但</description>
+    </item>
+    
     <item>
       <title>Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’</title>
       <link>https://blog.washman.top/post/2021-04-25-rjava-error-configuration-failed-for-package-rjava/</link>
@@ -17,12 +35,48 @@
     </item>
     
     <item>
+      <title>amapGeocode: 使用R进行高德地图地理编码/逆编码</title>
+      <link>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</link>
+      <pubDate>Fri, 09 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-10-09-amapgeocode-introduce-amap/amapgeocode-%E4%BD%BF%E7%94%A8r%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E5%9C%B0%E7%90%86%E7%BC%96%E7%A0%81-%E9%80%86%E7%BC%96%E7%A0%81.zh-hans/</guid>
+      <description>在最近的学习中，大量使用到了地理编码与地理逆编码，然而不幸的是目前广泛在 R 中介绍的能完成该任务的包因为 API 的 Breaking Upgrade 很多功能已经失效了。尤其是意外的发现，目前的包主要由百度地图 API 作数据源，于是为了满足在 R 中</description>
+    </item>
+    
+    <item>
+      <title>Using R 番外: R 包开发中 vignette/test token 的处理</title>
+      <link>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</link>
+      <pubDate>Fri, 25 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/</guid>
+      <description>作为一个不怎么 Skr 的 API Wrapper，最近花式的用到了高德地图的地理编码/逆编码服务，与其散乱各处每次都要反复修改 function 代码，不如干脆就封装成 package，还能方便自己和团队今后的使用。 作为年轻人（并不）</description>
+    </item>
+    
+    <item>
       <title>R Shiny: 使用 moreThanANOVA 进行「正确」的显著性检验</title>
       <link>https://blog.washman.top/post/shiny-apps-%E4%BD%BF%E7%94%A8-morethananova-%E8%BF%9B%E8%A1%8C-%E6%AD%A3%E7%A1%AE-%E7%9A%84%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C.zh-hans/</link>
       <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.washman.top/post/shiny-apps-%E4%BD%BF%E7%94%A8-morethananova-%E8%BF%9B%E8%A1%8C-%E6%AD%A3%E7%A1%AE-%E7%9A%84%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C.zh-hans/</guid>
       <description>TL:DR 使用 moreThanANOVA 可以自动选择适当的方法显著性检验并输出多重比较的图表（如题图） ANOVA 不是万金油 显著性检验可以说是自然科学领域中最常见的操作，毕竟探究处理间是否有差异、区域间特征异同是后续探索以及假设的第一步。 然而</description>
+    </item>
+    
+    <item>
+      <title>Using R: 方差分解（Variation partition）变量筛选与显著性标注</title>
+      <link>https://blog.washman.top/post/2020-05-11-vpart-and-significant/%E6%96%B9%E5%B7%AE%E5%88%86%E8%A7%A3%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A0%87%E6%B3%A8.zh-hans/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-05-11-vpart-and-significant/%E6%96%B9%E5%B7%AE%E5%88%86%E8%A7%A3%E5%8F%98%E9%87%8F%E7%AD%9B%E9%80%89%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A0%87%E6%B3%A8.zh-hans/</guid>
+      <description>何为反差分解？ 关于方差分解的数学原理，在 GUSTA ME 这篇文章 Variation partitioning 有非常清晰且容易理解的介绍。 引用经管之家网友 lovecather668 在var中方差分解的意义 中的回答： VAR中的方差分解是分析影响内生变量的结构冲击的贡献度。例如，有</description>
+    </item>
+    
+    <item>
+      <title>Using R: ggplot2 可视化 RDA 结果</title>
+      <link>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</link>
+      <pubDate>Tue, 28 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/2020-04-28-ggplot2-rda-visualization/using-r-for-everything-ggplot2-%E5%8F%AF%E8%A7%86%E5%8C%96-rda-%E7%BB%93%E6%9E%9C.zh-hans/</guid>
+      <description>关于 RDA（Redundancy analysis 冗余分析）是什么，相信对于已经有可视化需求的同学来说已经不用更多的解释了。 在 R 中常用来进行 RDA 分析和绘制工作的是 vegan 和 ggvegan 这两个包。然而，在实际使用中，最常遇到的问题是虽然</description>
     </item>
     
     <item>

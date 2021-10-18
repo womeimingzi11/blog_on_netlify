@@ -1,7 +1,7 @@
 ---
 title: 'Using R: 我到底在 B 站花了多长时间？'
 author: Han Chen
-date: '2021-10-10'
+date: "Last edited at 2021-10-18"
 slug: []
 categories:
   - Analysis
@@ -13,7 +13,7 @@ tags:
   - R
   - 爬虫
   - httr
-draft: yes
+# draft: yes
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -87,47 +87,8 @@ history_tb &lt;-
   reduce(history_resp_ls, bind_rows) %&gt;% 
   as_tibble()
 
-glimpse(history_tb)</code></pre>
-<pre><code>## Rows: 1,200
-## Columns: 37
-## $ aid           &lt;int&gt; 548555070, 763529824, 590703462, 208522684, 208528325, 4…
-## $ videos        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-## $ tid           &lt;int&gt; 228, 212, 239, 182, 17, 228, 228, 21, 21, 21, 213, 21, 1…
-## $ tname         &lt;chr&gt; &quot;人文历史&quot;, &quot;美食侦探&quot;, &quot;家居房产&quot;, &quot;影视杂谈&quot;, &quot;单机游…
-## $ copyright     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-## $ pic           &lt;chr&gt; &quot;http://i0.hdslb.com/bfs/archive/0faed6cddf7023bc15e3574…
-## $ title         &lt;chr&gt; &quot;职场溃败？婚恋贬值？堕胎弑父？日韩女权为啥被男权“反杀…
-## $ pubdate       &lt;int&gt; 1634297417, 1634357105, 1632710912, 1634349464, 16343424…
-## $ ctime         &lt;int&gt; 1634292246, 1634357107, 1632710912, 1634349464, 16343424…
-## $ desc          &lt;chr&gt; &quot;脱钩躺平的日本女权为什么让男性成了赢家？\n魔怔对轰的韩…
-## $ state         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-## $ duration      &lt;int&gt; 1118, 740, 365, 2375, 784, 1864, 1323, 192, 723, 1092, 5…
-## $ mission_id    &lt;int&gt; 166436, 149948, 122681, NA, NA, 118047, 63528, 151951, N…
-## $ rights        &lt;df[,12]&gt; &lt;data.frame[26 x 12]&gt;
-## $ owner         &lt;df[,3]&gt; &lt;data.frame[26 x 3]&gt;
-## $ stat          &lt;df[,11]&gt; &lt;data.frame[26 x 11]&gt;
-## $ dynamic       &lt;chr&gt; &quot;脱钩躺平的日本女权为什么让男性成了赢家？\n魔怔对轰…
-## $ cid           &lt;int&gt; 425484290, 425687871, 415232261, 425816695, 425771863…
-## $ dimension     &lt;df[,3]&gt; &lt;data.frame[26 x 3]&gt;
-## $ short_link_v2 &lt;chr&gt; &quot;https://b23.tv/BV1wq4y157j2&quot;, &quot;https://b23.tv/BV1qr…
-## $ favorite      &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, …
-## $ type          &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,…
-## $ sub_type      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-## $ device        &lt;int&gt; 2, 1, 2, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4,…
-## $ page          &lt;df[,8]&gt; &lt;data.frame[26 x 8]&gt;
-## $ count         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-## $ progress      &lt;int&gt; 1077, 648, 1, 17, 332, 172, 2, -1, 113, 31, 123, -1, 571…
-## $ view_at       &lt;int&gt; 1634370752, 1634362956, 1634359009, 1634349864, 16343498…
-## $ kid           &lt;int&gt; 548555070, 763529824, 590703462, 208522684, 208528325, 4…
-## $ business      &lt;chr&gt; &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;, &quot;archive&quot;…
-## $ redirect_link &lt;chr&gt; &quot;https://www.bilibili.com/video/av548555070&quot;, &quot;https://w…
-## $ bvid          &lt;chr&gt; &quot;BV1wq4y157j2&quot;, &quot;BV1qr4y1278D&quot;, &quot;BV1Wq4y1o7N6&quot;, &quot;BV1hh41…
-## $ season_id     &lt;int&gt; NA, NA, NA, NA, NA, 29416, 29416, NA, NA, NA, NA, NA, NA…
-## $ up_from_v2    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, 8, 8, 8, NA, 8, 9, NA, NA, N…
-## $ redirect_url  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ bangumi       &lt;df[,7]&gt; &lt;data.frame[26 x 7]&gt;
-## $ cheese        &lt;df[,5]&gt; &lt;data.frame[26 x 5]&gt;</code></pre>
-<pre class="r"><code>head(history_tb)</code></pre>
+# glimpse(history_tb)
+head(history_tb)</code></pre>
 <pre><code>## # A tibble: 6 × 37
 ##         aid videos   tid tname   copyright pic   title pubdate  ctime desc  state
 ##       &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;chr&gt;       &lt;int&gt; &lt;chr&gt; &lt;chr&gt;   &lt;int&gt;  &lt;int&gt; &lt;chr&gt; &lt;int&gt;
@@ -194,12 +155,12 @@ glimpse(history_tb)</code></pre>
 ##  Max.   :2119441601    NA                    NA                  
 ##                                                                  
 ##       stat.aid             stat.view          stat.danmaku          stat.reply          stat.favorite          stat.coin           stat.share          stat.now_rank        stat.his_rank          stat.like          stat.dislike    
-##  Min.   :  2599625    Min.   :     342     Min.   :     0.00    Min.   :    0.00     Min.   :     0.0     Min.   :     0.0     Min.   :     0.00    Min.   :0            Min.   :  0.0000     Min.   :      0.0    Min.   :0          
-##  1st Qu.:335748249    1st Qu.:  143143     1st Qu.:   252.75    1st Qu.:  236.00     1st Qu.:   575.8     1st Qu.:   410.8     1st Qu.:    93.75    1st Qu.:0            1st Qu.:  0.0000     1st Qu.:   5783.2    1st Qu.:0          
-##  Median :548441262    Median :  463840     Median :  1001.50    Median :  672.50     Median :  2535.0     Median :  2303.0     Median :   537.50    Median :0            Median :  0.0000     Median :  18102.0    Median :0          
-##  Mean   :553406301    Mean   : 1265402     Mean   :  4445.64    Mean   : 1656.88     Mean   : 13284.8     Mean   : 21799.3     Mean   :  4757.16    Mean   :0            Mean   :  6.1483     Mean   :  67042.3    Mean   :0          
-##  3rd Qu.:763034751    3rd Qu.: 1420766     3rd Qu.:  3782.00    3rd Qu.: 1786.00     3rd Qu.:  8644.8     3rd Qu.: 11958.2     3rd Qu.:  2452.25    3rd Qu.:0            3rd Qu.:  0.0000     3rd Qu.:  67681.8    3rd Qu.:0          
-##  Max.   :976108546    Max.   :26731623     Max.   :175758.00    Max.   :36855.00     Max.   :727994.0     Max.   :954554.0     Max.   :279190.00    Max.   :0            Max.   :819.0000     Max.   :1442109.0    Max.   :0          
+##  Min.   :  2599625    Min.   :     345     Min.   :     0.00    Min.   :    0.00     Min.   :     0.0     Min.   :     0.0     Min.   :     0.00    Min.   :0            Min.   :  0.0000     Min.   :      0.0    Min.   :0          
+##  1st Qu.:335748249    1st Qu.:  143161     1st Qu.:   252.75    1st Qu.:  236.00     1st Qu.:   575.8     1st Qu.:   410.8     1st Qu.:    93.75    1st Qu.:0            1st Qu.:  0.0000     1st Qu.:   5792.2    1st Qu.:0          
+##  Median :548441262    Median :  463887     Median :  1001.50    Median :  672.50     Median :  2535.5     Median :  2304.0     Median :   537.50    Median :0            Median :  0.0000     Median :  18104.0    Median :0          
+##  Mean   :553406301    Mean   : 1265763     Mean   :  4446.50    Mean   : 1657.17     Mean   : 13287.5     Mean   : 21805.3     Mean   :  4757.99    Mean   :0            Mean   :  6.1367     Mean   :  67060.7    Mean   :0          
+##  3rd Qu.:763034751    3rd Qu.: 1420778     3rd Qu.:  3782.00    3rd Qu.: 1786.25     3rd Qu.:  8645.5     3rd Qu.: 11958.2     3rd Qu.:  2454.50    3rd Qu.:0            3rd Qu.:  0.0000     3rd Qu.:  67722.0    3rd Qu.:0          
+##  Max.   :976108546    Max.   :26733751     Max.   :175758.00    Max.   :36859.00     Max.   :728040.0     Max.   :954574.0     Max.   :279194.00    Max.   :0            Max.   :819.0000     Max.   :1442142.0    Max.   :0          
 ##                                                                                                                                                                                                                                       
 ##    dynamic               cid           
 ##  Length:1200        Min.   :  4062651  
@@ -281,16 +242,24 @@ glimpse(history_tb)</code></pre>
 ##  3rd Qu.:359         NA                  NA                  NA                  NA                
 ##  Max.   :359         NA                  NA                  NA                  NA                
 ##  NA&#39;s   :1199        NA                  NA                  NA                  NA</code></pre>
-<p>对于数据的每一列的含义，项目中<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>均有解释。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？</p>
+<p>对于数据的每一列的含义，项目中<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>均有说明。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？</p>
 </div>
 <div id="数据整理" class="section level2">
 <h2>数据整理</h2>
-<p>根据此前的 <code>summary()</code> 操作，我们发现记录观看时间的 <code>view_at</code> 键值大致为 1634370752 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。</p>
+<p>根据此前的 <code>summary()</code> 以及<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>中的说明。<code>duration</code> 键值为视频长度，<code>progress</code> 为视频播放进度，对于完播视频其键值为 <code>-1</code>。为了便于计算播放时长，我们将 <code>duration</code> 与 <code>progress</code> 结合输出为 <code>play_time</code> 以计算播放时间。</p>
+<p>记录观看时间的 <code>view_at</code> 键值为 1634370752 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。同样的方法来处理 <code>pubdate</code>。</p>
+<p>代表分区大类的 <code>tid</code> 键值类型为数值型，然而根据其实际意义，应与 <code>tname</code> 结合使用，通过 <code>forcats::fct_reorder</code> 根据 <code>tid</code> 对 <code>tname</code> 进行排序。</p>
 <pre class="r"><code>library(&quot;lubridate&quot;)
+library(&quot;forcats&quot;)
 
-histroy_view_time_tb &lt;-
+histroy_tidy_tb &lt;-
   history_tb %&gt;%
-  transmute(
+  mutate(
+    tname = fct_reorder(tname, tid),
+    play_time = 
+      if_else(progress&lt;0, duration, progress),
+    pubdate = 
+      as.POSIXct(pubdate, origin = &quot;1970-01-01&quot;),
     view_at =
       as.POSIXct(view_at, origin = &quot;1970-01-01&quot;),
     date = date(view_at),
@@ -300,54 +269,66 @@ histroy_view_time_tb &lt;-
 </div>
 <div id="我到底看了多久的视频" class="section level2">
 <h2>我到底看了多久的视频？</h2>
+<p>首先我们回答第一个问题，这段时间我到底看了多久的 B 站视频？</p>
+<pre class="r"><code>total_sec &lt;- histroy_tidy_tb %&gt;% 
+  summarise(
+    min = min(view_at),
+    max = max(view_at),
+    total = sum(play_time))
+
+total_sec</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   min                 max                  total
+##   &lt;dttm&gt;              &lt;dttm&gt;               &lt;int&gt;
+## 1 2021-08-31 15:13:58 2021-10-16 15:52:32 321262</code></pre>
+<p>从 2021-08-31 15:13:58 到 2021-10-16 15:52:32 总共看视频 321262 秒！也就是89.24 小时！妈见打系列了属于是。</p>
 </div>
 <div id="什么时候才会看-b-站" class="section level2">
 <h2>什么时候才会看 B 站？</h2>
 <p>之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。</p>
 <pre class="r"><code>library(&quot;ggplot2&quot;)
-library(&quot;cowplot&quot;)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;cowplot&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lubridate&#39;:
-## 
-##     stamp</code></pre>
-<pre class="r"><code>view_date_p &lt;-
-  histroy_view_time_tb %&gt;%
+library(&quot;cowplot&quot;)
+
+view_date_p &lt;-
+  histroy_tidy_tb %&gt;%
   group_by(date) %&gt;%
-  count() %&gt;%
-  ggplot(aes(x = date, y = n)) +
+  summarise(duration_sum = sum(play_time, na.rm = TRUE)/3600) %&gt;%
+  ggplot(aes(x = date, y = duration_sum)) +
   geom_line() +
   scale_x_date(
     &quot;&quot;,
-    date_breaks = &quot;7 day&quot;)
+    date_breaks = &quot;7 day&quot;) +
+  ylab(&quot;Total Play Duration\n(Hour)&quot;)
 
 view_time_p &lt;-
-  histroy_view_time_tb %&gt;%
+  histroy_tidy_tb %&gt;%
   group_by(time) %&gt;%
-  count() %&gt;%
-  ggplot(aes(x = time, y = n)) +
+  summarise(duration_mean = mean(play_time, na.rm = TRUE)/3600) %&gt;%
+  ggplot(aes(x = time, y = duration_mean)) +
   geom_col() +
   scale_x_continuous(
     &quot;Time of Day&quot;,
-    limits = c(0, 24))
+    limits = c(0, 24)) +
+  ylab(&quot;Mean Play Duration\n(Hour/day)&quot;)
 
 view_dow_p &lt;-
-  histroy_view_time_tb %&gt;%
+  histroy_tidy_tb %&gt;%
   group_by(dow) %&gt;%
-  count() %&gt;%
-  ggplot(aes(x = dow, y = n)) +
+  summarise(duration_mean = mean(play_time, na.rm = TRUE)/3600) %&gt;%
+  ggplot(aes(x = dow, y = duration_mean)) +
   geom_col() +
-  scale_x_continuous(&quot;Day of Week&quot;)
+  scale_x_continuous(&quot;Day of Week&quot;) +
+  ylab(&quot;Mean Play Duration\n(Hour/day)&quot;)
 
 view_bottom_grid_p &lt;-
   plot_grid(view_time_p,
             view_dow_p,
-            labels = c(&quot;B&quot;, &quot;C&quot;))</code></pre>
-<pre><code>## Warning: Removed 2 rows containing missing values (geom_col).</code></pre>
-<pre class="r"><code>view_title_p &lt;-
+            labels = c(&quot;B&quot;, &quot;C&quot;))
+
+view_title_p &lt;-
   ggdraw() +
   draw_label(
-    &quot;Number of viewed videos (individual)&quot;, 
+    &quot;Play Duration (Hour)&quot;, 
     fontface = &quot;bold&quot;
   ) +
   theme(
@@ -365,6 +346,163 @@ view_grid_p &lt;-
 
 view_grid_p</code></pre>
 <p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/when_view_viz-1.png" width="672" /></p>
-<p>从可视化结果来看，9月2日、9月23日以及10月2日我看了比往常更多个B站频。此外周三、周四以及周六我刷视频个数似乎更多，然而最有趣的是，我到底是个怎样的夜猫子哇，为什么凌晨一点会刷那么多的视频？？？？注意身体哇<del>少年</del>中年。</p>
+<p>从可视化结果来看9月23号到10月2日我看了比往常更多个B站频。此外周一周二我刷视频时间似乎更久，然而最有趣的是，我到底是个怎样的夜猫子哇，居然凌晨也不休息？？？？注意身体哇<del>少年</del>中年。</p>
+</div>
+<div id="我看了哪类视频" class="section level2">
+<h2>我看了哪类视频？</h2>
+<p>既然花费了那么久看视频，那么我到底看了什么视频呢？</p>
+<pre class="r"><code>library(forcats)
+library(showtext)
+
+showtext_auto()
+
+histroy_tidy_tb %&gt;% 
+  select(
+    tname,
+    play_time
+  ) %&gt;% 
+  group_by(tname) %&gt;% 
+  summarise(duration_sum = sum(play_time, na.rm = TRUE)/3600) %&gt;% 
+  mutate(tname = fct_reorder(
+    tname, duration_sum
+  )) %&gt;% 
+  ggplot(aes(x = tname,
+             y = duration_sum)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = &quot;播放时长 （小时）&quot;,
+       y = &quot;子分类&quot;) +
+  theme(text = element_text(family = &quot;source-han-sans-cn&quot;))</code></pre>
+<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/category_viz-1.png" width="672" /></p>
+<p>再来看看不同时间看视频类型有没有什么差别。按照 <code>time</code> 和 <code>tname</code> 分类，观察每天不同类型视频的时常。</p>
+<pre class="r"><code>showtext_auto()
+
+histroy_tidy_tb %&gt;% 
+  group_by(time, tname) %&gt;%
+  summarise(duration_mean_by_type = mean(play_time, na.rm = TRUE)/3600)  %&gt;%
+  select(
+    tname, time, duration_mean_by_type
+  ) %&gt;% 
+  ggplot(aes(x = time,
+             y = duration_mean_by_type,
+             fill = tname
+             )) +
+  geom_col()</code></pre>
+<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/category_time_viz-1.png" width="672" /></p>
+<p>然而因为分类过于丰富了，反而看不出规律了。为了便于数据可视化，我们这里尝试将播放时长较短的类型合并，将类别播放总时间低于整体播放总时间 1% 的视频分类归为其它。</p>
+<pre class="r"><code>library(&quot;colorspace&quot;)
+
+history_type_aggregate_tb &lt;-
+  histroy_tidy_tb %&gt;%
+  select(tname,
+         play_time) %&gt;%
+  group_by(tname) %&gt;%
+  summarise(duration_sum = sum(play_time, na.rm = TRUE) / 3600) %&gt;%
+  mutate(percentage = duration_sum / sum(duration_sum),
+         tname = as.character(tname)) %&gt;%
+  mutate(type = if_else(percentage &gt;= .01, tname, &#39;other&#39;)) %&gt;%
+  group_by(type) %&gt;%
+  summarise(duration_sum = sum(duration_sum)) %&gt;% 
+  arrange(desc(duration_sum))
+
+knitr::kable(history_type_aggregate_tb)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">type</th>
+<th align="right">duration_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">单机游戏</td>
+<td align="right">21.296667</td>
+</tr>
+<tr class="even">
+<td align="left">人文历史</td>
+<td align="right">17.441944</td>
+</tr>
+<tr class="odd">
+<td align="left">搞笑</td>
+<td align="right">11.794167</td>
+</tr>
+<tr class="even">
+<td align="left">other</td>
+<td align="right">8.030833</td>
+</tr>
+<tr class="odd">
+<td align="left">日常</td>
+<td align="right">6.670000</td>
+</tr>
+<tr class="even">
+<td align="left">美食侦探</td>
+<td align="right">6.540278</td>
+</tr>
+<tr class="odd">
+<td align="left">影视杂谈</td>
+<td align="right">4.636389</td>
+</tr>
+<tr class="even">
+<td align="left">美食制作</td>
+<td align="right">4.466667</td>
+</tr>
+<tr class="odd">
+<td align="left">数码</td>
+<td align="right">2.066111</td>
+</tr>
+<tr class="even">
+<td align="left">社科·法律·心理</td>
+<td align="right">1.768056</td>
+</tr>
+<tr class="odd">
+<td align="left">美食测评</td>
+<td align="right">1.553889</td>
+</tr>
+<tr class="even">
+<td align="left">财经商业</td>
+<td align="right">1.532222</td>
+</tr>
+<tr class="odd">
+<td align="left">美食记录</td>
+<td align="right">1.442222</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>showtext_auto()
+
+histroy_tidy_tb %&gt;% 
+  mutate(
+    tname = as.character(tname),
+    type = if_else(tname %in% history_type_aggregate_tb$type, 
+                   tname,
+                   &quot;other&quot;
+    )) %&gt;% 
+  group_by(time, type) %&gt;%
+  summarise(duration_mean_by_type = mean(play_time, na.rm = TRUE)/3600)  %&gt;%
+  select(
+    type, time, duration_mean_by_type
+  ) %&gt;% 
+  ggplot(aes(x = time,
+             y = duration_mean_by_type,
+             fill = type,
+             label = type
+  )) +
+  geom_col() +
+  labs(x = &quot;时间&quot;,
+       y = &quot;播放时长\n(小时)&quot;,
+       fill = &quot;视频类别&quot;) +
+  theme_classic() +
+  scale_fill_discrete_sequential(&quot;Batlow&quot;)</code></pre>
+<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/tname_to_type_viz-1.png" width="672" /></p>
+<p>看起来，我仍然是那个爱看别人打游戏的少年，一天中只要看 B 站，就会花时间看单机游戏。其次在凌晨和中午就比较喜欢看影视杂谈类的视频。最后到了半下午和晚上，就喜欢看美食类的节目……果然是个几百斤的孩子呢（摊手</p>
+<p>文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。这里我们把 <code>tibble</code> 对象保存为 <code>Parquet</code> 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 <a href="https://github.com/apache/arrow/tree/master/r">apache/arrow</a>。</p>
+<pre class="r"><code>library(arrow)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;arrow&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     timestamp</code></pre>
+<pre class="r"><code>write_parquet(histroy_tidy_tb, sink = &quot;../assets/bilibili_histroy_tidy_tb.parquet&quot;)</code></pre>
+<hr />
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 </div>

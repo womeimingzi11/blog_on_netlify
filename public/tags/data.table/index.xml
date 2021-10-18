@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>data.table on 洗衣机的博客</title>
+    <link>https://blog.washman.top/tags/data.table/</link>
+    <description>Recent content in data.table on 洗衣机的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 14 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/tags/data.table/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</title>
+      <link>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</guid>
+      <description>最近跑的一段程序，其中需要对栅格文件进行批量读写，然而使用多 session 的并行无法批量处理 raster 文件，而基于 fork 策略的并行方法又无法在 Windows 中调用。于是只能考虑在 Unix 或者 Linux 中完成。然而，手头 MacBook 性能不足，PC 上面虽然装了 Ryzentosh 但</description>
+    </item>
+    
+  </channel>
+</rss>

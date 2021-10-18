@@ -41,8 +41,8 @@ Singh et al.(2018) 在 Scientific Report 上发表的文章[《tropical forest c
 # suppressMessages will hide message from loading package, it makes the output clearer
 library(tidyverse)
 # col_types = cols() will suppress message about the column type to make the output clearer
-df_com <- read_csv('assets/2020-04-28-post/df_com_smp.csv', col_types = cols())
-df_env <- read_csv('assets/2020-04-28-post/df_env_smp.csv', col_types = cols())
+df_com <- read_csv('../assets/2020-04-28-post/df_com_smp.csv', col_types = cols())
+df_env <- read_csv('../assets/2020-04-28-post/df_env_smp.csv', col_types = cols())
 
 # Take a glimpse about the structure of data frame
 glimpse(df_com)

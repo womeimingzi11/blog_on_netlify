@@ -50,9 +50,9 @@ library('vegan')
 library('tidyverse')
 
 # read Environmental Variables
-  df_env <- read_csv('assets/2020-04-28-post/df_env_smp.csv')
+  df_env <- read_csv('../assets/2020-04-28-post/df_env_smp.csv')
 # read Community composition matrix
-df_com <- read_csv('assets/2020-04-28-post/df_com_smp.csv')
+df_com <- read_csv('../assets/2020-04-28-post/df_com_smp.csv')
 
 # View the structure of data
 DT::datatable(df_env)

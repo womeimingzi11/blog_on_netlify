@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>
+    amapGeocode: 使用R进行高德地图地理编码/逆编码 | 洗衣机的博客
+  </title>
+
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+  
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/modern-normalize@0.6.0/modern-normalize.css"
+  />
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://blog.washman.top/style.min.bd2cee8cbd90a87d0e442d03c16f05be6e30184eb160d1d9013e70e07b8490f4.css" integrity="sha256-vSzujL2QqH0ORC0DwW8Fvm4wGE6xYNHZAT5w4HuEkPQ=" />
+
+  
+  
+    
+  
+</head>
+
+    <body>
+        <header id="header">
+  <div class="header_container">
+    <h1 class="sitetitle">
+      <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a>
+    </h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="https://blog.washman.top/">Home</a></li>
+        
+          <li>
+            <a href="/about/">
+              
+              <span>About Me</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/tags/">
+              
+              <span>Tags</span>
+            </a>
+          </li>
+        
+          <li>
+            <a href="/post/">
+              
+              <span>Posts</span>
+            </a>
+          </li>
+        
+        <li class="hide-sm"><a href="https://blog.washman.top/index.xml" type="application/rss+xml">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+        
+<section id="main">
+  <article class="post content">
+    <h2 class="title">amapGeocode: 使用R进行高德地图地理编码/逆编码</h2>
+    <div class="post_content">
+      
+<script src="2020-10-09-amapgeocode-使用r进行高德地图地理编码-逆编码_files/header-attrs/header-attrs.js"></script>
+
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<p>在最近的学习中，大量使用到了地理编码与地理逆编码，然而不幸的是目前广泛在 R 中介绍的能完成该任务的包因为 API 的 Breaking Upgrade 很多功能已经失效了。尤其是意外的发现，目前的包主要由百度地图 API 作数据源，于是为了满足在 R 中使用高德地图 API 进行地理编码与逆编码的需求，开发了 <a href="https://github.com/womeimingzi11/amapGeocode"><code>amapGeocode</code></a> 这款包，如果能对有同样需求的同学有任何帮助，将不胜荣幸。</p>
+<div id="什么是地理编码逆编码" class="section level2">
+<h2>什么是地理编码/逆编码</h2>
+<p>根据<a href="https://www.zhihu.com/people/di-li-xiao-zi">地理小子</a>在文章<a href="https://zhuanlan.zhihu.com/p/22095359">《地理编码与逆地理编码（上）——理解地理编码》</a>中的陈述：</p>
+<blockquote>
+<p>地理编码指将地名的详细地址以地理坐标（如经纬度)表示的过程。其中，将地址信息映射为地理坐标的过程称之为地理编码；将地理坐标转换为地址信息的过程称之为逆地理编码。如图1.1所示为地理编码和逆地理编码的关系。</p>
+</blockquote>
+<div class="figure">
+<img src="https://pic3.zhimg.com/80/d2e918ce2b6e6f44d72e2d7659d60566_1440w.jpg" alt="" />
+<p class="caption">图1.1-<a href="https://www.zhihu.com/people/di-li-xiao-zi">地理小子</a>-<a href="https://zhuanlan.zhihu.com/p/22095359">《地理编码与逆地理编码（上）——理解地理编码》</a></p>
+</div>
+<p>无论是在科学研究还是数据处理的过程中，凡是涉及到位置信息的情况，经常会使用到地理编码与逆编码：例如给定样本的地址，将其转换为经纬度以便进行量化计算并进行可视化；亦或者给定样本地址信息，将其按照行政区域进行分类以便进行分组并统计。</p>
+</div>
+<div id="如何在-r-中进行地理编码逆编码" class="section level2">
+<h2>如何在 R 中进行地理编码/逆编码</h2>
+<p>目前进行地理编码/逆编码的方法通常是使用地图供应商提供的 API 获取信息。在 R 中目前常使用 <a href="https://CRAN.R-project.org/package=tidygeocoder">tidygeocoder</a>，<a href="https://github.com/badbye/baidumap">baidumap</a> 以及 <a href="https://github.com/ChrisMuir/baidugeo">baidugeo</a> 等 Package 完成这类任务。然而，其中 <a href="https://CRAN.R-project.org/package=tidygeocoder">tidygeocoder</a> 使用国际地理信息供应商，其准确度以及信息覆盖程度尚不能令人满意；而后两者因为百度地图 API 的升级，导致目前 Package 不能被新用户调用（其中前者笔者已经提交了 <a href="https://github.com/badbye/baidumap/pull/20">Request</a>，不过是否会被合并还需要进一步等待；后者<a href="https://github.com/ChrisMuir/baidugeo/pull/4">笔者正在和开发者进行更新</a>，具体修复时间还需等待）。</p>
+<p>此外，通过笔者在实际项目的使用过程中发现，在相当多的情况下，高德地图提供的地理编码/逆编码信息似乎好于百度地图，当然因为没有进行客观的对照分析，仅作为个人体验以作参考<del>，如有谬误，您说的对</del>。</p>
+</div>
+<div id="amapgeocode" class="section level2">
+<h2>amapGeocode</h2>
+<p>基于以上原因，笔者使用<a href="https://lbs.amap.com/api/webservice/guide/api/georegeo">高德开放平台</a> API 编写了用于 R 的地理编码/逆编码的 Package <a href="https://cran.r-project.org/package=amapGeocode">amapGeocode</a>。代码托管于 <a href="https://github.com/womeimingzi11/amapGeocode">Github</a>。具体的高德文档可以查看<a href="https://lbs.amap.com/">这里</a>和<a href="https://lbs.amap.com/api/webservice/summary/">这里</a>。</p>
+<p>目前 amapGeocode 支持通过 <code>getCoord()</code> 进行地理编码，即根据地址获取坐标等信息；以及通过 <code>getLocation()</code> 进行地理逆编码，即根据经纬度获取地址等信息。此外还可以通过 <code>getAdmin()</code> 获取给定行政区其下属行政区（<code>JSON</code> 和 <code>XML</code> 支持多级行政区）。</p>
+<p>上述 function 支持输入单条的文本地址/坐标/行政区，同时也支持批量输入信息，其默认返回结果为 <a href="https://tibble.tidyverse.org/">tibble</a>， 同时也可以返回原生的 <code>JSON</code> 格式以及 <code>XML</code> 格式，此时批量查询的地址将以 <code>list</code> 的结构保存。</p>
+<div id="安装" class="section level3">
+<h3>安装</h3>
+<p>目前可以通过下列命令从 CRAN 安装稳定版：</p>
+<pre class="r"><code>install.packages(&quot;amapGeocode&quot;)</code></pre>
+<p>此外也可以通过 Github 安装开发版：</p>
+<pre class="r"><code>remotes::install_github(&#39;womeimingzi11/amapGeocode&#39;)</code></pre>
+</div>
+<div id="申请-api-key" class="section level3">
+<h3>申请 API Key</h3>
+<p>由于 amapGeocode 使用了高的开放平台的的 API 服务，因此在使用 amapGeocode 之前，用户<strong>必须首先申请</strong> API Key，申请地址如下 <a href="https://console.amap.com/dev/index" class="uri">https://console.amap.com/dev/index</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/20210914170924.png" /></p>
+<p>点击<code>管理Key</code>进入管理页面，选择<code>创建新应用</code>，应用名称和用途可以根据自己的实际用途填写。之后在刚刚创建的应用右侧点击添加按钮添加一个新的 API Key，Key 名称可以自行命名，但是注意一定要把服务平台选为 <code>Web服务</code>。之后就能查看申请到的 Key 了。<strong>请注意，Key 的作用相当于访问高德服务的密码，切勿分享给其他人使用。如果怀疑 Key 泄露，可以通过<code>删除</code>按钮撤销该 Key，但同时也意味着您之前在程序中引用的该 Key 也需要一并更换，否者 amapGeocode 无法正常工作。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/20210914170905.png" /></p>
+<p>此外，截止到 2020 年 10 月 9 日，根据<a href="https://console.amap.com/dev/flow/manage">高德开放平台配额管理页面显示</a>：高德开放平台<strong>地理编码/逆地理编码/行政区查询服务</strong>对于实名认证免费用户分别提供了<strong>单日</strong> 300,000次/300,000次/30,000 次的使用额度，超过此额度后，当日无法继续使用查询服务。理论上来讲，除非主动购买额外的查询次数，否则不会产生费用，但 amapGeocode 开发者暨笔者不对高德开放平台其规定与收费政策作任何保证，请用户自行判断。</p>
+</div>
+</div>
+<div id="使用方法" class="section level2">
+<h2>使用方法</h2>
+<div id="地理编码" class="section level3">
+<h3>地理编码</h3>
+<pre class="r"><code>library(amapGeocode)</code></pre>
+<p>加载 amapGeocode 后，用户可以选择每次执行命令之时手动指定 <code>key</code> 参数来设定之前申请到的 Key，同时也可以通过下列命令将 key 设置为全局可用，则单条命令无需再次手动输入之前申请到的 Key</p>
+<pre><code>options(amap_key = &#39;REPLACE THIS BY YOUR KEY&#39;)</code></pre>
+<p>通过 <code>getCoord()</code> 来获取给定地址的经纬度：</p>
+<pre class="r"><code>getCoord(c(&quot;四川省中医院&quot;, &quot;四川省人民医院&quot;, &quot;兰州大学盘旋路校区&quot;,
+    &quot;成都中医药大学十二桥校区&quot;))</code></pre>
+<pre><code>##         lng      lat                          formatted_address country
+## 1: 104.0431 30.66780             四川省成都市金牛区四川省中医院    中国
+## 2: 104.0390 30.66362           四川省成都市青羊区四川省人民医院    中国
+## 3: 103.8619 36.04619       甘肃省兰州市城关区兰州大学盘旋路校区    中国
+## 4: 104.0439 30.66629 四川省成都市金牛区成都中医药大学十二桥校区    中国
+##    province   city district township street number citycode adcode
+## 1:   四川省 成都市   金牛区       NA     NA     NA      028 510106
+## 2:   四川省 成都市   青羊区       NA     NA     NA      028 510105
+## 3:   甘肃省 兰州市   城关区       NA     NA     NA     0931 620102
+## 4:   四川省 成都市   金牛区       NA     NA     NA      028 510106</code></pre>
+<p>在默认状态下，该命令将返回按输入顺序排序的 tibble 表格。不过用户依然可以通过指定 <code>output = 'JSON'</code> 或 <code>output = 'XML'</code> 并配合 <code>to_table = FALSE</code> 来直接获得高德地图 API 返回的 <code>JSON/XML</code> 格式的结果。</p>
+<pre class="r"><code># An individual request
+res &lt;- getCoord(&quot;成都中医药大学&quot;, output = &quot;XML&quot;, to_table = FALSE)
+res</code></pre>
+<pre><code>## {xml_document}
+## &lt;response&gt;
+## [1] &lt;status&gt;1&lt;/status&gt;
+## [2] &lt;info&gt;OK&lt;/info&gt;
+## [3] &lt;infocode&gt;10000&lt;/infocode&gt;
+## [4] &lt;count&gt;1&lt;/count&gt;
+## [5] &lt;geocodes type=&quot;list&quot;&gt;\n  &lt;geocode&gt;\n    &lt;formatted_address&gt;四川省成都市金牛区成都中医 ...</code></pre>
+<p>这类结果可以使用 amapGeocode 内置的 <code>extractCoord()</code> 处理为与之前格式相同的 <code>tibble</code> 格式。</p>
+<pre class="r"><code>extractCoord(res)</code></pre>
+<pre><code>##         lng      lat                formatted_address country province   city
+## 1: 104.0433 30.66686 四川省成都市金牛区成都中医药大学    中国   四川省 成都市
+##    district township street number citycode adcode
+## 1:   金牛区       NA     NA     NA      028 510106</code></pre>
+</div>
+<div id="地理逆编码" class="section level3">
+<h3>地理逆编码</h3>
+<p>与地理编码的使用方法基本相同，<code>getLocation()</code> 示例如下：</p>
+<pre class="r"><code>coord &lt;- tibble::tribble(~lat, ~lon, 104.043284, 30.666864, 104.039, 30.66362)
+getLocation(coord$lat, coord$lon)</code></pre>
+<pre><code>##                                                                     formatted_address
+## 1: 四川省成都市金牛区西安路街道成都中医药大学附属医院腹泻门诊成都中医药大学十二桥校区
+## 2:                           四川省成都市青羊区草堂街道四川省医学科学院四川省人民医院
+##    country province   city district   township citycode     towncode
+## 1:    中国   四川省 成都市   金牛区 西安路街道      028 510106013000
+## 2:    中国   四川省 成都市   青羊区   草堂街道      028 510105007000</code></pre>
+</div>
+<div id="行政区获取" class="section level3">
+<h3>行政区获取</h3>
+<p>与地理编码/逆编码方法基本相同，<code>getAdmin()</code>示例如下：</p>
+<pre class="r"><code>getAdmin(c(&quot;四川省&quot;, &quot;兰州市&quot;, &quot;济宁市&quot;))</code></pre>
+<pre><code>## [[1]]
+##          lng      lat               name level citycode adcode
+##  1: 105.8440 32.43577             广元市  city     0839 510800
+##  2: 106.1106 30.83723             南充市  city     0817 511300
+##  3: 106.7475 31.86785             巴中市  city     0827 511900
+##  4: 104.3978 31.12745             德阳市  city     0838 510600
+##  5: 103.7661 29.55228             乐山市  city     0833 511100
+##  6: 104.0663 30.57296             成都市  city      028 510100
+##  7: 103.8484 30.07711             眉山市  city     1833 511400
+##  8: 107.4678 31.20928             达州市  city     0818 511700
+##  9: 104.6273 30.12924             资阳市  city     0832 512000
+## 10: 106.6326 30.45635             广安市  city     0826 511600
+## 11: 105.0580 29.58021             内江市  city     1832 511000
+## 12: 104.6791 31.46767             绵阳市  city     0816 510700
+## 13: 105.5926 30.53268             遂宁市  city     0825 510900
+## 14: 102.2677 27.88140     凉山彝族自治州  city     0834 513400
+## 15: 104.6428 28.75235             宜宾市  city     0831 511500
+## 16: 104.7793 29.33924             自贡市  city     0813 510300
+## 17: 101.7185 26.58242           攀枝花市  city     0812 510400
+## 18: 105.4419 28.87098             泸州市  city     0830 510500
+## 19: 103.0415 30.01000             雅安市  city     0835 511800
+## 20: 102.2245 31.89943 阿坝藏族羌族自治州  city     0837 513200
+## 21: 101.9623 30.04952     甘孜藏族自治州  city     0836 513300
+##          lng      lat               name level citycode adcode
+## 
+## [[2]]
+##         lng      lat     name    level citycode adcode
+## 1: 103.9473 36.33243   皋兰县 district     0931 620122
+## 2: 102.8593 36.34577   红古区 district     0931 620111
+## 3: 103.6280 36.08845   西固区 district     0931 620104
+## 4: 103.7863 36.06625 七里河区 district     0931 620103
+## 5: 103.8253 36.05695   城关区 district     0931 620102
+## 6: 103.7190 36.10449   安宁区 district     0931 620105
+## 7: 104.1125 35.84335   榆中县 district     0931 620123
+## 8: 103.2603 36.73646   永登县 district     0931 620121
+## 
+## [[3]]
+##          lng      lat   name    level citycode adcode
+##  1: 116.9862 35.58193 曲阜市 district     0537 370881
+##  2: 116.4973 35.71189 汶上县 district     0537 370830
+##  3: 117.2508 35.66472 泗水县 district     0537 370831
+##  4: 117.0074 35.40254 邹城市 district     0537 370883
+##  5: 116.3423 35.40794 嘉祥县 district     0537 370829
+##  6: 116.1318 35.76596 梁山县 district     0537 370832
+##  7: 116.3115 35.06658 金乡县 district     0537 370828
+##  8: 116.7836 35.55194 兖州区 district     0537 370812
+##  9: 116.6505 35.01271 鱼台县 district     0537 370827
+## 10: 117.1292 34.80666 微山县 district     0537 370826
+## 11: 116.6058 35.44423 任城区 district     0537 370811</code></pre>
+<p>注意，由于 <code>getAdmin()</code> 可以对互相独立的行政区域进行批量查询，因此默认将查询结果也许并无意义，因此需要用户自行从 list 中提取元素以便进一步使用。</p>
+</div>
+<div id="实验性功能坐标转换" class="section level3">
+<h3>实验性功能——坐标转换</h3>
+<p>由于不同的地图服务，其坐标有时会加入一定程度的偏移，因此为了使坐标在高德地图中查询准确，可以首先对原始坐标进行转换，<a href="https://lbs.amap.com/api/webservice/guide/api/convert">目前高德开放平台 API 提供将 GPS 坐标、mapbar 坐标、baidu 坐标转换为高德坐标</a>。</p>
+<p><strong>但是因为开发者目前并没有真正使用过这类功能，因此目前该方法尚处于实验阶段。无论是结果准确性，以及使用的便捷程度以及合理性均不作任何保证。同时在将来也许会进行 Breaking Upgrade 造成目前的调用方式不可用，因此极不推荐将该 function 引入生产环境。同时也希望大家对于该功能的完善给出建议。</strong></p>
+<pre class="r"><code>convertCoord(&quot;116.481499,39.990475&quot;, coordsys = &quot;gps&quot;)</code></pre>
+<pre><code>##         lng      lat
+## 1: 116.4876 39.99175</code></pre>
+<p>更多功能以及改进还在开发中。</p>
+</div>
+</div>
+<div id="常见问题" class="section level2">
+<h2>常见问题</h2>
+<div id="会引入并行请求吗" class="section level3">
+<h3>会引入并行请求吗？</h3>
+<p>虽然在开发之初，笔者认为将来不会加入并行，不过现在的计划，大概是会吧，谁知道呢？
+<del>Unfortunately, there is no plan to add internal parallel support to amapGeocode. Here are some reasons:</del></p>
+<p><del>1. The aim of amapGeocode is to create a package which is easy to use. Indeed, the parallel operation can make many times performance improvement, especially there are half million queries. However, the parallel operation often platform limited, I don’t have enough time and machine to test on different platforms. In fact even in macOS, the system I’m relatively familiar with, I have already encountered a lot of weird parallel issues and I don’t have the intention or the experience to fix them.</del></p>
+<p><del>2. The queries limitation. For most of free users or developers, the daily query limitation and queries per second is absolutely enough: 30,000 queries per day and 200 queries per second. But for parallel operation, the limitation is relatively easy to exceed. For purchase developers, it may cause serious financial troubles.</del></p>
+<p><del>So for anybody who wants to send millions of request by amapGeocode, you are welcomed to make the parallel operations manually.</del></p>
+</div>
+</div>
+<div id="bug-report" class="section level2">
+<h2>Bug Report</h2>
+<p>对于 API Wrap 类型的包，上游 API 更新造成的功能不可用在所难免。如果你遇到这类故障或者任何其它 Bug，请第一时间让我知道
+<a class="github-button" href="https://github.com/womeimingzi11/amapGeocode/issues" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Issue womeimingzi11/amapGeocode on GitHub">Issue</a>！</p>
+<p>如果 amapGeocode 对你有任何帮助，希望可以帮我
+<a class="github-button" href="https://github.com/womeimingzi11/amapGeocode" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Star womeimingzi11/amapGeocode on GitHub">Star</a></p>
+<hr />
+<p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+</div>
+
+    </div>
+    <div class="info post_meta">
+      <time datetime=2020-10-09T00:00:00Z class="date">Friday, October 9, 2020</time>
+      
+        <ul class="tags">
+        
+          <li> <a href="https://blog.washman.top/tags/package">package</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/r">R</a> </li>
+        
+          <li> <a href="https://blog.washman.top/tags/gis">GIS</a> </li>
+        
+        </ul>
+      
+      
+    </div>
+    <div class="clearfix"></div>
+  </article>
+  
+    <div class="other_posts">
+      
+      <a href="https://blog.washman.top/post/2020-09-25-r-pakcage-vignette-test-token/using-r-for-everything-%E7%95%AA%E5%A4%96-r-%E5%8C%85%E5%BC%80%E5%8F%91%E4%B8%AD-vignette-test-token-%E7%9A%84%E5%A4%84%E7%90%86/" class="prev">Using R 番外: R 包开发中 vignette/test token 的处理</a>
+      
+      
+      <a href="https://blog.washman.top/post/2021-04-25-rjava-error-configuration-failed-for-package-rjava/" class="next">Using R: rJava 安装失败小记——ERROR: configuration failed for package ‘rJava’</a>
+      
+    </div>
+    <aside id="comments">
+    <div id="vcomments"></div>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <script type="text/javascript">
+          const meta = 'nick,mail'.split(',').filter(function (item) {
+              return ['nick','mail','link'].indexOf(item) > -1;
+          });
+          const requiredFields = 'nick,mail'.split(',').filter(function(item) {
+            return ['nick', 'mail'].indexOf(item) > -1;
+          })
+          new Valine({
+              el: '#vcomments',
+              appId: 'p28b16bttr3Y0SUO2PWhuyMn-gzGzoHsz',
+              appKey: 'HPGrnuJVajkgFhHjDSde7Xuc',
+              placeholder: '欢迎讨论～',
+              avatar: 'mm',
+              pageSize: '10' || 10,
+              visitor: false ,
+              highlight: true ,
+              recordIP: true ,
+              requiredFields: requiredFields || undefined,
+              meta: meta || undefined,
+      });
+    </script>
+</aside>
+
+  
+</section>
+
+        <a id="back_to_top" title="Go To Top" href="#">
+  <span>
+    <svg viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0z"></path>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+    </svg>
+  </span>
+</a>
+
+        <footer id="footer">
+  <p>
+    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
+    <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
+  </p>
+
+  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+</footer>
+
+    </body>
+</html>
