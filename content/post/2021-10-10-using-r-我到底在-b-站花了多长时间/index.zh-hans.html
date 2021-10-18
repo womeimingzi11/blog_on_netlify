@@ -16,6 +16,15 @@ tags:
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<link href="/rmarkdown-libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/datatables-binding/datatables.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery-3.6.0.min.js"></script>
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
 
 
 <p>前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。</p>
@@ -404,69 +413,9 @@ history_type_aggregate_tb &lt;-
   summarise(duration_sum = sum(duration_sum)) %&gt;% 
   arrange(desc(duration_sum))
 
-knitr::kable(history_type_aggregate_tb)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">type</th>
-<th align="right">duration_sum</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">单机游戏</td>
-<td align="right">21.296667</td>
-</tr>
-<tr class="even">
-<td align="left">人文历史</td>
-<td align="right">17.441944</td>
-</tr>
-<tr class="odd">
-<td align="left">搞笑</td>
-<td align="right">11.794167</td>
-</tr>
-<tr class="even">
-<td align="left">other</td>
-<td align="right">8.030833</td>
-</tr>
-<tr class="odd">
-<td align="left">日常</td>
-<td align="right">6.670000</td>
-</tr>
-<tr class="even">
-<td align="left">美食侦探</td>
-<td align="right">6.540278</td>
-</tr>
-<tr class="odd">
-<td align="left">影视杂谈</td>
-<td align="right">4.636389</td>
-</tr>
-<tr class="even">
-<td align="left">美食制作</td>
-<td align="right">4.466667</td>
-</tr>
-<tr class="odd">
-<td align="left">数码</td>
-<td align="right">2.066111</td>
-</tr>
-<tr class="even">
-<td align="left">社科·法律·心理</td>
-<td align="right">1.768056</td>
-</tr>
-<tr class="odd">
-<td align="left">美食测评</td>
-<td align="right">1.553889</td>
-</tr>
-<tr class="even">
-<td align="left">财经商业</td>
-<td align="right">1.532222</td>
-</tr>
-<tr class="odd">
-<td align="left">美食记录</td>
-<td align="right">1.442222</td>
-</tr>
-</tbody>
-</table>
+DT::datatable(history_type_aggregate_tb)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["单机游戏","人文历史","搞笑","other","日常","美食侦探","影视杂谈","美食制作","数码","社科·法律·心理","美食测评","财经商业","美食记录"],[21.2966666666667,17.4419444444444,11.7941666666667,8.03083333333333,6.67,6.54027777777778,4.63638888888889,4.46666666666667,2.06611111111111,1.76805555555556,1.55388888888889,1.53222222222222,1.44222222222222]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>type<\/th>\n      <th>duration_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>showtext_auto()
 
 histroy_tidy_tb %&gt;% 
@@ -492,7 +441,7 @@ histroy_tidy_tb %&gt;%
        fill = &quot;视频类别&quot;) +
   theme_classic() +
   scale_fill_discrete_sequential(&quot;Batlow&quot;)</code></pre>
-<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/tname_to_type_viz-1.png" width="672" /></p>
+<p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/tname_to_type_viz-2.png" width="672" /></p>
 <p>看起来，我仍然是那个爱看别人打游戏的少年，一天中只要看 B 站，就会花时间看单机游戏。其次在凌晨和中午就比较喜欢看影视杂谈类的视频。最后到了半下午和晚上，就喜欢看美食类的节目……果然是个几百斤的孩子呢（摊手</p>
 <p>文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。这里我们把 <code>tibble</code> 对象保存为 <code>Parquet</code> 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 <a href="https://github.com/apache/arrow/tree/master/r">apache/arrow</a>。</p>
 <pre class="r"><code>library(arrow)

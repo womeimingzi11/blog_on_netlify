@@ -289,7 +289,7 @@ history_type_aggregate_tb <-
   summarise(duration_sum = sum(duration_sum)) %>% 
   arrange(desc(duration_sum))
 
-knitr::kable(history_type_aggregate_tb)
+DT::datatable(history_type_aggregate_tb)
 
 showtext_auto()
 
