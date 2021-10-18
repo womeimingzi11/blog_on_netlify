@@ -16,6 +16,7 @@ tags:
 output:
   blogdown::html_page:
     toc: true
+    number_sections: true
 ---
 
 前段段时间受伤卧病在床，难得的闲暇时间，又以躺着不便于学习为由，疯狂娱乐。几乎沉迷 B 站无法自拔，蓦然回首发现好像在小破站花费了不少时间，遂试图总结一番。
@@ -28,7 +29,7 @@ output:
 
 本文基于项目，利用 R 语言对笔者在 B 站的历史记录进行分析总结。
 
-## 设置登陆信息
+# 设置登陆信息
 
 既然要访问历史记录，毫无疑问需要设置登陆信息。根据项目中的[API 认证与鉴权](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md)以及[登录基本信息](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/login/login_info.md)的说明，首先设置 Cookies 信息，然而本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，设置 cookies 就耗时良久。
 
@@ -62,7 +63,7 @@ source("local_set_cookies.R")
 
 在后续的操作中，只要在请求中附上 `cookies` 即可。
 
-## 获取历史记录
+# 获取历史记录
 
 首先是查询历史记录，在[历史记录](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%EF%BC%88%E6%97%A7%EF%BC%89)章节中提供了新/旧两个 API.
 
@@ -115,7 +116,7 @@ summary(history_tb)
 ```
 对于数据的每一列的含义，项目中[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)均有说明。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？
 
-## 数据整理
+# 数据整理
 
 根据此前的 `summary()` 以及[获取全部视频历史记录（旧）](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7)中的说明。`duration` 键值为视频长度，`progress` 为视频播放进度，对于完播视频其键值为 `-1`。为了便于计算播放时长，我们将 `duration` 与 `progress` 结合输出为 `play_time` 以计算播放时间。
 
@@ -143,6 +144,7 @@ histroy_tidy_tb <-
   )
 ```
 
+# 数据可视化
 ## 我到底看了多久的视频？
 
 首先我们回答第一个问题，这段时间我到底看了多久的 B 站视频？

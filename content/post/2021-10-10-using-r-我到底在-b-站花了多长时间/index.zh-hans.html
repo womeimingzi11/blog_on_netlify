@@ -16,6 +16,7 @@ tags:
 output:
   blogdown::html_page:
     toc: true
+    number_sections: true
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -31,12 +32,15 @@ output:
 
 <div id="TOC">
 <ul>
-<li><a href="#设置登陆信息">设置登陆信息</a></li>
-<li><a href="#获取历史记录">获取历史记录</a></li>
-<li><a href="#数据整理">数据整理</a></li>
-<li><a href="#我到底看了多久的视频">我到底看了多久的视频？</a></li>
-<li><a href="#什么时候才会看-b-站">什么时候才会看 B 站？</a></li>
-<li><a href="#我看了哪类视频">我看了哪类视频？</a></li>
+<li><a href="#设置登陆信息"><span class="toc-section-number">1</span> 设置登陆信息</a></li>
+<li><a href="#获取历史记录"><span class="toc-section-number">2</span> 获取历史记录</a></li>
+<li><a href="#数据整理"><span class="toc-section-number">3</span> 数据整理</a></li>
+<li><a href="#数据可视化"><span class="toc-section-number">4</span> 数据可视化</a>
+<ul>
+<li><a href="#我到底看了多久的视频"><span class="toc-section-number">4.1</span> 我到底看了多久的视频？</a></li>
+<li><a href="#什么时候才会看-b-站"><span class="toc-section-number">4.2</span> 什么时候才会看 B 站？</a></li>
+<li><a href="#我看了哪类视频"><span class="toc-section-number">4.3</span> 我看了哪类视频？</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -45,8 +49,8 @@ output:
 <p><a href="https://github.com/SocialSisterYi/bilibili-API-collect">SocialSisterYi/bilibili-API-collect</a></p>
 <p><a href="https://github.com/SocialSisterYi/bilibili-API-collect">SocialSisterYi/bilibili-API-collect</a>（下文简称<strong>项目</strong>），通过对 B 站 Web 端、移动端以及 TV 端等诸多来源的 B 站 API 进行收集整理，汇总了一份较为全面的非官方 API 文档。</p>
 <p>本文基于项目，利用 R 语言对笔者在 B 站的历史记录进行分析总结。</p>
-<div id="设置登陆信息" class="section level2">
-<h2>设置登陆信息</h2>
+<div id="设置登陆信息" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> 设置登陆信息</h1>
 <p>既然要访问历史记录，毫无疑问需要设置登陆信息。根据项目中的<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md">API 认证与鉴权</a>以及<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/login/login_info.md">登录基本信息</a>的说明，首先设置 Cookies 信息，然而本以为只要简单的 httr::GET + httr::set_cookies 就能轻松秒杀，然而未曾想过的是，设置 cookies 就耗时良久。</p>
 <p>根据 <a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/other/API_auth.md">API 认证与鉴权</a>中的说明，访问 B 站的 cookies 需要 DedeUserID、DedeUserID__ckMd5、SESSDATA 以及 bili_jct。</p>
 <p>这不难，直接 Chrome + F12 调试模式，Application 选项卡直接查看即可。</p>
@@ -65,8 +69,8 @@ cookies &lt;-
 <!-- Evaluated code code block, but no need to be shown -->
 <p>在后续的操作中，只要在请求中附上 <code>cookies</code> 即可。</p>
 </div>
-<div id="获取历史记录" class="section level2">
-<h2>获取历史记录</h2>
+<div id="获取历史记录" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 获取历史记录</h1>
 <p>首先是查询历史记录，在<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%EF%BC%88%E6%97%A7%EF%BC%89">历史记录</a>章节中提供了新/旧两个 API.</p>
 <blockquote>
 <p><a href="http://api.bilibili.com/x/web-interface/history/cursor" class="uri">http://api.bilibili.com/x/web-interface/history/cursor</a></p>
@@ -265,8 +269,8 @@ head(history_tb)</code></pre>
 ##  NA&#39;s   :1199        NA                  NA                  NA                  NA</code></pre>
 <p>对于数据的每一列的含义，项目中<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>均有说明。不过我们首先要弄明白，我们的观看记录最早记录到什么时候？</p>
 </div>
-<div id="数据整理" class="section level2">
-<h2>数据整理</h2>
+<div id="数据整理" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> 数据整理</h1>
 <p>根据此前的 <code>summary()</code> 以及<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>中的说明。<code>duration</code> 键值为视频长度，<code>progress</code> 为视频播放进度，对于完播视频其键值为 <code>-1</code>。为了便于计算播放时长，我们将 <code>duration</code> 与 <code>progress</code> 结合输出为 <code>play_time</code> 以计算播放时间。</p>
 <p>记录观看时间的 <code>view_at</code> 键值为 1634370752 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。同样的方法来处理 <code>pubdate</code>。</p>
 <p>代表分区大类的 <code>tid</code> 键值类型为数值型，然而根据其实际意义，应与 <code>tname</code> 结合使用，通过 <code>forcats::fct_reorder</code> 根据 <code>tid</code> 对 <code>tname</code> 进行排序。</p>
@@ -288,8 +292,10 @@ histroy_tidy_tb &lt;-
     dow = wday(view_at, week_start = 1)
   )</code></pre>
 </div>
-<div id="我到底看了多久的视频" class="section level2">
-<h2>我到底看了多久的视频？</h2>
+<div id="数据可视化" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> 数据可视化</h1>
+<div id="我到底看了多久的视频" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> 我到底看了多久的视频？</h2>
 <p>首先我们回答第一个问题，这段时间我到底看了多久的 B 站视频？</p>
 <pre class="r"><code>total_sec &lt;- histroy_tidy_tb %&gt;% 
   summarise(
@@ -304,8 +310,8 @@ total_sec</code></pre>
 ## 1 2021-08-31 15:13:58 2021-10-16 15:52:32 321262</code></pre>
 <p>从 2021-08-31 15:13:58 到 2021-10-16 15:52:32 总共看视频 321262 秒！也就是89.24 小时！妈见打系列了属于是。</p>
 </div>
-<div id="什么时候才会看-b-站" class="section level2">
-<h2>什么时候才会看 B 站？</h2>
+<div id="什么时候才会看-b-站" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> 什么时候才会看 B 站？</h2>
 <p>之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。</p>
 <pre class="r"><code>library(&quot;ggplot2&quot;)
 library(&quot;cowplot&quot;)
@@ -369,8 +375,8 @@ view_grid_p</code></pre>
 <p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/when_view_viz-1.png" width="672" /></p>
 <p>从可视化结果来看9月23号到10月2日我看了比往常更多个B站频。此外周一周二我刷视频时间似乎更久，然而最有趣的是，我到底是个怎样的夜猫子哇，居然凌晨也不休息？？？？注意身体哇<del>少年</del>中年。</p>
 </div>
-<div id="我看了哪类视频" class="section level2">
-<h2>我看了哪类视频？</h2>
+<div id="我看了哪类视频" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> 我看了哪类视频？</h2>
 <p>既然花费了那么久看视频，那么我到底看了什么视频呢？</p>
 <pre class="r"><code>library(forcats)
 library(showtext)
@@ -461,4 +467,5 @@ histroy_tidy_tb %&gt;%
 write_parquet(histroy_tidy_tb, sink = &quot;../assets/bilibili_histroy_tidy_tb.parquet&quot;)</code></pre>
 <hr />
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
+</div>
 </div>
