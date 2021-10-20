@@ -15,10 +15,10 @@ hasCJKLanguage = true
 # copyright = "&copy;{year}, All Rights Reserved. [鲁ICP备2021032727号-1](https://beian.miit.gov.cn)"
 
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$", "_files$",
-"\\.R",
-"assets/*"]
+"\\.R", "assets/*", "*.ndjson"]
 ## Change this two to switch between different language
-languageCode = "zh-cn"  # For RSS, view https://www.rssboard.org/rss-language-codes
+# For RSS, view https://www.rssboard.org/rss-language-codes
+languageCode = "zh-cn"  
 
 # Add your Google Analytics identifier: UA-XXXXXXXX-X
 googleAnalytics = ""

@@ -1,7 +1,7 @@
 ---
 title: 'Using R: 我到底在 B 站花了多长时间？'
 author: Han Chen
-date: "2021-10-18"
+date: "2021-10-20"
 slug: []
 categories:
   - Analysis
@@ -462,9 +462,22 @@ histroy_tidy_tb %&gt;%
   scale_fill_discrete_sequential(&quot;Batlow&quot;)</code></pre>
 <p><img src="/post/2021-10-10-using-r-我到底在-b-站花了多长时间/index.zh-hans_files/figure-html/tname_to_type_viz-2.png" width="672" /></p>
 <p>看起来，我仍然是那个爱看别人打游戏的少年，一天中只要看 B 站，就会花时间看单机游戏。其次在凌晨和中午就比较喜欢看影视杂谈类的视频。最后到了半下午和晚上，就喜欢看美食类的节目……果然是个几百斤的孩子呢（摊手</p>
-<p>文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。这里我们把 <code>tibble</code> 对象保存为 <code>Parquet</code> 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 <a href="https://github.com/apache/arrow/tree/master/r">apache/arrow</a>。</p>
-<pre class="r"><code>library(arrow)
-write_parquet(histroy_tidy_tb, sink = &quot;../assets/bilibili_histroy_tidy_tb.parquet&quot;)</code></pre>
+<p>文章至此，长度已经太长了，更多的分析，在接下来的文章中呈现，先把数据保存下来以后续使用。<del>这里我们把 <code>tibble</code> 对象保存为 <code>Parquet</code> 文件，这是一种通用性较高的分列式文件格式，也是 Hadoop 生态中常用的文件存储格式。具体介绍见 <a href="https://github.com/apache/arrow/tree/master/r">apache/arrow</a></del>。我们直接把数据保存在本地的 MinIO 数据库中。</p>
+<pre class="r"><code>library(minio.s3)
+# bucket &lt;-
+#   minio.s3::put_bucket(&quot;bili-history&quot;)
+s3save(histroy_tidy_tb, object = &quot;histroy_tidy_tb.Rdata&quot;, bucket = &#39;bili-history&#39;)
+get_bucket(&#39;bili-history&#39;)</code></pre>
+<pre><code>## Bucket: bili-history 
+## 
+## $Contents
+## Key:            histroy_tidy_tb.Rdata 
+## LastModified:   2021-10-20T15:12:11.594Z 
+## ETag:           &quot;de3c012163e9e1e21ef1307369fd6c30&quot; 
+## Size (B):       349671 
+## Owner:          minio 
+## Storage class:  STANDARD</code></pre>
+<pre class="r"><code># write_parquet(histroy_tidy_tb, sink = &quot;../assets/bilibili_histroy_tidy_tb.parquet&quot;)</code></pre>
 <hr />
 <p>欢迎通过<a href="mailto://chenhan28@gmail.com">邮箱</a>，<a href="https://weibo.com/womeimingzi11">微博</a>, <a href="https://twitter.com/chenhan1992">Twitter</a>以及<a href="https://www.zhihu.com/people/womeimingzi">知乎</a>与我联系。也欢迎关注<a href="https://blog.washman.top/">我的博客</a>。如果能对<a href="https://github.com/womeimingzi11">我的 Github</a> 感兴趣，就再欢迎不过啦！</p>
 </div>
