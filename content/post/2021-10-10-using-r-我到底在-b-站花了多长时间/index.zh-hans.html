@@ -1,7 +1,7 @@
 ---
 title: 'Using R: 我到底在 B 站花了多长时间？'
 author: Han Chen
-date: "2021-10-20"
+date: "2021-10-21"
 slug: []
 categories:
   - Analysis
@@ -117,147 +117,139 @@ head(history_tb)</code></pre>
 <pre><code>## # A tibble: 6 × 37
 ##         aid videos   tid tname   copyright pic   title pubdate  ctime desc  state
 ##       &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;chr&gt;       &lt;int&gt; &lt;chr&gt; &lt;chr&gt;   &lt;int&gt;  &lt;int&gt; &lt;chr&gt; &lt;int&gt;
-## 1 548555070      1   228 人文历…         1 http… 职场…  1.63e9 1.63e9 &quot;脱…      0
-## 2 763529824      1   212 美食侦…         1 http… 我竟…  1.63e9 1.63e9 &quot;被…      0
-## 3 590703462      1   239 家居房…         1 http… 实拍…  1.63e9 1.63e9 &quot;&quot;        0
-## 4 208522684      1   182 影视杂…         1 http… 【米…  1.63e9 1.63e9 &quot;【…      0
-## 5 208528325      1    17 单机游…         1 http… 红警…  1.63e9 1.63e9 &quot;&quot;        0
-## 6 462713993      1   228 人文历…         1 http… 美国…  1.63e9 1.63e9 &quot;本…      0
-## # … with 26 more variables: duration &lt;int&gt;, mission_id &lt;int&gt;, rights &lt;df[,12]&gt;,
-## #   owner &lt;df[,3]&gt;, stat &lt;df[,11]&gt;, dynamic &lt;chr&gt;, cid &lt;int&gt;,
-## #   dimension &lt;df[,3]&gt;, short_link_v2 &lt;chr&gt;, favorite &lt;lgl&gt;, type &lt;int&gt;,
+## 1 632936267      1   212 美食侦…         1 http… 还是…  1.63e9 1.63e9 &quot;-&quot;       0
+## 2 721202142      1   228 人文历…         1 http… 中国…  1.63e9 1.63e9 &quot;移…      0
+## 3 378655043      1   176 汽车生…         1 http… 什么…  1.63e9 1.63e9 &quot;诈…      0
+## 4 676243719      1    76 美食制…         1 http… 这是…  1.63e9 1.63e9 &quot;日…      0
+## 5 758813440      1   138 搞笑            1 http… 太顶…  1.62e9 1.62e9 &quot;吴…      0
+## 6 847480646      1    28 原创音…         1 http… “梗…   1.63e9 1.63e9 &quot;引…      0
+## # … with 26 more variables: duration &lt;int&gt;, rights &lt;df[,12]&gt;, owner &lt;df[,3]&gt;,
+## #   stat &lt;df[,11]&gt;, dynamic &lt;chr&gt;, cid &lt;int&gt;, dimension &lt;df[,3]&gt;,
+## #   short_link_v2 &lt;chr&gt;, up_from_v2 &lt;int&gt;, favorite &lt;lgl&gt;, type &lt;int&gt;,
 ## #   sub_type &lt;int&gt;, device &lt;int&gt;, page &lt;df[,8]&gt;, count &lt;int&gt;, progress &lt;int&gt;,
 ## #   view_at &lt;int&gt;, kid &lt;int&gt;, business &lt;chr&gt;, redirect_link &lt;chr&gt;, bvid &lt;chr&gt;,
-## #   season_id &lt;int&gt;, up_from_v2 &lt;int&gt;, redirect_url &lt;chr&gt;, bangumi &lt;df[,7]&gt;,
+## #   mission_id &lt;int&gt;, season_id &lt;int&gt;, redirect_url &lt;chr&gt;, bangumi &lt;df[,7]&gt;,
 ## #   cheese &lt;df[,5]&gt;</code></pre>
 <pre class="r"><code>summary(history_tb)</code></pre>
-<pre><code>##       aid                videos            tid           tname          
-##  Min.   :  2599625   Min.   : 1.000   Min.   : 17.0   Length:1200       
-##  1st Qu.:335748249   1st Qu.: 1.000   1st Qu.: 21.0   Class :character  
-##  Median :548441262   Median : 1.000   Median :138.0   Mode  :character  
-##  Mean   :553406301   Mean   : 1.123   Mean   :118.3                     
-##  3rd Qu.:763034751   3rd Qu.: 1.000   3rd Qu.:199.0                     
-##  Max.   :976108546   Max.   :49.000   Max.   :239.0                     
-##                                                                         
+<pre><code>##       aid                videos          tid           tname          
+##  Min.   :  2599625   Min.   : 1.0   Min.   : 17.0   Length:1200       
+##  1st Qu.:336101652   1st Qu.: 1.0   1st Qu.: 31.0   Class :character  
+##  Median :587790294   Median : 1.0   Median :138.0   Mode  :character  
+##  Mean   :560113126   Mean   : 1.2   Mean   :124.2                     
+##  3rd Qu.:763318868   3rd Qu.: 1.0   3rd Qu.:212.0                     
+##  Max.   :976237705   Max.   :49.0   Max.   :239.0                     
+##                                                                       
 ##    copyright         pic               title              pubdate         
 ##  Min.   :1.000   Length:1200        Length:1200        Min.   :1.437e+09  
-##  1st Qu.:1.000   Class :character   Class :character   1st Qu.:1.611e+09  
-##  Median :1.000   Mode  :character   Mode  :character   Median :1.630e+09  
-##  Mean   :1.157                                         Mean   :1.618e+09  
+##  1st Qu.:1.000   Class :character   Class :character   1st Qu.:1.614e+09  
+##  Median :1.000   Mode  :character   Mode  :character   Median :1.631e+09  
+##  Mean   :1.142                                         Mean   :1.619e+09  
 ##  3rd Qu.:1.000                                         3rd Qu.:1.632e+09  
-##  Max.   :2.000                                         Max.   :1.634e+09  
+##  Max.   :2.000                                         Max.   :1.635e+09  
 ##                                                                           
-##      ctime               desc               state             duration      
-##  Min.   :1.497e+09   Length:1200        Min.   :-100.000   Min.   :    9.0  
-##  1st Qu.:1.611e+09   Class :character   1st Qu.:   0.000   1st Qu.:  108.8  
-##  Median :1.630e+09   Mode  :character   Median :   0.000   Median :  314.0  
-##  Mean   :1.618e+09                      Mean   :  -0.755   Mean   :  496.5  
-##  3rd Qu.:1.632e+09                      3rd Qu.:   0.000   3rd Qu.:  672.5  
-##  Max.   :1.634e+09                      Max.   :   0.000   Max.   :11296.0  
-##                                                                             
-##    mission_id    
-##  Min.   : 10923  
-##  1st Qu.: 24246  
-##  Median : 84241  
-##  Mean   : 77959  
-##  3rd Qu.:118047  
-##  Max.   :199678  
-##  NA&#39;s   :560     
+##      ctime               desc               state             duration       
+##  Min.   :1.497e+09   Length:1200        Min.   :-100.000   Min.   :     9.0  
+##  1st Qu.:1.614e+09   Class :character   1st Qu.:   0.000   1st Qu.:   120.0  
+##  Median :1.631e+09   Mode  :character   Median :   0.000   Median :   364.0  
+##  Mean   :1.620e+09                      Mean   :  -0.755   Mean   :   737.6  
+##  3rd Qu.:1.632e+09                      3rd Qu.:   0.000   3rd Qu.:   713.0  
+##  Max.   :1.635e+09                      Max.   :   0.000   Max.   :132074.0  
+##                                                                              
 ##       rights.bp           rights.elec        rights.download       rights.movie          rights.pay           rights.hd5        rights.no_reprint     rights.autoplay      rights.ugc_pay     rights.is_cooperation  rights.ugc_pay_preview  rights.no_background
-##  Min.   :0            Min.   :0            Min.   :0            Min.   :0            Min.   :0.0000       Min.   :0.00         Min.   :0.0000000    Min.   :0.0000       Min.   :0            Min.   :0.0000000    Min.   :0            Min.   :0                
-##  1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0.0000       1st Qu.:0.00         1st Qu.:1.0000000    1st Qu.:1.0000       1st Qu.:0            1st Qu.:0.0000000    1st Qu.:0            1st Qu.:0                
-##  Median :0            Median :0            Median :0            Median :0            Median :0.0000       Median :0.00         Median :1.0000000    Median :1.0000       Median :0            Median :0.0000000    Median :0            Median :0                
-##  Mean   :0            Mean   :0            Mean   :0            Mean   :0            Mean   :0.0025       Mean   :0.45         Mean   :0.8133333    Mean   :0.9925       Mean   :0            Mean   :0.0316667    Mean   :0            Mean   :0                
-##  3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0.0000       3rd Qu.:1.00         3rd Qu.:1.0000000    3rd Qu.:1.0000       3rd Qu.:0            3rd Qu.:0.0000000    3rd Qu.:0            3rd Qu.:0                
-##  Max.   :0            Max.   :0            Max.   :0            Max.   :0            Max.   :1.0000       Max.   :1.00         Max.   :1.0000000    Max.   :1.0000       Max.   :0            Max.   :1.0000000    Max.   :0            Max.   :0                
+##  Min.   :0            Min.   :0            Min.   :0            Min.   :0            Min.   :0.0000       Min.   :0.0000       Min.   :0.0000000    Min.   :0.0000       Min.   :0            Min.   :0.0000       Min.   :0            Min.   :0                
+##  1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0            1st Qu.:0.0000       1st Qu.:0.0000       1st Qu.:1.0000000    1st Qu.:1.0000       1st Qu.:0            1st Qu.:0.0000       1st Qu.:0            1st Qu.:0                
+##  Median :0            Median :0            Median :0            Median :0            Median :0.0000       Median :0.0000       Median :1.0000000    Median :1.0000       Median :0            Median :0.0000       Median :0            Median :0                
+##  Mean   :0            Mean   :0            Mean   :0            Mean   :0            Mean   :0.0025       Mean   :0.4375       Mean   :0.8316667    Mean   :0.9925       Mean   :0            Mean   :0.0375       Mean   :0            Mean   :0                
+##  3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0            3rd Qu.:0.0000       3rd Qu.:1.0000       3rd Qu.:1.0000000    3rd Qu.:1.0000       3rd Qu.:0            3rd Qu.:0.0000       3rd Qu.:0            3rd Qu.:0                
+##  Max.   :0            Max.   :0            Max.   :0            Max.   :0            Max.   :1.0000       Max.   :1.0000       Max.   :1.0000000    Max.   :1.0000       Max.   :0            Max.   :1.0000       Max.   :0            Max.   :0                
 ##                                                                                                                                                                                                                                                                  
 ##       owner.mid             owner.name            owner.face     
 ##  Min.   :     28457    Length:1200           Length:1200         
-##  1st Qu.:  25876945    Class :character      Class :character    
-##  Median : 339521128    Mode  :character      Mode  :character    
-##  Mean   : 482978659    NA                    NA                  
+##  1st Qu.:  23947287    Class :character      Class :character    
+##  Median : 337521240    Mode  :character      Mode  :character    
+##  Mean   : 467453220    NA                    NA                  
 ##  3rd Qu.: 544336675    NA                    NA                  
-##  Max.   :2119441601    NA                    NA                  
+##  Max.   :2105467274    NA                    NA                  
 ##                                                                  
 ##       stat.aid             stat.view          stat.danmaku          stat.reply          stat.favorite          stat.coin           stat.share          stat.now_rank        stat.his_rank          stat.like          stat.dislike    
-##  Min.   :  2599625    Min.   :     345     Min.   :     0.00    Min.   :    0.00     Min.   :     0.0     Min.   :     0.0     Min.   :     0.00    Min.   :0            Min.   :  0.0000     Min.   :      0.0    Min.   :0          
-##  1st Qu.:335748249    1st Qu.:  143161     1st Qu.:   252.75    1st Qu.:  236.00     1st Qu.:   575.8     1st Qu.:   410.8     1st Qu.:    93.75    1st Qu.:0            1st Qu.:  0.0000     1st Qu.:   5792.2    1st Qu.:0          
-##  Median :548441262    Median :  463887     Median :  1001.50    Median :  672.50     Median :  2535.5     Median :  2304.0     Median :   537.50    Median :0            Median :  0.0000     Median :  18104.0    Median :0          
-##  Mean   :553406301    Mean   : 1265763     Mean   :  4446.50    Mean   : 1657.17     Mean   : 13287.5     Mean   : 21805.3     Mean   :  4757.99    Mean   :0            Mean   :  6.1367     Mean   :  67060.7    Mean   :0          
-##  3rd Qu.:763034751    3rd Qu.: 1420778     3rd Qu.:  3782.00    3rd Qu.: 1786.25     3rd Qu.:  8645.5     3rd Qu.: 11958.2     3rd Qu.:  2454.50    3rd Qu.:0            3rd Qu.:  0.0000     3rd Qu.:  67722.0    3rd Qu.:0          
-##  Max.   :976108546    Max.   :26733751     Max.   :175758.00    Max.   :36859.00     Max.   :728040.0     Max.   :954574.0     Max.   :279194.00    Max.   :0            Max.   :819.0000     Max.   :1442142.0    Max.   :0          
+##  Min.   :  2599625    Min.   :     378     Min.   :     0.00    Min.   :    0.00     Min.   :     0.0     Min.   :     0.0     Min.   :     0.00    Min.   :0            Min.   :  0.0000     Min.   :      0.0    Min.   :0          
+##  1st Qu.:336101652    1st Qu.:  142812     1st Qu.:   292.00    1st Qu.:  236.00     1st Qu.:   626.2     1st Qu.:   473.8     1st Qu.:    97.75    1st Qu.:0            1st Qu.:  0.0000     1st Qu.:   5843.8    1st Qu.:0          
+##  Median :587790294    Median :  496958     Median :  1145.00    Median :  691.00     Median :  2543.0     Median :  2616.0     Median :   598.00    Median :0            Median :  0.0000     Median :  19623.0    Median :0          
+##  Mean   :560113126    Mean   : 1237879     Mean   :  4531.27    Mean   : 1697.03     Mean   : 12988.9     Mean   : 22294.0     Mean   :  4892.27    Mean   :0            Mean   :  6.7825     Mean   :  68178.2    Mean   :0          
+##  3rd Qu.:763318868    3rd Qu.: 1451116     3rd Qu.:  4072.50    3rd Qu.: 1827.50     3rd Qu.:  8584.0     3rd Qu.: 13353.0     3rd Qu.:  2610.75    3rd Qu.:0            3rd Qu.:  0.0000     3rd Qu.:  71615.8    3rd Qu.:0          
+##  Max.   :976237705    Max.   :26865323     Max.   :175789.00    Max.   :37253.00     Max.   :730496.0     Max.   :774376.0     Max.   :279676.00    Max.   :0            Max.   :819.0000     Max.   :1276872.0    Max.   :0          
 ##                                                                                                                                                                                                                                       
 ##    dynamic               cid           
 ##  Length:1200        Min.   :  4062651  
-##  Class :character   1st Qu.:284416165  
-##  Mode  :character   Median :398991118  
-##                     Mean   :340534630  
-##                     3rd Qu.:409446128  
-##                     Max.   :425816695  
+##  Class :character   1st Qu.:300695667  
+##  Mode  :character   Median :401334872  
+##                     Mean   :348783941  
+##                     3rd Qu.:412164764  
+##                     Max.   :428187561  
 ##                                        
 ##    dimension.width     dimension.height     dimension.rotate  
 ##  Min.   : 318.000     Min.   : 240.000     Min.   :0.0000000  
 ##  1st Qu.:1280.000     1st Qu.:1080.000     1st Qu.:0.0000000  
 ##  Median :1920.000     Median :1080.000     Median :0.0000000  
-##  Mean   :1831.462     Mean   :1231.765     Mean   :0.0016667  
+##  Mean   :1839.597     Mean   :1231.498     Mean   :0.0016667  
 ##  3rd Qu.:1920.000     3rd Qu.:1080.000     3rd Qu.:0.0000000  
 ##  Max.   :4096.000     Max.   :4320.000     Max.   :1.0000000  
 ##                                                               
-##  short_link_v2       favorite            type           sub_type      
-##  Length:1200        Mode :logical   Min.   : 3.000   Min.   :0.00000  
-##  Class :character   FALSE:1168      1st Qu.: 3.000   1st Qu.:0.00000  
-##  Mode  :character   TRUE :32        Median : 3.000   Median :0.00000  
-##                                     Mean   : 3.012   Mean   :0.01833  
-##                                     3rd Qu.: 3.000   3rd Qu.:0.00000  
-##                                     Max.   :10.000   Max.   :7.00000  
-##                                                                       
-##      device     
-##  Min.   :1.000  
-##  1st Qu.:1.000  
-##  Median :1.000  
-##  Mean   :2.227  
-##  3rd Qu.:4.000  
-##  Max.   :4.000  
-##                 
+##  short_link_v2        up_from_v2     favorite            type       
+##  Length:1200        Min.   : 1.00   Mode :logical   Min.   : 3.000  
+##  Class :character   1st Qu.: 8.00   FALSE:1167      1st Qu.: 3.000  
+##  Mode  :character   Median : 9.00   TRUE :33        Median : 3.000  
+##                     Mean   :15.96                   Mean   : 3.012  
+##                     3rd Qu.:20.00                   3rd Qu.: 3.000  
+##                     Max.   :36.00                   Max.   :10.000  
+##                     NA&#39;s   :1000                                    
+##     sub_type           device     
+##  Min.   :0.00000   Min.   :1.000  
+##  1st Qu.:0.00000   1st Qu.:1.000  
+##  Median :0.00000   Median :1.000  
+##  Mean   :0.01833   Mean   :2.118  
+##  3rd Qu.:0.00000   3rd Qu.:4.000  
+##  Max.   :7.00000   Max.   :4.000  
+##                                   
 ##                           page.cid                                                   page.page                                                   page.from                                                   page.part                                                 page.duration                                                  page.vid                                                  page.weblink                         page.dimension.width     dimension.height    dimension.rotate 
-##  Min.   :  4062651                                           Min.   :1.000000                                            Length:1200                                                 Length:1200                                                 Min.   :   7.000                                            Length:1200                                                 Length:1200                                                 Min.   : 318.000    Min.   : 240.000    Min.   :0.000000      
-##  1st Qu.:282782401                                           1st Qu.:1.000000                                            Class :character                                            Class :character                                            1st Qu.: 106.000                                            Class :character                                            Class :character                                            1st Qu.:1280.000    1st Qu.:1080.000    1st Qu.:0.000000      
-##  Median :398092893                                           Median :1.000000                                            Mode  :character                                            Mode  :character                                            Median : 304.000                                            Mode  :character                                            Mode  :character                                            Median :1920.000    Median :1080.000    Median :0.000000      
-##  Mean   :339880276                                           Mean   :1.011775                                            NA                                                          NA                                                          Mean   : 454.854                                            NA                                                          NA                                                          Mean   :1830.565    Mean   :1230.074    Mean   :0.001682      
-##  3rd Qu.:409349167                                           3rd Qu.:1.000000                                            NA                                                          NA                                                          3rd Qu.: 662.000                                            NA                                                          NA                                                          3rd Qu.:1920.000    3rd Qu.:1080.000    3rd Qu.:0.000000      
-##  Max.   :425816695                                           Max.   :5.000000                                            NA                                                          NA                                                          Max.   :6276.000                                            NA                                                          NA                                                          Max.   :4096.000    Max.   :4320.000    Max.   :1.000000      
+##  Min.   :  4062651                                           Min.   : 1.000000                                           Length:1200                                                 Length:1200                                                 Min.   :    7.00                                            Length:1200                                                 Length:1200                                                 Min.   : 318.000    Min.   : 240.000    Min.   :0.000000      
+##  1st Qu.:300266664                                           1st Qu.: 1.000000                                           Class :character                                            Class :character                                            1st Qu.:  119.00                                            Class :character                                            Class :character                                            1st Qu.:1280.000    1st Qu.:1080.000    1st Qu.:0.000000      
+##  Median :401174042                                           Median : 1.000000                                           Mode  :character                                            Mode  :character                                            Median :  340.00                                            Mode  :character                                            Mode  :character                                            Median :1920.000    Median :1080.000    Median :0.000000      
+##  Mean   :348207322                                           Mean   : 1.026072                                           NA                                                          NA                                                          Mean   :  487.39                                            NA                                                          NA                                                          Mean   :1838.506    Mean   :1229.653    Mean   :0.001682      
+##  3rd Qu.:412109363                                           3rd Qu.: 1.000000                                           NA                                                          NA                                                          3rd Qu.:  694.00                                            NA                                                          NA                                                          3rd Qu.:1920.000    3rd Qu.:1080.000    3rd Qu.:0.000000      
+##  Max.   :428187561                                           Max.   :17.000000                                           NA                                                          NA                                                          Max.   :10943.00                                            NA                                                          NA                                                          Max.   :4096.000    Max.   :4320.000    Max.   :1.000000      
 ##  NA&#39;s   :11                                                  NA&#39;s   :11                                                  NA                                                          NA                                                          NA&#39;s   :11                                                  NA                                                          NA                                                          NA&#39;s   :11          NA&#39;s   :11          NA&#39;s   :11            
 ##      count           progress         view_at               kid           
 ##  Min.   : 1.000   Min.   :  -1.0   Min.   :1.630e+09   Min.   :    27040  
-##  1st Qu.: 1.000   1st Qu.:  -1.0   1st Qu.:1.631e+09   1st Qu.:335656946  
-##  Median : 1.000   Median :   1.0   Median :1.632e+09   Median :548358156  
-##  Mean   : 1.124   Mean   : 120.9   Mean   :1.632e+09   Mean   :549728250  
-##  3rd Qu.: 1.000   3rd Qu.: 101.2   3rd Qu.:1.633e+09   3rd Qu.:762993506  
-##  Max.   :49.000   Max.   :2334.0   Max.   :1.634e+09   Max.   :976108546  
+##  1st Qu.: 1.000   1st Qu.:  -1.0   1st Qu.:1.632e+09   1st Qu.:335887840  
+##  Median : 1.000   Median :   1.0   Median :1.632e+09   Median :587030088  
+##  Mean   : 1.201   Mean   : 122.3   Mean   :1.633e+09   Mean   :556435075  
+##  3rd Qu.: 1.000   3rd Qu.: 101.2   3rd Qu.:1.633e+09   3rd Qu.:763218471  
+##  Max.   :49.000   Max.   :2334.0   Max.   :1.635e+09   Max.   :976237705  
 ##  NA&#39;s   :8                                                                
-##    business         redirect_link          bvid             season_id      
-##  Length:1200        Length:1200        Length:1200        Min.   :  107.0  
-##  Class :character   Class :character   Class :character   1st Qu.:  651.5  
-##  Mode  :character   Mode  :character   Mode  :character   Median : 3491.0  
-##                                                           Mean   :10603.4  
-##                                                           3rd Qu.:24492.5  
-##                                                           Max.   :32364.0  
-##                                                           NA&#39;s   :1085     
-##    up_from_v2    redirect_url      
-##  Min.   : 1.00   Length:1200       
-##  1st Qu.: 8.00   Class :character  
-##  Median :10.00   Mode  :character  
-##  Mean   :17.18                     
-##  3rd Qu.:20.00                     
-##  Max.   :36.00                     
-##  NA&#39;s   :1000                      
+##    business         redirect_link          bvid             mission_id    
+##  Length:1200        Length:1200        Length:1200        Min.   : 10923  
+##  Class :character   Class :character   Class :character   1st Qu.: 28604  
+##  Mode  :character   Mode  :character   Mode  :character   Median : 84241  
+##                                                           Mean   : 82051  
+##                                                           3rd Qu.:122069  
+##                                                           Max.   :208463  
+##                                                           NA&#39;s   :542     
+##    season_id     redirect_url      
+##  Min.   :  107   Length:1200       
+##  1st Qu.:  562   Class :character  
+##  Median : 3491   Mode  :character  
+##  Mean   :10602                     
+##  3rd Qu.:24327                     
+##  Max.   :32364                     
+##  NA&#39;s   :1083                      
 ##                                                                          bangumi.ep_id                                                                                                                                                   bangumi.title                                                                                                                                                 bangumi.long_title                                                                                                                                            bangumi.episode_status                                                                                                                                              bangumi.follow                                                                                                                                                  bangumi.cover                                                                           bangumi.season.season_id      season.title     season.season_status   season.is_finish   season.total_count  season.newest_ep_id  season.newest_ep_index  season.season_type
-##  Min.   :330566.0                                                                                                                                                Length:1200                                                                                                                                                     Length:1200                                                                                                                                                     Min.   : 2.0                                                                                                                                                    Min.   :0                                                                                                                                                       Length:1200                                                                                                                                                     Min.   :27040       Length:1200         Min.   : 2.0000     Min.   :0.0000      Min.   :-1.0000     Min.   :330566      Length:1200         Min.   :2.0000                  
-##  1st Qu.:339391.0                                                                                                                                                Class :character                                                                                                                                                Class :character                                                                                                                                                1st Qu.: 2.0                                                                                                                                                    1st Qu.:0                                                                                                                                                       Class :character                                                                                                                                                1st Qu.:31395       Class :character    1st Qu.: 2.0000     1st Qu.:0.5000      1st Qu.:-1.0000     1st Qu.:359631      Class :character    1st Qu.:2.0000                  
-##  Median :384953.0                                                                                                                                                Mode  :character                                                                                                                                                Mode  :character                                                                                                                                                Median : 2.0                                                                                                                                                    Median :0                                                                                                                                                       Mode  :character                                                                                                                                                Median :34041       Mode  :character    Median : 8.0000     Median :1.0000      Median : 1.0000     Median :416137      Mode  :character    Median :3.0000                  
-##  Mean   :378549.3                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Mean   : 6.0                                                                                                                                                    Mean   :0                                                                                                                                                       NA                                                                                                                                                              Mean   :34280       NA                  Mean   : 7.5714     Mean   :0.7143      Mean   : 0.7143     Mean   :391129      NA                  Mean   :3.1429                  
-##  3rd Qu.:416009.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              3rd Qu.:10.5                                                                                                                                                    3rd Qu.:0                                                                                                                                                       NA                                                                                                                                                              3rd Qu.:38450       NA                  3rd Qu.:13.0000     3rd Qu.:1.0000      3rd Qu.: 1.0000     3rd Qu.:423589      NA                  3rd Qu.:3.0000                  
-##  Max.   :423526.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Max.   :13.0                                                                                                                                                    Max.   :0                                                                                                                                                       NA                                                                                                                                                              Max.   :39189       NA                  Max.   :13.0000     Max.   :1.0000      Max.   : 5.0000     Max.   :424760      NA                  Max.   :7.0000                  
+##  Min.   :330566.0                                                                                                                                                Length:1200                                                                                                                                                     Length:1200                                                                                                                                                     Min.   : 2.0                                                                                                                                                    Min.   :0                                                                                                                                                       Length:1200                                                                                                                                                     Min.   :27040       Length:1200         Min.   : 2.0000     Min.   :0.0000      Min.   :-1.0000     Min.   :330566.0    Length:1200         Min.   :2.0000                  
+##  1st Qu.:339391.0                                                                                                                                                Class :character                                                                                                                                                Class :character                                                                                                                                                1st Qu.: 2.0                                                                                                                                                    1st Qu.:0                                                                                                                                                       Class :character                                                                                                                                                1st Qu.:31395       Class :character    1st Qu.: 2.0000     1st Qu.:0.5000      1st Qu.:-1.0000     1st Qu.:359631.0    Class :character    1st Qu.:2.0000                  
+##  Median :384953.0                                                                                                                                                Mode  :character                                                                                                                                                Mode  :character                                                                                                                                                Median : 2.0                                                                                                                                                    Median :0                                                                                                                                                       Mode  :character                                                                                                                                                Median :34041       Mode  :character    Median : 8.0000     Median :1.0000      Median : 1.0000     Median :416137.0    Mode  :character    Median :3.0000                  
+##  Mean   :378549.3                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Mean   : 6.0                                                                                                                                                    Mean   :0                                                                                                                                                       NA                                                                                                                                                              Mean   :34280       NA                  Mean   : 7.5714     Mean   :0.7143      Mean   : 0.7143     Mean   :391498.3    NA                  Mean   :3.1429                  
+##  3rd Qu.:416009.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              3rd Qu.:10.5                                                                                                                                                    3rd Qu.:0                                                                                                                                                       NA                                                                                                                                                              3rd Qu.:38450       NA                  3rd Qu.:13.0000     3rd Qu.:1.0000      3rd Qu.: 1.0000     3rd Qu.:424143.0    NA                  3rd Qu.:3.0000                  
+##  Max.   :423526.0                                                                                                                                                NA                                                                                                                                                              NA                                                                                                                                                              Max.   :13.0                                                                                                                                                    Max.   :0                                                                                                                                                       NA                                                                                                                                                              Max.   :39189       NA                  Max.   :13.0000     Max.   :1.0000      Max.   : 5.0000     Max.   :426237.0    NA                  Max.   :7.0000                  
 ##  NA&#39;s   :1193                                                                                                                                                    NA                                                                                                                                                              NA                                                                                                                                                              NA&#39;s   :1193                                                                                                                                                    NA&#39;s   :1193                                                                                                                                                    NA                                                                                                                                                              NA&#39;s   :1193        NA                  NA&#39;s   :1193        NA&#39;s   :1193        NA&#39;s   :1193        NA&#39;s   :1193        NA                  NA&#39;s   :1193                    
 ##   cheese.season_id     cheese.number     cheese.long_title      cheese.cover     cheese.update_info
 ##  Min.   :359         Length:1200         Length:1200         Length:1200         Length:1200       
@@ -272,7 +264,7 @@ head(history_tb)</code></pre>
 <div id="数据整理" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> 数据整理</h1>
 <p>根据此前的 <code>summary()</code> 以及<a href="https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/history&amp;toview/history.md#%E8%8E%B7%E5%8F%96%E5%85%A8%E9%83%A8%E8%A7%86%E9%A2%91%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%97%A7">获取全部视频历史记录（旧）</a>中的说明。<code>duration</code> 键值为视频长度，<code>progress</code> 为视频播放进度，对于完播视频其键值为 <code>-1</code>。为了便于计算播放时长，我们将 <code>duration</code> 与 <code>progress</code> 结合输出为 <code>play_time</code> 以计算播放时间。</p>
-<p>记录观看时间的 <code>view_at</code> 键值为 1634370752 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。同样的方法来处理 <code>pubdate</code>。</p>
+<p>记录观看时间的 <code>view_at</code> 键值为 1634781264 这样的形式，根据经验此处应为 Unix 时间戳，使用 <code>as.POSIXct</code> 转换为 date/time 格式。之后按照每天中的时间以及星期将观看时间进行归类。同样的方法来处理 <code>pubdate</code>。</p>
 <p>代表分区大类的 <code>tid</code> 键值类型为数值型，然而根据其实际意义，应与 <code>tname</code> 结合使用，通过 <code>forcats::fct_reorder</code> 根据 <code>tid</code> 对 <code>tname</code> 进行排序。</p>
 <pre class="r"><code>library(&quot;lubridate&quot;)
 library(&quot;forcats&quot;)
@@ -307,16 +299,20 @@ total_sec</code></pre>
 <pre><code>## # A tibble: 1 × 3
 ##   min                 max                  total
 ##   &lt;dttm&gt;              &lt;dttm&gt;               &lt;int&gt;
-## 1 2021-08-31 15:13:58 2021-10-16 15:52:32 321262</code></pre>
-<p>从 2021-08-31 15:13:58 到 2021-10-16 15:52:32 总共看视频 321262 秒！也就是89.24 小时！妈见打系列了属于是。</p>
+## 1 2021-09-01 19:43:49 2021-10-21 09:54:24 331559</code></pre>
+<p>从 2021-09-01 19:43:49 到 2021-10-21 09:54:24 总共看视频 331559 秒！也就是92.1 小时！妈见打系列了属于是。</p>
 </div>
 <div id="什么时候才会看-b-站" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> 什么时候才会看 B 站？</h2>
 <p>之后，我们开始探究新的问题，我都是在什么时候看的 B 站视频？我们分别对日期、一日中的时间、一周中的每天进行了可视化分析。</p>
 <pre class="r"><code>library(&quot;ggplot2&quot;)
-library(&quot;cowplot&quot;)
-
-view_date_p &lt;-
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:lubridate&#39;:
+## 
+##     stamp</code></pre>
+<pre class="r"><code>view_date_p &lt;-
   histroy_tidy_tb %&gt;%
   group_by(date) %&gt;%
   summarise(duration_sum = sum(play_time, na.rm = TRUE)/3600) %&gt;%
@@ -379,9 +375,10 @@ view_grid_p</code></pre>
 <h2><span class="header-section-number">4.3</span> 我看了哪类视频？</h2>
 <p>既然花费了那么久看视频，那么我到底看了什么视频呢？</p>
 <pre class="r"><code>library(forcats)
-library(showtext)
-
-showtext_auto()
+library(showtext)</code></pre>
+<pre><code>## Loading required package: sysfonts</code></pre>
+<pre><code>## Loading required package: showtextdb</code></pre>
+<pre class="r"><code>showtext_auto()
 
 histroy_tidy_tb %&gt;% 
   select(
@@ -434,7 +431,7 @@ history_type_aggregate_tb &lt;-
 
 DT::datatable(history_type_aggregate_tb)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["单机游戏","人文历史","搞笑","other","日常","美食侦探","影视杂谈","美食制作","数码","社科·法律·心理","美食测评","财经商业","美食记录"],[21.2966666666667,17.4419444444444,11.7941666666667,8.03083333333333,6.67,6.54027777777778,4.63638888888889,4.46666666666667,2.06611111111111,1.76805555555556,1.55388888888889,1.53222222222222,1.44222222222222]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>type<\/th>\n      <th>duration_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["单机游戏","人文历史","搞笑","other","美食侦探","日常","美食制作","影视杂谈","数码","财经商业","社科·法律·心理","美食测评","美食记录"],[21.0811111111111,18.5225,12.1830555555556,9.47694444444445,7.18944444444444,5.52027777777778,5.10083333333333,4.53805555555556,2.06583333333333,1.89777777777778,1.54833333333333,1.53333333333333,1.44222222222222]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>type<\/th>\n      <th>duration_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>showtext_auto()
 
 histroy_tidy_tb %&gt;% 
@@ -472,9 +469,9 @@ get_bucket(&#39;bili-history&#39;)</code></pre>
 ## 
 ## $Contents
 ## Key:            histroy_tidy_tb.Rdata 
-## LastModified:   2021-10-20T15:28:59.988Z 
-## ETag:           &quot;de3c012163e9e1e21ef1307369fd6c30&quot; 
-## Size (B):       349671 
+## LastModified:   2021-10-21T03:27:53.416Z 
+## ETag:           &quot;7a07c6f484da97bf7cac3fa97e898991&quot; 
+## Size (B):       347773 
 ## Owner:          minio 
 ## Storage class:  STANDARD</code></pre>
 <hr />

@@ -568,11 +568,9 @@ knitr::kable(df_fitted_by_mods)</code></pre>
 # to solve NA value,
 # but it is not always the best practice
 
-library(&quot;ForecastComb&quot;)</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
-##   method            from
-##   as.zoo.data.frame zoo</code></pre>
-<pre class="r"><code>fc_dat &lt;-
+library(&quot;ForecastComb&quot;)
+
+fc_dat &lt;-
   foreccomb(observed_vector = WWWusage_train,
             prediction_matrix = df_fitted_by_mods,
             na.impute = TRUE)</code></pre>
@@ -700,6 +698,9 @@ library(&quot;ForecastComb&quot;)</code></pre>
 <pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:greyforecasting&#39;:
+## 
+##     combine</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
 ## 
 ##     filter, lag</code></pre>
@@ -832,7 +833,6 @@ fc_dat_miss_val_fix</code></pre>
   auto_combine(fc_dat_miss_val_fix)</code></pre>
 <pre><code>## Optimization algorithm chooses number of retained models for trimmed eigenvector approach...</code></pre>
 <pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
-<pre><code>## Loading required package: forecast</code></pre>
 <pre><code>## Optimization algorithm chooses number of retained models for trimmed bias-corrected eigenvector approach...</code></pre>
 <pre><code>## Algorithm finished. Optimized number of retained models: 1</code></pre>
 <pre><code>## Optimization algorithm chooses trim factor for trimmed mean approach...</code></pre>
@@ -977,7 +977,7 @@ fc_dat_miss_val_fix</code></pre>
 ##     pred &lt;- as.vector(coef %*% t(cbind(1, newpreds)))
 ##     return(pred)
 ## }
-## &lt;bytecode: 0x7f8ce5df1d00&gt;
+## &lt;bytecode: 0x7f8cd87d7768&gt;
 ## &lt;environment: namespace:ForecastComb&gt;
 ## 
 ## $Intercept
