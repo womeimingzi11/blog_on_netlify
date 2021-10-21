@@ -14,8 +14,7 @@ hasCJKLanguage = true
 
 # copyright = "&copy;{year}, All Rights Reserved. [鲁ICP备2021032727号-1](https://beian.miit.gov.cn)"
 
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$", "_files$",
-"\\.R", "assets/*", "\\.ndjson"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$", "\\.R", "assets/*", "\\.ndjson"]
 ## Change this two to switch between different language
 # For RSS, view https://www.rssboard.org/rss-language-codes
 languageCode = "zh-cn"  
@@ -58,7 +57,6 @@ identifier = "about"
 name = "About Me"
 url = "/about/"
 weight = 1 # Weight is an integer used to sort the menu items. The sorting goes from smallest to largest numbers. If weight is not defined for each menu entry, Hugo will sort the entries alphabetically.
-
 
 [[menu.main]]
 identifier = "tags"

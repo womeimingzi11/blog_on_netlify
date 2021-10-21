@@ -43,3 +43,9 @@ vignettes/*.pdf
 
 # ignore local_header files
 ^local_*.R
+
+.DS_Store
+Thumbs.db
+
+/public/
+/resources/
