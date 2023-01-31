@@ -26,21 +26,21 @@
     </item>
     
     <item>
-      <title>Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</title>
-      <link>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</link>
-      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</guid>
-      <description>如何在 blogdown 中处理参考文献？ 什么是 blogdown？ 其入门手册标题 blogdown: Creating Websites with R Markdown 是对 blogdown 最恰当最简洁的解释。实际上笔者自己的博客正是使用 blogdown 构建。 什么是参考文献？ 证明我说的话不是乱讲的底气（误 为什么要处理参考文</description>
-    </item>
-    
-    <item>
       <title>Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</title>
       <link>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</link>
       <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</guid>
       <description>最近跑的一段程序，其中需要对栅格文件进行批量读写，然而使用多 session 的并行无法批量处理 raster 文件，而基于 fork 策略的并行方法又无法在 Windows 中调用。于是只能考虑在 Unix 或者 Linux 中完成。然而，手头 MacBook 性能不足，PC 上面虽然装了 Ryzentosh 但</description>
+    </item>
+    
+    <item>
+      <title>Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</title>
+      <link>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</guid>
+      <description>如何在 blogdown 中处理参考文献？ 什么是 blogdown？ 其入门手册标题 blogdown: Creating Websites with R Markdown 是对 blogdown 最恰当最简洁的解释。实际上笔者自己的博客正是使用 blogdown 构建。 什么是参考文献？ 证明我说的话不是乱讲的底气（误 为什么要处理参考文</description>
     </item>
     
     <item>

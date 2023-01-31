@@ -6,7 +6,16 @@
     <description>Recent content on 洗衣机的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 21 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 31 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.washman.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://blog.washman.top/about/</link>
+      <pubDate>Tue, 31 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/about/</guid>
+      <description>博主是谁 Hello, 我是洗衣机，为什么叫洗衣机？Long story，也许什么时候会讲给大家听吧（应该没人在乎其实～我洗衣机或者 Han 都可以！ 从兰州大学生态学院获得了生态学博士学位。 如果放在生态学博士里面，大概是比较</description>
+    </item>
+    
     <item>
       <title>Using R: 我到底在 B 站花了多长时间？</title>
       <link>https://blog.washman.top/post/2021-10-10-using-r-%E6%88%91%E5%88%B0%E5%BA%95%E5%9C%A8-b-%E7%AB%99%E8%8A%B1%E4%BA%86%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4/</link>
@@ -26,21 +35,21 @@
     </item>
     
     <item>
-      <title>Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</title>
-      <link>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</link>
-      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</guid>
-      <description>如何在 blogdown 中处理参考文献？ 什么是 blogdown？ 其入门手册标题 blogdown: Creating Websites with R Markdown 是对 blogdown 最恰当最简洁的解释。实际上笔者自己的博客正是使用 blogdown 构建。 什么是参考文献？ 证明我说的话不是乱讲的底气（误 为什么要处理参考文</description>
-    </item>
-    
-    <item>
       <title>Using R: 谨慎在读写性能糟糕的 WSL2 中使用 R！速度只有1/10</title>
       <link>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</link>
       <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.washman.top/post/r_in_wsl2_is_limited_by_io_performance/</guid>
       <description>最近跑的一段程序，其中需要对栅格文件进行批量读写，然而使用多 session 的并行无法批量处理 raster 文件，而基于 fork 策略的并行方法又无法在 Windows 中调用。于是只能考虑在 Unix 或者 Linux 中完成。然而，手头 MacBook 性能不足，PC 上面虽然装了 Ryzentosh 但</description>
+    </item>
+    
+    <item>
+      <title>Using R: 使用 Zotero 为 Rmarkdown 插入参考文献</title>
+      <link>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</link>
+      <pubDate>Tue, 14 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.washman.top/post/rmd_auto_insert_zotero_bib/</guid>
+      <description>如何在 blogdown 中处理参考文献？ 什么是 blogdown？ 其入门手册标题 blogdown: Creating Websites with R Markdown 是对 blogdown 最恰当最简洁的解释。实际上笔者自己的博客正是使用 blogdown 构建。 什么是参考文献？ 证明我说的话不是乱讲的底气（误 为什么要处理参考文</description>
     </item>
     
     <item>
@@ -131,15 +140,6 @@
       
       <guid>https://blog.washman.top/post/2020-02-19-ggplot2-rasterlayer-visualizaiton/%E4%BD%BF%E7%94%A8-ggplot2-%E7%BB%98%E5%88%B6-rasterlayer-%E5%9C%B0%E5%9B%BE.zh-hans/</guid>
       <description>Han (chenhan28@gmail.com) 在最近刚刚完成的一篇 SCI 文章中，为了描述实验的采样范围，通过 ggplot2 包 (Wickham et al. 2019) 将一组 RasterLayer 绘制成为了青藏高原的地形图。考虑到使用 R 绘制地图的中文内容较少，我们进行一次回顾。 PS 因为不是地理方面的文章/专业，所以</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://blog.washman.top/about/</link>
-      <pubDate>Fri, 25 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.washman.top/about/</guid>
-      <description>博主是谁 Hello, 我是洗衣机，为什么叫洗衣机？Long story，也许什么时候会讲给大家听吧（应该没人在乎其实～我洗衣机或者 Han 都可以！ 截止 2020 年 2 月 21 日，还是兰州大学生态学博士研究生在读，如果没什么意外这个状态</description>
     </item>
     
   </channel>

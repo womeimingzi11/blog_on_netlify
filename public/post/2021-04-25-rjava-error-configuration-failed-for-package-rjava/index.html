@@ -102,26 +102,26 @@ Please visit http://www.java.com for information on installing Java.</p>
 </blockquote>
 <h2 id="step-1-安装-jdk">Step 1. 安装 JDK</h2>
 <p>在决定安装 JDK 之前，建议首先检查一下是否真的没有安装 JDK 以及 JDK 的版本，在 macOS 或 Linux 中的 Terminal （或者 RStudio 的 <strong>Terminal 标签</strong>，<strong>Terminal 标签</strong>，<strong>Terminal 标签</strong>）中运行下述命令</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ java -version
-The operation couldn’t be completed. Unable to locate a Java Runtime.
-Please visit http://www.java.com <span class="k">for</span> information on installing Java.
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-04-25%20at%2001.17.35%402x.png" alt="在 Terminal 标签中"></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ java -version
+</span></span><span class="line"><span class="cl">The operation couldn’t be completed. Unable to locate a Java Runtime.
+</span></span><span class="line"><span class="cl">Please visit http://www.java.com <span class="k">for</span> information on installing Java.
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/womeimingzi11/self-image/CleanShot%202021-04-25%20at%2001.17.35%402x.png" alt="在 Terminal 标签中"></p>
 <p>如果没有返回 Java Runtime 的版本或者或者 JDK 版本较高，通常我们可以尝试安装 JDK8，至于为什么是 JDK8 而不是更新的版本，我们后面会讲到。</p>
 <p>对于 macOS，我建议使用Homebrew 安装 JDK，Homebrew 是什么以及如何安装请参考<a href="https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/">清华大学 brew 镜像说明</a>。</p>
 <p>在 <code>AdoptOpenJDK/openjdk</code>这个Homebrew 的 Tap 源中提供了较为丰富的 JDK 版本，基本能够满足需求。至于为什么选择 AdoptOpenJDK，为什么不选择 OracleJDK，以及为什么不选择任何其他版本的 JDK 这里就不做讨论了——有需求的朋友一定能更优雅的解决 rJava 的问题吧。</p>
 <p>通过 Homebrew 安装 AdoptOpenJDK 8 的命令如下（Terminal 中运行）：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Activate the AdoptOpenJDK tap</span>
-brew tap AdoptOpenJDK/openjdk
-<span class="c1"># Install the desired version</span>
-brew cask install adoptopenjdk8
-</code></pre></div><p>在 Debian 及 Debian 衍生的 Linux 中，例如 Ubuntu/Debian 等可以使用下列命令:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">sudo apt-get install openjdk-8-jdk
-</code></pre></div><p>安装成功后再次检查 JDK 版本——1.8.X 就代表 JDK8 成功安装了。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ java -version
-openjdk version <span class="s2">&#34;1.8.0_292&#34;</span>
-OpenJDK Runtime Environment <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 1.8.0_292-b10<span class="o">)</span>
-OpenJDK 64-Bit Server VM <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 25.292-b10, mixed mode<span class="o">)</span>
-</code></pre></div><p>此时再返回 R 的 Console 中加载之前报错的包，我有 90% 的信心认为你不会再遇到问题了！</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Activate the AdoptOpenJDK tap</span>
+</span></span><span class="line"><span class="cl">brew tap AdoptOpenJDK/openjdk
+</span></span><span class="line"><span class="cl"><span class="c1"># Install the desired version</span>
+</span></span><span class="line"><span class="cl">brew cask install adoptopenjdk8
+</span></span></code></pre></div><p>在 Debian 及 Debian 衍生的 Linux 中，例如 Ubuntu/Debian 等可以使用下列命令:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">sudo apt-get install openjdk-8-jdk
+</span></span></code></pre></div><p>安装成功后再次检查 JDK 版本——1.8.X 就代表 JDK8 成功安装了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ java -version
+</span></span><span class="line"><span class="cl">openjdk version <span class="s2">&#34;1.8.0_292&#34;</span>
+</span></span><span class="line"><span class="cl">OpenJDK Runtime Environment <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 1.8.0_292-b10<span class="o">)</span>
+</span></span><span class="line"><span class="cl">OpenJDK 64-Bit Server VM <span class="o">(</span>AdoptOpenJDK<span class="o">)(</span>build 25.292-b10, mixed mode<span class="o">)</span>
+</span></span></code></pre></div><p>此时再返回 R 的 Console 中加载之前报错的包，我有 90% 的信心认为你不会再遇到问题了！</p>
 <h2 id="step-2-r-cmd-autoconf">Step 2. <code>R CMD autoconf</code></h2>
 <p>然而，最尴尬的事情并不是 JDK 没有安装，而是 <strong>JDK 安装了，可就是/还是要花式报错……</strong></p>
 <p>相信这也是从网上搜到这篇文章的朋友的最大的困扰，这个问题通常是因为 R 没有正确的识别到电脑上的 JDK，想要解决这个问题也不算太难，网络上大量的教程都会建议尝试在 Terminal 中运行 <code>R CMD autoconf</code>，你以为的是问题解决了，然而通常你遇到的是：</p>
@@ -152,64 +152,63 @@ If in doubt, re-run &ldquo;R CMD javareconf&rdquo; as root.</p>
 </blockquote>
 <p><code>jEnv</code>可以在本机安装的不同版本 Java 之间切换，并且可以针对不同的作用范围指定 Java 版本，本示例中主要使用第一个功能。</p>
 <p>参考 <code>jEnv</code><a href="https://www.jenv.be/">官方说明</a>，首先在 Shell 中克隆并加载 jEnv:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Clone jEnv git to home directory</span>
-$ git clone https://github.com/jenv/jenv.git ~/.jenv
-
-<span class="c1"># Set jEnv Path for Bash</span>
-$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.bash_profile
-$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.bash_profile
-
-<span class="c1"># Set jEnv Path for Zsh</span>
-$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.zshrc
-$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.zshrc
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Clone jEnv git to home directory</span>
+</span></span><span class="line"><span class="cl">$ git clone https://github.com/jenv/jenv.git ~/.jenv
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set jEnv Path for Bash</span>
+</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.bash_profile
+</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.bash_profile
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set jEnv Path for Zsh</span>
+</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.jenv/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.zshrc
+</span></span><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s1">&#39;eval &#34;$(jenv init -)&#34;&#39;</span> &gt;&gt; ~/.zshrc
+</span></span></code></pre></div><blockquote>
 <h3 id="which-shell-am-i-using">Which shell am I using?</h3>
 <p>上述设定 jEnv Path 的操作并不是需要都要执行，实际上在进行配置路径之前，大家需要知道自己使用的是什么 Shell，至于 Shell、Bash、Zsh、Terminal、R Console 分别是什么，本文不做进一步讲解，但可以自行搜索，否者很容易混淆。</p>
 <p>可以使用 <code>echo &quot;$SHELL&quot;</code> 命令快速的检查当前使用 Shell，例如这里我们看到：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$SHELL</span><span class="s2">&#34;</span>
-
-/bin/zsh
-</code></pre></div><p><code>zsh</code>关键字即说明我们当前使用的是 zsh</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$SHELL</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/bin/zsh
+</span></span></code></pre></div><p><code>zsh</code>关键字即说明我们当前使用的是 zsh</p>
 </blockquote>
 <p>随后将本地已经安装的所有 JDK 路径添加到 <code>jEnv</code> 中以供后续管理，例如示例中电脑安装了 JDK8 和 JDK14，那么使用下列命令将两个版本均添加到 <code>zsh</code> 中:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># For macOS, the directory of Java is in</span>
-<span class="c1"># /Library/Java/JavaVirtualMachines</span>
-
-<span class="c1"># Add JDK8 to jEnv</span>
-$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-openjdk64-1.8.0.292 added
-1.8.0.292 added
-1.8 added
-
-<span class="c1"># Add JDK14 to jEnv</span>
-$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/Home
-openjdk64-14.0.2 added
-14.0.2 added
-14.0 added
-<span class="m">14</span> added
-
-</code></pre></div><p>Shell 中提示 added 就代表添加成功，使用命令 <code>jenv versions</code> 查看已经添加至 <code>jEnv</code>中的 JDK 版本，并且该命令可以显示哪个 JDK 被激活：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ jenv versions
-* system <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
-  1.8
-  1.8.0.292
-  <span class="m">14</span>
-  14.0
-  14.0.2
-  openjdk64-1.8.0.292
-  openjdk64-14.0.2
-</code></pre></div><p>使用 <code>jenv global</code> 切换全局 JDK 版本：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ jenv global 1.8
-$ jenv versions
-  system
-* 1.8 <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
-  1.8.0.292
-  <span class="m">14</span>
-  14.0
-  14.0.2
-  openjdk64-1.8.0.292
-  openjdk64-14.0.2
-</code></pre></div><p>结果显示 JDK 已经切换至 JDK8 (1.8)。此时再次在 Terminal 中执行 <code>R CMD javareconf</code> 应该就可以正确的配置 R 对 Java 的调用。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># For macOS, the directory of Java is in</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># /Library/Java/JavaVirtualMachines</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add JDK8 to jEnv</span>
+</span></span><span class="line"><span class="cl">$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+</span></span><span class="line"><span class="cl">openjdk64-1.8.0.292 added
+</span></span><span class="line"><span class="cl">1.8.0.292 added
+</span></span><span class="line"><span class="cl">1.8 added
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add JDK14 to jEnv</span>
+</span></span><span class="line"><span class="cl">$ jenv add /Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/Home
+</span></span><span class="line"><span class="cl">openjdk64-14.0.2 added
+</span></span><span class="line"><span class="cl">14.0.2 added
+</span></span><span class="line"><span class="cl">14.0 added
+</span></span><span class="line"><span class="cl"><span class="m">14</span> added
+</span></span></code></pre></div><p>Shell 中提示 added 就代表添加成功，使用命令 <code>jenv versions</code> 查看已经添加至 <code>jEnv</code>中的 JDK 版本，并且该命令可以显示哪个 JDK 被激活：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ jenv versions
+</span></span><span class="line"><span class="cl">* system <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  1.8
+</span></span><span class="line"><span class="cl">  1.8.0.292
+</span></span><span class="line"><span class="cl">  <span class="m">14</span>
+</span></span><span class="line"><span class="cl">  14.0
+</span></span><span class="line"><span class="cl">  14.0.2
+</span></span><span class="line"><span class="cl">  openjdk64-1.8.0.292
+</span></span><span class="line"><span class="cl">  openjdk64-14.0.2
+</span></span></code></pre></div><p>使用 <code>jenv global</code> 切换全局 JDK 版本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ jenv global 1.8
+</span></span><span class="line"><span class="cl">$ jenv versions
+</span></span><span class="line"><span class="cl">  system
+</span></span><span class="line"><span class="cl">* 1.8 <span class="o">(</span><span class="nb">set</span> by /Users/chenhan/.jenv/version<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  1.8.0.292
+</span></span><span class="line"><span class="cl">  <span class="m">14</span>
+</span></span><span class="line"><span class="cl">  14.0
+</span></span><span class="line"><span class="cl">  14.0.2
+</span></span><span class="line"><span class="cl">  openjdk64-1.8.0.292
+</span></span><span class="line"><span class="cl">  openjdk64-14.0.2
+</span></span></code></pre></div><p>结果显示 JDK 已经切换至 JDK8 (1.8)。此时再次在 Terminal 中执行 <code>R CMD javareconf</code> 应该就可以正确的配置 R 对 Java 的调用。</p>
 <p>除了 <code>jenv global</code> 控制全局 JDK 版本，还可以通过 <code>jenv local</code> 控制当前目录/项目下 JDK 版本，以及通过 <code>jenv shell</code> 控制当前 Shell 中 JDK 版本。</p>
 <p>通过上述办法，解决了笔者遇到的大多数 <code>rJava</code> 遇到的载入包问题。</p>
 <hr>
@@ -284,12 +283,12 @@ $ jenv versions
 
         <footer id="footer">
   <p>
-    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>&copy; 2023 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
     <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
     <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
   </p>
 
-  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+  <script src="https://blog.washman.top/js/main.min.8d5e5c2aeeb637f3dddaa2680f8169c057c6dca5717ee4188a442ad000362f09.js" integrity="sha256-jV5cKu62N/Pd2qJoD4FpwFfG3KVxfuQYikQq0AA2Lwk=" crossorigin="anonymous" async></script>
 </footer>
 
     </body>

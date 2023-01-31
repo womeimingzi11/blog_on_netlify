@@ -115,23 +115,23 @@ also hold the raster cell values in memory.</p>
 <p>所需加载包： 1. <code>elevatr</code>(Hollister and Shah 2018)；2. <code>raster</code>； 3.<code>tidyverse</code> (Wickham and RStudio 2019)</p>
 <p>具体到这一次的地图绘制中，我们需要<strong>两个</strong> RasterLayer —— 1. 作为背景层的 <code>bg_rst</code>，以及 2.用作展示地形的 <code>tp_rst</code>。那么如何获得这两个 RasterLayer 呢？<code>elevatr</code> 包提供了专门用于获取高程栅格数据的方法 <code>get_elev_raster</code>.</p>
 <p>不过在获取高程数据之前，需要首先指定地图绘制矩形边界。之后方可使用 <code>get_elev_raster</code> 来获取边界范围内的高程数据，使用 <code>z</code> 参数 (zoom) 确定缩放程度。因为通过 <code>get_elev_raster</code> 获取高程 raster 的方法是获取服务器与自定义边界的最小公倍数（不准确的说法），所以需要对获取的原始 RasterLayer 再次剪切，以便得到地图绘制矩形边界内的数据。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="nf">library</span><span class="p">(</span><span class="n">elevatr</span><span class="p">)</span>  <span class="c1"># Get rasterlay from AWS by `get_elev_raster` fucntion</span>
-<span class="nf">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span>  <span class="c1"># Manipulate RasterLayer object</span>
-<span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>  <span class="c1"># Tidy is everything.</span>
-
-<span class="c1"># Set the extent we want to plot</span>
-<span class="n">ext_sample</span> <span class="o">&lt;-</span> <span class="nf">extent</span><span class="p">(</span><span class="m">70</span><span class="p">,</span> <span class="m">105</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="m">45</span><span class="p">)</span>
-
-<span class="c1"># Preparing for getting the elevation raster data, make a blank RasterLayer,</span>
-<span class="c1"># becasue the first parameter of get_elev_raster is a target Rasterlayer.</span>
-<span class="n">bg_init</span> <span class="o">&lt;-</span> <span class="nf">raster</span><span class="p">(</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext_sample</span><span class="p">,</span> <span class="n">resolution</span> <span class="o">=</span> <span class="m">0.01</span><span class="p">)</span>
-<span class="c1"># Get elevation raster with zoom 5, then only keep the extend we want to plot</span>
-<span class="c1"># later.</span>
-<span class="n">bg_rst</span> <span class="o">&lt;-</span> <span class="nf">get_elev_raster</span><span class="p">(</span><span class="n">bg_init</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="m">5</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">crop</span><span class="p">(</span><span class="n">ext_sample</span><span class="p">)</span>
-</code></pre></div><p><code>bg_rst</code> 就是地图背景中灰色的辅助部分的数据就准备好了。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Let&#39;s check the detail of bg_rst, the Background RasterLayer</span>
-<span class="n">bg_rst</span>
-</code></pre></div><pre><code>## class      : RasterLayer 
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">elevatr</span><span class="p">)</span>  <span class="c1"># Get rasterlay from AWS by `get_elev_raster` fucntion</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span>  <span class="c1"># Manipulate RasterLayer object</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>  <span class="c1"># Tidy is everything.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set the extent we want to plot</span>
+</span></span><span class="line"><span class="cl"><span class="n">ext_sample</span> <span class="o">&lt;-</span> <span class="nf">extent</span><span class="p">(</span><span class="m">70</span><span class="p">,</span> <span class="m">105</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="m">45</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Preparing for getting the elevation raster data, make a blank RasterLayer,</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># becasue the first parameter of get_elev_raster is a target Rasterlayer.</span>
+</span></span><span class="line"><span class="cl"><span class="n">bg_init</span> <span class="o">&lt;-</span> <span class="nf">raster</span><span class="p">(</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext_sample</span><span class="p">,</span> <span class="n">resolution</span> <span class="o">=</span> <span class="m">0.01</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Get elevation raster with zoom 5, then only keep the extend we want to plot</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># later.</span>
+</span></span><span class="line"><span class="cl"><span class="n">bg_rst</span> <span class="o">&lt;-</span> <span class="nf">get_elev_raster</span><span class="p">(</span><span class="n">bg_init</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="m">5</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">crop</span><span class="p">(</span><span class="n">ext_sample</span><span class="p">)</span>
+</span></span></code></pre></div><p><code>bg_rst</code> 就是地图背景中灰色的辅助部分的数据就准备好了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># Let&#39;s check the detail of bg_rst, the Background RasterLayer</span>
+</span></span><span class="line"><span class="cl"><span class="n">bg_rst</span>
+</span></span></code></pre></div><pre><code>## class      : RasterLayer 
 ## dimensions : 1075, 1591, 1710325  (nrow, ncol, ncell)
 ## resolution : 0.022, 0.0186  (x, y)
 ## extent     : 70.008, 105.01, 25.0029, 44.9979  (xmin, xmax, ymin, ymax)
@@ -141,33 +141,33 @@ also hold the raster cell values in memory.</p>
 ## values     : -156.1392, 8006.811  (min, max)
 </code></pre>
 <p>随后我们需要下载青藏高原的多边形文件，这里我们选择张镱锂 (2002) 等人在《论青藏高原范围与面积》一文提供的青藏高原范围与界线地理信息系统数据。从<a href="http://www.geodoi.ac.cn/WebCn/doi.aspx?Id=135">《全球变化科学研究数据出版系统》</a>下载即可。这里我选择了 <code>DBATP.zip</code> 下载，对应的文件格式为 Shaplefile，使用 rgdal 包 (Bivand et al. 2019) 提供的 <code>readOGR</code> 方法读取其中的 <code>DBATP_Polygon.shp</code>，保存的数据类型为<code>tp_ext</code>（类型为 SpatialPolygonsDataFrame）。之后将<code>bg_rst</code> 数据按照 <code>tp_ext</code> 形状进行处理，获得符合青藏高原范围的 RasterLayer <code>tp_rst</code>。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="nf">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span>
-<span class="c1"># Read the SpatialPolygon File from DBATP_Polygon.shp</span>
-<span class="n">tp_ext</span> <span class="o">&lt;-</span> <span class="nf">readOGR</span><span class="p">(</span><span class="s">&#34;DBATP/DBATP_Polygon.shp&#34;</span><span class="p">)</span>
-</code></pre></div><pre><code>## OGR data source with driver: ESRI Shapefile 
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Read the SpatialPolygon File from DBATP_Polygon.shp</span>
+</span></span><span class="line"><span class="cl"><span class="n">tp_ext</span> <span class="o">&lt;-</span> <span class="nf">readOGR</span><span class="p">(</span><span class="s">&#34;DBATP/DBATP_Polygon.shp&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><pre><code>## OGR data source with driver: ESRI Shapefile 
 ## Source: &quot;/Users/chenhan/Documents/Develop Learn/R/plotMapByGGplot/DBATP/DBATP_Polygon.shp&quot;, layer: &quot;DBATP_Polygon&quot;
 ## with 1 features
 ## It has 1 fields
 </code></pre>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Keep the shpae of the Tibetan Plateau</span>
-<span class="n">tp_rst</span> <span class="o">&lt;-</span> <span class="nf">mask</span><span class="p">(</span><span class="n">bg_rst</span><span class="p">,</span> <span class="n">tp_ext</span><span class="p">)</span>
-</code></pre></div><p>为了便于定位，我们还将在图片上绘制地标名称 <code>city_ls</code>，以及采样点位置及其类型 <code>hbt_coord</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># Keep the shpae of the Tibetan Plateau</span>
+</span></span><span class="line"><span class="cl"><span class="n">tp_rst</span> <span class="o">&lt;-</span> <span class="nf">mask</span><span class="p">(</span><span class="n">bg_rst</span><span class="p">,</span> <span class="n">tp_ext</span><span class="p">)</span>
+</span></span></code></pre></div><p>为了便于定位，我们还将在图片上绘制地标名称 <code>city_ls</code>，以及采样点位置及其类型 <code>hbt_coord</code>。</p>
 <p>PS.可以根据自己的实际情况确定数据的存储类型，这里因为个人项目的实际情况，数据并没有保存成为常见的 data.freame 或者 tibble 之类的类表格形式。<strong>注意绘图过程中前后对应即可</strong>。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Create the list of landmarks which we want to mark</span>
-<span class="n">city_ls</span> <span class="o">&lt;-</span> <span class="nf">list</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">91.1</span><span class="p">,</span> <span class="m">86.925278</span><span class="p">,</span> <span class="m">101.7781</span><span class="p">),</span> <span class="n">y</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">29.65</span><span class="p">,</span> <span class="m">27.988056</span><span class="p">,</span> <span class="m">36.6169</span><span class="p">),</span> 
-    <span class="n">label</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Lhasa&#34;</span><span class="p">,</span> <span class="s">&#34;Qomolangma&#34;</span><span class="p">,</span> <span class="s">&#34;Xi&#39;Ning&#34;</span><span class="p">))</span>
-<span class="nf">str</span><span class="p">(</span><span class="n">city_ls</span><span class="p">)</span>
-</code></pre></div><pre><code>## List of 3
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># Create the list of landmarks which we want to mark</span>
+</span></span><span class="line"><span class="cl"><span class="n">city_ls</span> <span class="o">&lt;-</span> <span class="nf">list</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">91.1</span><span class="p">,</span> <span class="m">86.925278</span><span class="p">,</span> <span class="m">101.7781</span><span class="p">),</span> <span class="n">y</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">29.65</span><span class="p">,</span> <span class="m">27.988056</span><span class="p">,</span> <span class="m">36.6169</span><span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">label</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Lhasa&#34;</span><span class="p">,</span> <span class="s">&#34;Qomolangma&#34;</span><span class="p">,</span> <span class="s">&#34;Xi&#39;Ning&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nf">str</span><span class="p">(</span><span class="n">city_ls</span><span class="p">)</span>
+</span></span></code></pre></div><pre><code>## List of 3
 ##  $ x    : num [1:3] 91.1 86.9 101.8
 ##  $ y    : num [1:3] 29.6 28 36.6
 ##  $ label: chr [1:3] &quot;Lhasa&quot; &quot;Qomolangma&quot; &quot;Xi'Ning&quot;
 </code></pre>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># Read point with latitude and longitude. This operation is not needed for</span>
-<span class="c1"># everyone, actually it depends on the actual data structure.</span>
-<span class="n">hbt_coord</span> <span class="o">&lt;-</span> <span class="nf">read_rds</span><span class="p">(</span><span class="s">&#34;hbt_coord.rds&#34;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">Ecosystem</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">hbt</span> <span class="o">==</span> <span class="s">&#34;M&#34;</span><span class="p">,</span> 
-    <span class="s">&#34;Alpine Meadow&#34;</span><span class="p">,</span> <span class="s">&#34;Alpine Steppe&#34;</span><span class="p">))</span>
-<span class="nf">str</span><span class="p">(</span><span class="n">hbt_coord</span><span class="p">)</span>
-</code></pre></div><pre><code>## Classes 'tbl_df', 'tbl' and 'data.frame':    432 obs. of  4 variables:
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># Read point with latitude and longitude. This operation is not needed for</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># everyone, actually it depends on the actual data structure.</span>
+</span></span><span class="line"><span class="cl"><span class="n">hbt_coord</span> <span class="o">&lt;-</span> <span class="nf">read_rds</span><span class="p">(</span><span class="s">&#34;hbt_coord.rds&#34;</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">Ecosystem</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">hbt</span> <span class="o">==</span> <span class="s">&#34;M&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;Alpine Meadow&#34;</span><span class="p">,</span> <span class="s">&#34;Alpine Steppe&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nf">str</span><span class="p">(</span><span class="n">hbt_coord</span><span class="p">)</span>
+</span></span></code></pre></div><pre><code>## Classes 'tbl_df', 'tbl' and 'data.frame':    432 obs. of  4 variables:
 ##  $ hbt      : chr  &quot;M&quot; &quot;M&quot; &quot;M&quot; &quot;M&quot; ...
 ##  $ lon      : num  101 101 101 100 100 ...
 ##  $ lat      : num  35.3 35 35 34.5 34.5 ...
@@ -181,10 +181,10 @@ also hold the raster cell values in memory.</p>
 <p>不过在进行绘图之前，还需要对 RasterLayer 数据进行一些小的调整，以便与 <code>ggplot2</code> 的功能兼容。首先将两个 RasterLayer 转换为 data.frame 保留 xy，xy 为经纬度，应点上的值将会保留成与 RasterLayer 中 names 相同的列名，比如 <code>bg_rst</code> 转换为 data.frame 后列名就是 x, y, layer。之后我们将 layer（在此处为当前为止的海拔高度）转换数值范围，因为保留原始的数据用作后面的透明度会让整张图像灰蒙蒙。</p>
 <p>不过要注意的是，正如我们前面说到的 mask 后的 RasterLayer 会将区域外的数据标记为 NA，如果直接使用 NA 绘图将会出现各种奇怪的效果，因此我们选择将 NA 数据更换为 0，将区域内的数据更换为 1，将两种值用作图像的 alpha 就会绘制出准确的青藏高原样式。</p>
 <p>没看懂咋办？呆胶布！动手试试不进行 NA 转换的效果便知道了。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># scales package provide rescale function which can convert the range of numbers</span>
-<span class="c1"># list to another range.</span>
-<span class="nf">library</span><span class="p">(</span><span class="n">scales</span><span class="p">)</span>
-</code></pre></div><pre><code>## 
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># scales package provide rescale function which can convert the range of numbers</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># list to another range.</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">scales</span><span class="p">)</span>
+</span></span></code></pre></div><pre><code>## 
 ## Attaching package: 'scales'
 
 ## The following object is masked from 'package:purrr':
@@ -195,105 +195,105 @@ also hold the raster cell values in memory.</p>
 ## 
 ##     col_factor
 </code></pre>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># First convert RasterLayer as Data.Frame with xy coordinate system.  Then</span>
-<span class="c1"># rescale the elevaion to alpha, as the background part, super high alpha value</span>
-<span class="c1"># is not a good idea, which range is the best? It depends by the actual. Save the</span>
-<span class="c1"># alpha value with colname &#39;alpha&#39;</span>
-<span class="n">bg_rst_df</span> <span class="o">&lt;-</span> <span class="nf">as.data.frame</span><span class="p">(</span><span class="n">bg_rst</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">alpha</span> <span class="o">=</span> <span class="nf">rescale</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0.25</span><span class="p">,</span> 
-    <span class="m">0.75</span><span class="p">)))</span>
-
-<span class="c1"># NA will be generated by the mask function, if use NA and evelation as the alpha</span>
-<span class="c1"># of Topographic figure, it will be dizzy, and for color Topographic figure</span>
-<span class="c1"># please don&#39;t use the greyscale and color for the evelation simultaneously. Just</span>
-<span class="c1"># use alpha to control the shape of regional shpae.</span>
-<span class="n">tp_rst_df</span> <span class="o">&lt;-</span> <span class="nf">as.data.frame</span><span class="p">(</span><span class="n">tp_rst</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">na.omit</span><span class="p">()</span>
-</code></pre></div><p>当数据准备完毕，我们就开始图形的绘制。首先进行地形图叠加到背景地形的绘制。因为命令较多，并且均以注释的形式标注到代码中，故此不再提前讲解。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="c1"># sacle_parm as a parameter controls the sclae of the hole figure, it will be</span>
-<span class="c1"># used to control the size of text, point, legend, etc. to fit the size of</span>
-<span class="c1"># figure.</span>
-<span class="n">scale_parm</span> <span class="o">&lt;-</span> <span class="m">2</span>
-<span class="c1"># Init ggplot</span>
-<span class="c1"># plot the backgroun layer, set the alpha without color will make a grey</span>
-<span class="c1"># background</span>
-<span class="n">gmap</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">()</span> <span class="o">+</span> 
-<span class="c1"># plot the topographic layer, set alpha to keep the shape of Tibetan Plateau</span>
-<span class="c1"># (TP). Color indicates the elevation.</span>
-<span class="nf">geom_raster</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">bg_rst_df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">+</span> 
- <span class="c1"># terrain.colors is an built-in function to generate a list of color palettes.</span>
-<span class="c1"># set the legend title of evelation by name parameter.</span>
-<span class="nf">geom_raster</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">tp_rst_df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="n">layer</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">+</span>
- <span class="c1"># As we said before, the alphas is used to determine the shpae of TP, we don&#39;t</span>
-<span class="c1"># need to show them as legends.</span>
-<span class="nf">scale_fill_gradientn</span><span class="p">(</span><span class="n">colours</span> <span class="o">=</span> <span class="nf">terrain.colors</span><span class="p">(</span><span class="m">100</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;Elevation (m)&#34;</span><span class="p">)</span> <span class="o">+</span>
- <span class="c1"># Project this figure as a map but not a normal figure</span>
-<span class="nf">scale_alpha</span><span class="p">(</span><span class="n">guide</span> <span class="o">=</span> <span class="s">&#34;none&#34;</span><span class="p">)</span> <span class="o">+</span>
- <span class="c1"># Set preset theme makes things easire</span>
-<span class="nf">coord_quickmap</span><span class="p">()</span> <span class="o">+</span>
- <span class="c1"># Set the limititions of axes. `expand` parameter will remove the gaps between</span>
-<span class="nf">theme_minimal</span><span class="p">()</span> <span class="o">+</span>
- <span class="c1"># Set the titles of axis</span>
-<span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">limits</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">70</span><span class="p">,</span> <span class="m">105</span><span class="p">),</span> <span class="n">expand</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span> <span class="nf">scale_y_continuous</span><span class="p">(</span><span class="n">limits</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">25</span><span class="p">,</span> 
-    <span class="m">45</span><span class="p">),</span> <span class="n">expand</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span>
-<span class="nf">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s">&#34;Longtitude (E)&#34;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s">&#34;Laitude (N)&#34;</span><span class="p">)</span> <span class="o">+</span>
- <span class="c1"># remove the background color and background grid, you know the classical</span>
-<span class="c1"># ggplot&#39;s grid, don&#39;t you?</span>
-<span class="nf">theme</span><span class="p">(</span><span class="n">panel.grid</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">(),</span> <span class="n">panel.background</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">())</span> <span class="o">+</span> 
-<span class="c1"># Set the size of axis and legend</span>
-<span class="nf">theme</span><span class="p">(</span><span class="n">axis.title</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">7</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span> <span class="n">axis.text</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">6</span> <span class="o">*</span> 
-    <span class="n">scale_parm</span><span class="p">))</span> <span class="o">+</span> <span class="nf">theme</span><span class="p">(</span><span class="n">legend.key.width</span> <span class="o">=</span> <span class="nf">unit</span><span class="p">(</span><span class="m">0.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="s">&#34;cm&#34;</span><span class="p">),</span> <span class="n">legend.key.height</span> <span class="o">=</span> <span class="nf">unit</span><span class="p">(</span><span class="m">0.5</span> <span class="o">*</span> 
-    <span class="n">scale_parm</span><span class="p">,</span> <span class="s">&#34;cm&#34;</span><span class="p">),</span> <span class="n">legend.text</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">5</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span> <span class="n">legend.title</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">6</span> <span class="o">*</span> 
-    <span class="n">scale_parm</span><span class="p">))</span>
-
-<span class="c1"># Preview will slow down the process of operations, I highly recommand do not</span>
-<span class="c1"># preveiw the ggplot and save it as a file directly.</span>
-</code></pre></div><p>上述操作完毕，如果没有意外，就可以获得一张效果尚可的底图了。但是，个人强烈建议不进行预览图像，直接进行后续的操作，因为绘制当前精度的底图需要花费较长的时间。或者可以使用 <code>ggsave</code> 方法输出为文件进行预览，这样如果效果满意，可以直接用作成品，避免预览后再次绘制效率较低。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># First convert RasterLayer as Data.Frame with xy coordinate system.  Then</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># rescale the elevaion to alpha, as the background part, super high alpha value</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># is not a good idea, which range is the best? It depends by the actual. Save the</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># alpha value with colname &#39;alpha&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">bg_rst_df</span> <span class="o">&lt;-</span> <span class="nf">as.data.frame</span><span class="p">(</span><span class="n">bg_rst</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">alpha</span> <span class="o">=</span> <span class="nf">rescale</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0.25</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="m">0.75</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># NA will be generated by the mask function, if use NA and evelation as the alpha</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># of Topographic figure, it will be dizzy, and for color Topographic figure</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># please don&#39;t use the greyscale and color for the evelation simultaneously. Just</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># use alpha to control the shape of regional shpae.</span>
+</span></span><span class="line"><span class="cl"><span class="n">tp_rst_df</span> <span class="o">&lt;-</span> <span class="nf">as.data.frame</span><span class="p">(</span><span class="n">tp_rst</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">na.omit</span><span class="p">()</span>
+</span></span></code></pre></div><p>当数据准备完毕，我们就开始图形的绘制。首先进行地形图叠加到背景地形的绘制。因为命令较多，并且均以注释的形式标注到代码中，故此不再提前讲解。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># sacle_parm as a parameter controls the sclae of the hole figure, it will be</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># used to control the size of text, point, legend, etc. to fit the size of</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># figure.</span>
+</span></span><span class="line"><span class="cl"><span class="n">scale_parm</span> <span class="o">&lt;-</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Init ggplot</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># plot the backgroun layer, set the alpha without color will make a grey</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># background</span>
+</span></span><span class="line"><span class="cl"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="nf">ggplot</span><span class="p">()</span> <span class="o">+</span> 
+</span></span><span class="line"><span class="cl"><span class="c1"># plot the topographic layer, set alpha to keep the shape of Tibetan Plateau</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># (TP). Color indicates the elevation.</span>
+</span></span><span class="line"><span class="cl"><span class="nf">geom_raster</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">bg_rst_df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">+</span> 
+</span></span><span class="line"><span class="cl"> <span class="c1"># terrain.colors is an built-in function to generate a list of color palettes.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set the legend title of evelation by name parameter.</span>
+</span></span><span class="line"><span class="cl"><span class="nf">geom_raster</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">tp_rst_df</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="n">layer</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">))</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># As we said before, the alphas is used to determine the shpae of TP, we don&#39;t</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># need to show them as legends.</span>
+</span></span><span class="line"><span class="cl"><span class="nf">scale_fill_gradientn</span><span class="p">(</span><span class="n">colours</span> <span class="o">=</span> <span class="nf">terrain.colors</span><span class="p">(</span><span class="m">100</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;Elevation (m)&#34;</span><span class="p">)</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Project this figure as a map but not a normal figure</span>
+</span></span><span class="line"><span class="cl"><span class="nf">scale_alpha</span><span class="p">(</span><span class="n">guide</span> <span class="o">=</span> <span class="s">&#34;none&#34;</span><span class="p">)</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Set preset theme makes things easire</span>
+</span></span><span class="line"><span class="cl"><span class="nf">coord_quickmap</span><span class="p">()</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Set the limititions of axes. `expand` parameter will remove the gaps between</span>
+</span></span><span class="line"><span class="cl"><span class="nf">theme_minimal</span><span class="p">()</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Set the titles of axis</span>
+</span></span><span class="line"><span class="cl"><span class="nf">scale_x_continuous</span><span class="p">(</span><span class="n">limits</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">70</span><span class="p">,</span> <span class="m">105</span><span class="p">),</span> <span class="n">expand</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span> <span class="nf">scale_y_continuous</span><span class="p">(</span><span class="n">limits</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">25</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="m">45</span><span class="p">),</span> <span class="n">expand</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"><span class="nf">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s">&#34;Longtitude (E)&#34;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s">&#34;Laitude (N)&#34;</span><span class="p">)</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># remove the background color and background grid, you know the classical</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ggplot&#39;s grid, don&#39;t you?</span>
+</span></span><span class="line"><span class="cl"><span class="nf">theme</span><span class="p">(</span><span class="n">panel.grid</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">(),</span> <span class="n">panel.background</span> <span class="o">=</span> <span class="nf">element_blank</span><span class="p">())</span> <span class="o">+</span> 
+</span></span><span class="line"><span class="cl"><span class="c1"># Set the size of axis and legend</span>
+</span></span><span class="line"><span class="cl"><span class="nf">theme</span><span class="p">(</span><span class="n">axis.title</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">7</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span> <span class="n">axis.text</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">6</span> <span class="o">*</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">scale_parm</span><span class="p">))</span> <span class="o">+</span> <span class="nf">theme</span><span class="p">(</span><span class="n">legend.key.width</span> <span class="o">=</span> <span class="nf">unit</span><span class="p">(</span><span class="m">0.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="s">&#34;cm&#34;</span><span class="p">),</span> <span class="n">legend.key.height</span> <span class="o">=</span> <span class="nf">unit</span><span class="p">(</span><span class="m">0.5</span> <span class="o">*</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">scale_parm</span><span class="p">,</span> <span class="s">&#34;cm&#34;</span><span class="p">),</span> <span class="n">legend.text</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">5</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span> <span class="n">legend.title</span> <span class="o">=</span> <span class="nf">element_text</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">6</span> <span class="o">*</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">scale_parm</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Preview will slow down the process of operations, I highly recommand do not</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># preveiw the ggplot and save it as a file directly.</span>
+</span></span></code></pre></div><p>上述操作完毕，如果没有意外，就可以获得一张效果尚可的底图了。但是，个人强烈建议不进行预览图像，直接进行后续的操作，因为绘制当前精度的底图需要花费较长的时间。或者可以使用 <code>ggsave</code> 方法输出为文件进行预览，这样如果效果满意，可以直接用作成品，避免预览后再次绘制效率较低。</p>
 <p>随后我们再将地标为止添加到底图上。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
-  <span class="c1"># Add the city_ls to the main plot as landmarks.</span>
-  <span class="nf">geom_text</span><span class="p">(</span>
-    <span class="n">mapping</span> <span class="o">=</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">),</span>
-    <span class="c1"># geom_text don&#39;t support the structure we used. </span>
-    <span class="c1"># convert the list into data.frame, every element is used as column here.</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="nf">bind_cols</span><span class="p">(</span><span class="n">city_ls</span><span class="p">),</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="m">2</span> <span class="o">*</span> <span class="n">scale_parm</span>
-  <span class="p">)</span>
-</code></pre></div><p>最后将采样点添加到底图上。注意 ⚠️ 由于版权和数据分享的原因，我将采样点的坐标设置为 0，0，故此图片上不会显示任何采样点，请根据实际情况设置！</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
-  <span class="c1"># Add the sample sites to the main plot as points.</span>
-  <span class="c1"># Due to the copyright of my scholar article and data share policy, I won&#39;t point my sample sites to the picuture, the coordinations of point is 0,0 here.</span>
-  <span class="nf">geom_point</span><span class="p">(</span>
-    <span class="n">mapping</span> <span class="o">=</span> <span class="nf">aes</span><span class="p">(</span>
-      <span class="c1"># x = lon,</span>
-      <span class="n">x</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
-      <span class="n">y</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
-      <span class="c1"># y = lat,</span>
-      <span class="n">col</span> <span class="o">=</span> <span class="n">Ecosystem</span><span class="p">,</span>
-      <span class="n">shape</span> <span class="o">=</span> <span class="n">Ecosystem</span>
-    <span class="p">),</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">hbt_coord</span><span class="p">,</span>
-    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
-    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
-    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span>
-  <span class="p">)</span> <span class="o">+</span>
-  <span class="c1"># Convert the color as legend class, becasuse the shape legend is legend class.</span>
-  <span class="c1"># If there is no class conversion, the shape and color will be showed as two legends.</span>
-  <span class="c1"># Then select colour as guides and site a larger size to make it more readable.</span>
-  <span class="c1"># Don&#39;t know what&#39;s these means? Commit below code will show you everything.</span>
-  <span class="nf">scale_color_discrete</span><span class="p">(</span><span class="n">guide</span> <span class="o">=</span> <span class="s">&#34;legend&#34;</span><span class="p">)</span> <span class="o">+</span>
-  <span class="nf">guides</span><span class="p">(</span><span class="n">colour</span> <span class="o">=</span> <span class="nf">guide_legend</span><span class="p">(</span><span class="n">override.aes</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">.8</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">)))</span>
-</code></pre></div><p>如果对输出结果满意，那么可以跳过下面这一步，直接进行 <code>ggsave</code> 操作保存图像。不过在这里，保存图像之前，我们还需要修改图片的空白区域 margins 来让图像更合适一些。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
-  <span class="nf">theme</span><span class="p">(</span><span class="n">plot.margin</span> <span class="o">=</span>
-          <span class="c1"># Set marigns of figure, the order of parameters is top, right, bottom, left</span>
-          <span class="nf">unit</span><span class="p">(</span>
-            <span class="nf">c</span><span class="p">(</span><span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">-.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span>
-            <span class="s">&#34;cm&#34;</span>
-          <span class="p">))</span>
-</code></pre></div><p>最后导出图像即可。<code>ggsvae</code> 提供了丰富的参数定义输出的图像。对于需要投稿 SCI 的文章，通常 Author Guidelines 要求提供不低于 300 DPI 的图片文件。如果允许，保存为 PDF 文件会是不错的方法，毕竟通用性和文件大小都能得到很好的满足。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="nf">ggsave</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#34;gmap.pdf&#34;</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">gmap</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">9</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="m">6.2</span> <span class="o">*</span> 
-    <span class="n">scale_parm</span><span class="p">,</span> <span class="n">units</span> <span class="o">=</span> <span class="s">&#34;cm&#34;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="m">600</span><span class="p">)</span>
-</code></pre></div><pre><code>## Warning: Removed 432 rows containing missing values (geom_point).
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Add the city_ls to the main plot as landmarks.</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">geom_text</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mapping</span> <span class="o">=</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># geom_text don&#39;t support the structure we used. </span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># convert the list into data.frame, every element is used as column here.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="nf">bind_cols</span><span class="p">(</span><span class="n">city_ls</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size</span> <span class="o">=</span> <span class="m">2</span> <span class="o">*</span> <span class="n">scale_parm</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span></code></pre></div><p>最后将采样点添加到底图上。注意 ⚠️ 由于版权和数据分享的原因，我将采样点的坐标设置为 0，0，故此图片上不会显示任何采样点，请根据实际情况设置！</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Add the sample sites to the main plot as points.</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Due to the copyright of my scholar article and data share policy, I won&#39;t point my sample sites to the picuture, the coordinations of point is 0,0 here.</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">geom_point</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mapping</span> <span class="o">=</span> <span class="nf">aes</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># x = lon,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">x</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">y</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1"># y = lat,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">col</span> <span class="o">=</span> <span class="n">Ecosystem</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">shape</span> <span class="o">=</span> <span class="n">Ecosystem</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">hbt_coord</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Don&#39;t set the size as 0 until you don&#39;t want to see anything here.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size</span> <span class="o">=</span> <span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Convert the color as legend class, becasuse the shape legend is legend class.</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># If there is no class conversion, the shape and color will be showed as two legends.</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Then select colour as guides and site a larger size to make it more readable.</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># Don&#39;t know what&#39;s these means? Commit below code will show you everything.</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">scale_color_discrete</span><span class="p">(</span><span class="n">guide</span> <span class="o">=</span> <span class="s">&#34;legend&#34;</span><span class="p">)</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">guides</span><span class="p">(</span><span class="n">colour</span> <span class="o">=</span> <span class="nf">guide_legend</span><span class="p">(</span><span class="n">override.aes</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="m">.8</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">)))</span>
+</span></span></code></pre></div><p>如果对输出结果满意，那么可以跳过下面这一步，直接进行 <code>ggsave</code> 操作保存图像。不过在这里，保存图像之前，我们还需要修改图片的空白区域 margins 来让图像更合适一些。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">gmap</span> <span class="o">&lt;-</span> <span class="n">gmap</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">theme</span><span class="p">(</span><span class="n">plot.margin</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">          <span class="c1"># Set marigns of figure, the order of parameters is top, right, bottom, left</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">unit</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">c</span><span class="p">(</span><span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">0</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">-.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="m">.2</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;cm&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))</span>
+</span></span></code></pre></div><p>最后导出图像即可。<code>ggsvae</code> 提供了丰富的参数定义输出的图像。对于需要投稿 SCI 的文章，通常 Author Guidelines 要求提供不低于 300 DPI 的图片文件。如果允许，保存为 PDF 文件会是不错的方法，毕竟通用性和文件大小都能得到很好的满足。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">ggsave</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#34;gmap.pdf&#34;</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="n">gmap</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="m">9</span> <span class="o">*</span> <span class="n">scale_parm</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="m">6.2</span> <span class="o">*</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">scale_parm</span><span class="p">,</span> <span class="n">units</span> <span class="o">=</span> <span class="s">&#34;cm&#34;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="m">600</span><span class="p">)</span>
+</span></span></code></pre></div><pre><code>## Warning: Removed 432 rows containing missing values (geom_point).
 </code></pre>
 <p><img src="https://picgo-1256649726.cos.ap-chengdu.myqcloud.com/gmap.jpg" alt=""></p>
 <p>最后，如果有任何更好的意见和建议，换用通过任何形式与我交流。祝大家都能制作出令自己（主要是杂志）满意的作品。</p>
@@ -393,12 +393,12 @@ the ’Tidyverse’.” <a href="https://CRAN.R-project.org/package=tidyverse">h
 
         <footer id="footer">
   <p>
-    <span>&copy; 2021 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
+    <span>&copy; 2023 <a href="https://blog.washman.top/" title="洗衣机的博客">洗衣机的博客</a> </span>
     <span>Built with <a rel="nofollow" target="_blank" href="https://gohugo.io">Hugo</a></span>
     <span>Theme by <a rel="nofollow" target="_blank" href="https://github.com/wayjam/hugo-theme-mixedpaper">WayJam</a></span>
   </p>
 
-  <script src="https://blog.washman.top/js/main.min.d36ef68c78feb357a5c05e0c28a47045a10fabf33345f1cb02f91d521272e329.js" integrity="sha256-0272jHj+s1elwF4MKKRwRaEPq/MzRfHLAvkdUhJy4yk=" crossorigin="anonymous" async></script>
+  <script src="https://blog.washman.top/js/main.min.8d5e5c2aeeb637f3dddaa2680f8169c057c6dca5717ee4188a442ad000362f09.js" integrity="sha256-jV5cKu62N/Pd2qJoD4FpwFfG3KVxfuQYikQq0AA2Lwk=" crossorigin="anonymous" async></script>
 </footer>
 
     </body>
